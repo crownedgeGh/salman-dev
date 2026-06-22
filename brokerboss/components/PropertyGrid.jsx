@@ -20,10 +20,10 @@ export default function PropertyGrid({ properties }) {
 
   return (
     <div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Showing <span className="font-medium text-foreground">{properties.length}</span> propert{properties.length === 1 ? 'y' : 'ies'}
+      <p className="text-sm text-muted-foreground mb-4 font-medium">
+        Showing <span className="text-foreground">{properties.length}</span> propert{properties.length === 1 ? 'y' : 'ies'}
       </p>
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="flex flex-col gap-4">
         {properties.map((property) => (
           <PropertyCard key={property.id} property={property} />
         ))}
