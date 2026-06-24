@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  interactiveWidget: 'resizes-content',
+};
+
 export const metadata = {
   metadataBase: new URL('https://brokerboss.in'),
   title: {
