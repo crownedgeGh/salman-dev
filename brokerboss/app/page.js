@@ -126,7 +126,7 @@ function HeroSearch() {
             onClick={() => setActiveTab(tab.value)}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
               activeTab === tab.value
-                ? 'bg-white text-primary shadow-md'
+                ? 'bg-card text-primary shadow-md'
                 : 'bg-white/15 text-white/80 hover:bg-white/25 hover:text-white'
             }`}
           >
@@ -136,7 +136,7 @@ function HeroSearch() {
       </div>
 
       {/* ── Search bar ── */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/20">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-card rounded-2xl shadow-2xl overflow-hidden border border-border">
 
         {/* Location section */}
         <div className="flex-1 min-w-0 relative border-b sm:border-b-0 sm:border-r border-border/30">
@@ -165,7 +165,7 @@ function HeroSearch() {
           </div>
           {/* Suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 right-0 bg-white border border-border rounded-xl shadow-xl z-50 mt-1 overflow-hidden">
+            <ul className="absolute top-full left-0 right-0 bg-popover border border-border rounded-xl shadow-xl z-50 mt-1 overflow-hidden">
               {suggestions.map((s) => (
                 <li
                   key={s}
