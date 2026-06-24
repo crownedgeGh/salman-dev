@@ -1,10 +1,6 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { properties } from '@/data/properties';
-import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaSearch, FaTimes, FaChevronDown, FaRupeeSign } from 'react-icons/fa';
+import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaKey, FaMoneyBillWave, FaChartBar, FaCity, FaBolt, FaTag } from 'react-icons/fa';
 
 const typeIconMap = {
   House: FaHome,
@@ -71,161 +67,76 @@ const BUDGETS = [
   { label: 'Above ₹2 Crore', value: '200-' },
 ];
 
-const SEARCH_TABS = [
-  { label: 'Buy', value: 'Sale' },
-  { label: 'Rent', value: 'Rent' },
-  { label: 'Plot', value: 'Plot' },
-  { label: 'Commercial', value: 'Commercial' },
+const HERO_BUTTONS = [
+  {
+    label: 'Buy a Home',
+    description: 'Houses, Flats & Villas',
+    icon: FaHome,
+    listings: '15 listings',
+    href: '/properties?purpose=Sale',
+    bgColor: 'bg-blue-600 hover:bg-blue-700',
+  },
+  {
+    label: 'Rent a Property',
+    description: 'Monthly rental listings',
+    icon: FaTag,
+    listings: '8 listings',
+    href: '/properties?purpose=Rent',
+    bgColor: 'bg-violet-600 hover:bg-violet-700',
+  },
+  {
+    label: 'Buy a Plot',
+    description: 'Residential & commercial land',
+    icon: FaChartArea,
+    listings: '4 listings',
+    href: '/properties?type=Plot',
+    bgColor: 'bg-emerald-600 hover:bg-emerald-700',
+  },
+  {
+    label: 'Commercial',
+    description: 'Shops & offices',
+    icon: FaStore,
+    listings: '10 listings',
+    href: '/properties?type=Shop',
+    bgColor: 'bg-orange-500 hover:bg-orange-600',
+  },
 ];
 
-function HeroSearch() {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState('Sale');
-  const [locality, setLocality] = useState('');
-  const [localityChips, setLocalityChips] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [propertyType, setPropertyType] = useState('');
-  const [budget, setBudget] = useState('');
-
-  const suggestions = LOCALITIES.filter(
-    (l) => l.toLowerCase().includes(locality.toLowerCase()) && locality.length > 0 && !localityChips.includes(l)
-  );
-
-  function addChip(loc) {
-    if (!localityChips.includes(loc)) setLocalityChips((prev) => [...prev, loc]);
-    setLocality('');
-    setShowSuggestions(false);
-  }
-
-  function removeChip(loc) {
-    setLocalityChips((prev) => prev.filter((c) => c !== loc));
-  }
-
-  function handleSearch() {
-    const params = new URLSearchParams();
-    if (activeTab === 'Sale' || activeTab === 'Rent') params.set('purpose', activeTab);
-    if (activeTab === 'Plot') { params.set('type', 'Plot'); }
-    if (activeTab === 'Commercial') { params.set('type', 'Shop'); }
-    if (propertyType) params.set('type', propertyType);
-    if (localityChips.length > 0) params.set('locality', localityChips[0]);
-    if (budget) {
-      const [min, max] = budget.split('-');
-      if (min) params.set('priceMin', min);
-      if (max) params.set('priceMax', max);
-    }
-    router.push(`/properties?${params.toString()}`);
-  }
-
+function HeroCTA() {
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/* ── Tab strip ── */}
-      <div className="flex items-center gap-1 mb-3">
-        {SEARCH_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-              activeTab === tab.value
-                ? 'bg-card text-primary shadow-md'
-                : 'bg-white/15 text-white/80 hover:bg-white/25 hover:text-white'
-            }`}
+    <div className="w-full max-w-4xl mx-auto mt-6 px-2">
+      {/* 4 Buttons — 2×2 on mobile, 4-col on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        {HERO_BUTTONS.map(({ label, description, icon: Icon, href, listings, bgColor }) => (
+          <Link
+            key={label}
+            href={href}
+            className={`group relative flex flex-col text-left ${bgColor} rounded-2xl p-4 sm:p-5 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] overflow-hidden`}
           >
-            {tab.label}
-          </button>
+            {/* Top-right decorative circle */}
+            <div className="absolute top-[-20px] right-[-20px] w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full transition-transform duration-500 group-hover:scale-110" />
+            
+            {/* Icon */}
+            <Icon className="relative z-10 h-6 w-6 sm:h-7 sm:w-7 text-white mb-2 sm:mb-3" />
+
+            {/* Text content */}
+            <div className="relative z-10 flex-1">
+              <p className="font-bold text-white text-sm sm:text-base leading-tight mb-0.5">{label}</p>
+              <p className="text-white/80 text-[10px] sm:text-xs leading-snug mb-3 sm:mb-4 line-clamp-1">{description}</p>
+            </div>
+
+            {/* Listings Pill */}
+            <div className="relative z-10 inline-flex items-center gap-1 bg-white/20 w-fit px-2 py-0.5 rounded-full">
+              <FaBolt className="h-2 w-2 text-white" />
+              <span className="text-white font-semibold text-[9px] sm:text-[10px]">{listings}</span>
+            </div>
+          </Link>
         ))}
-      </div>
-
-      {/* ── Search bar ── */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-card rounded-2xl shadow-2xl overflow-hidden border border-border">
-
-        {/* Location section */}
-        <div className="flex-1 min-w-0 relative border-b sm:border-b-0 sm:border-r border-border/30">
-          <div className="flex flex-wrap items-center gap-1.5 px-4 py-3 min-h-[52px]">
-            <FaMapMarkerAlt className="h-4 w-4 text-primary shrink-0" />
-            {localityChips.map((chip) => (
-              <span
-                key={chip}
-                className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-semibold px-2.5 py-1 rounded-full border border-primary/20"
-              >
-                {chip}
-                <button onClick={() => removeChip(chip)} className="hover:text-red-500 transition-colors">
-                  <FaTimes className="h-2.5 w-2.5" />
-                </button>
-              </span>
-            ))}
-            <input
-              type="text"
-              value={locality}
-              onChange={(e) => { setLocality(e.target.value); setShowSuggestions(true); }}
-              onFocus={() => setShowSuggestions(true)}
-              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-              placeholder={localityChips.length === 0 ? 'Search locality, area…' : 'Add more…'}
-              className="flex-1 min-w-[100px] text-sm text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
-            />
-          </div>
-          {/* Suggestions dropdown */}
-          {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 right-0 bg-popover border border-border rounded-xl shadow-xl z-50 mt-1 overflow-hidden">
-              {suggestions.map((s) => (
-                <li
-                  key={s}
-                  onMouseDown={() => addChip(s)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-primary/5 cursor-pointer transition-colors"
-                >
-                  <FaMapMarkerAlt className="h-3.5 w-3.5 text-primary shrink-0" />
-                  {s}, Raipur
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* Property type dropdown */}
-        <div className="relative border-b sm:border-b-0 sm:border-r border-border/30">
-          <div className="flex items-center gap-2 px-4 py-3 min-h-[52px] cursor-pointer">
-            <FaHome className="h-4 w-4 text-muted-foreground shrink-0" />
-            <select
-              value={propertyType}
-              onChange={(e) => setPropertyType(e.target.value)}
-              className="bg-transparent text-sm text-foreground outline-none cursor-pointer pr-6 appearance-none w-28 sm:w-32"
-            >
-              {PROPERTY_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
-            <FaChevronDown className="h-3 w-3 text-muted-foreground shrink-0 pointer-events-none" />
-          </div>
-        </div>
-
-        {/* Budget dropdown */}
-        <div className="relative border-b sm:border-b-0 sm:border-r border-border/30">
-          <div className="flex items-center gap-2 px-4 py-3 min-h-[52px] cursor-pointer">
-            <FaRupeeSign className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-            <select
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              className="bg-transparent text-sm text-foreground outline-none cursor-pointer pr-6 appearance-none w-28 sm:w-36"
-            >
-              {BUDGETS.map((b) => (
-                <option key={b.value} value={b.value}>{b.label}</option>
-              ))}
-            </select>
-            <FaChevronDown className="h-3 w-3 text-muted-foreground shrink-0 pointer-events-none" />
-          </div>
-        </div>
-
-        {/* Search button */}
-        <button
-          onClick={handleSearch}
-          className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground font-bold px-6 py-3 sm:rounded-none rounded-xl sm:rounded-r-2xl text-sm transition-all shadow-inner m-2 sm:m-0 sm:px-8 sm:min-h-[52px]"
-        >
-          <FaSearch className="h-4 w-4" />
-          <span>Search</span>
-        </button>
       </div>
     </div>
   );
 }
+
 
 function FeaturedCard({ property }) {
   const badgeColor = typeBadgeColor[property.type] || 'bg-gray-100 text-gray-700';
@@ -305,38 +216,27 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/85" />
 
-        <div className="container mx-auto px-4 md:px-6 text-center relative z-10 py-20 md:py-32">
+        <div className="container mx-auto px-4 md:px-6 text-center relative z-10 py-12 md:py-32">
           {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2 rounded-full mb-6 shadow-lg">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 md:mb-6 shadow-lg">
             <FaStar className="h-3 w-3 text-yellow-400" />
             Raipur's #1 Property Marketplace
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-white drop-shadow-lg mb-4">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-white drop-shadow-lg mb-3 md:mb-4">
             Find Your Dream<br className="hidden sm:block" /> Property in Raipur
           </h1>
-          <p className="text-lg md:text-2xl font-medium mt-4 mb-10 text-white/80 max-w-2xl mx-auto">
-            Where brokers list and buyers connect instantly. Explore verified listings across Raipur, Chhattisgarh.
+          <p className="text-sm sm:text-lg md:text-2xl font-medium mt-2 mb-6 md:mb-10 text-white/75 max-w-lg mx-auto">
+            Brokers list. Buyers connect. Explore verified listings in Raipur, CG.
           </p>
 
-          {/* ── Hero Search Widget ── */}
-          <HeroSearch />
+          {/* ── Hero CTA Buttons ── */}
+          <HeroCTA />
 
-          {/* Secondary link */}
-          <p className="mt-5 text-white/50 text-xs">
-            Or{' '}
-            <Link href="/properties" className="text-white/80 underline underline-offset-2 hover:text-white transition-colors">
-              browse all properties
-            </Link>
-          </p>
+
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/50 animate-bounce">
-          <div className="w-5 h-8 rounded-full border-2 border-white/30 flex items-start justify-center pt-1">
-            <div className="w-1 h-2 bg-white/60 rounded-full" />
-          </div>
-        </div>
+
       </section>
 
       {/* ── Stats Bar ────────────────────────────────── */}
