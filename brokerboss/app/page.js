@@ -115,7 +115,7 @@ function HeroCTA() {
           >
             {/* Top-right decorative circle */}
             <div className="absolute top-[-20px] right-[-20px] w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full transition-transform duration-500 group-hover:scale-110" />
-            
+
             {/* Icon */}
             <Icon className="relative z-10 h-6 w-6 sm:h-7 sm:w-7 text-white mb-2 sm:mb-3" />
 
@@ -144,58 +144,48 @@ function FeaturedCard({ property }) {
   return (
     <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
       {/*
-        Card Image — strict 9:16 portrait ratio.
-        We use padding-top trick (177.78% = 16/9 * 100) so the container
-        always maintains 9:16 regardless of parent width.
-        maxHeight caps it so cards don't become too tall on wide screens.
+        Card Image — 4:3 landscape ratio.
+        We use padding-top (75%) and object-contain with bg-white so the tall logo doesn't get cut off.
       */}
-      <div className="relative w-full overflow-hidden bg-muted" style={{ paddingTop: 'min(177.78%, 220px)' }}>
+      <div className="relative w-full overflow-hidden bg-white" style={{ paddingTop: '75%' }}>
         <img
           src={property.broker.image}
           alt={property.title}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
         />
-        {/* Type + Purpose badges — stacked top-left */}
-        <div className="absolute top-2.5 left-2.5 flex gap-1.5">
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm shadow-sm ${badgeColor} border`}>
-            {property.type}
-          </span>
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm shadow-sm border ${property.purpose === 'Sale' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-sky-100 text-sky-700 border-sky-200'}`}>
-            {property.purpose}
-          </span>
-        </div>
+
       </div>
 
       {/* Card Body */}
-      <div className="p-3 sm:p-4 flex flex-col flex-1">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1">
         {/* Title */}
-        <h3 className="font-bold text-sm text-foreground line-clamp-2 leading-snug mb-1 group-hover:text-primary transition-colors">
+        <h3 className="font-bold text-xs sm:text-sm text-foreground line-clamp-2 leading-snug mb-1 group-hover:text-primary transition-colors">
           {property.title}
         </h3>
 
         {/* Price — bold, right under title (not on image) */}
-        <p className="text-primary font-extrabold text-base mb-1.5">{property.price}</p>
+        <p className="text-primary font-extrabold text-sm sm:text-base mb-1 sm:mb-1.5">{property.price}</p>
 
         {/* Location */}
-        <div className="flex items-center gap-1 text-muted-foreground text-[11px] mb-3">
-          <FaMapMarkerAlt className="h-3 w-3 shrink-0" />
+        <div className="flex items-center gap-1 text-muted-foreground text-[10px] sm:text-[11px] mb-2 sm:mb-3">
+          <FaMapMarkerAlt className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
           <span className="line-clamp-1">{property.locality}, {property.city}</span>
         </div>
 
         {/* Broker row */}
-        <div className="flex items-center gap-2 mt-auto pt-3 border-t border-border/40">
-          <div className="w-7 h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
             <img src={property.broker.image} alt={property.broker.name} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-semibold text-foreground line-clamp-1">{property.broker.name}</p>
-            <div className="flex items-center gap-0.5 text-blue-600 text-[9px] font-bold">
-              <FaCheckCircle className="h-2.5 w-2.5" /> Verified
+            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1">{property.broker.name}</p>
+            <div className="flex items-center gap-0.5 text-blue-600 text-[8px] sm:text-[9px] font-bold">
+              <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
             </div>
           </div>
           <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="shrink-0">
-            <button className="bg-primary hover:bg-primary/90 text-primary-foreground text-[10px] font-semibold px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm whitespace-nowrap">
-              <FaPhone className="h-2.5 w-2.5" /> Call
+            <button className="bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] sm:text-[10px] font-semibold px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm whitespace-nowrap">
+              <FaPhone className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> <span className="hidden xs:inline">Call</span>
             </button>
           </a>
         </div>
@@ -259,24 +249,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Browse by Category ───────────────────────── */}
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-extrabold text-foreground">Browse by Category</h2>
-            <p className="text-muted-foreground text-sm mt-2">Find the right property type for your needs</p>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {categories.map(({ label, icon: Icon, type, color }) => (
-              <Link key={type} href={`/properties?type=${type}`}>
-                <div className={`flex flex-col items-center gap-2 p-3 md:p-4 rounded-2xl border cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5 ${color} bg-opacity-60`}>
-                  <Icon className="h-6 w-6 md:h-7 md:w-7" />
-                  <span className="text-xs md:text-sm font-semibold text-center">{label}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* ── Featured Properties ──────────────────────── */}
       <section className="py-12 md:py-16">
