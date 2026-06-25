@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 import {
   FaMapMarkerAlt,
   FaRulerCombined,
@@ -39,7 +40,7 @@ const typeColorMap = {
 function CallBrokerButtons({ broker, compact }) {
   return (
     <div className={`flex flex-wrap items-center gap-2 w-full sm:w-auto ${compact ? 'mt-2' : 'mt-4 sm:mt-0'}`}>
-      <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="flex-1 sm:flex-none">
+      <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="flex-1 sm:flex-none" onClick={(e) => e.stopPropagation()}>
         <Button size={compact ? 'sm' : 'default'} className={`w-full gap-1.5 shadow-sm font-medium ${compact ? 'h-8 text-xs px-3' : ''}`}>
           <FaPhone className={compact ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
           Call Now
@@ -48,6 +49,7 @@ function CallBrokerButtons({ broker, compact }) {
       <Button
         variant="outline"
         size={compact ? 'sm' : 'default'}
+        onClick={(e) => e.stopPropagation()}
         className={`flex-1 sm:flex-none gap-1.5 border-primary text-primary hover:bg-primary/10 shadow-sm font-medium ${compact ? 'h-8 text-xs px-3' : ''}`}
       >
         <FaWhatsapp className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
@@ -66,10 +68,14 @@ function CallBrokerButtons({ broker, compact }) {
  * grow with the image — the image is contained inside its aspect-ratio box.
  */
 export default function PropertyCard({ property, compact = false }) {
+  const router = useRouter();
   const typeColor = typeColorMap[property.type] || 'bg-gray-100 text-gray-800';
 
   return (
-    <Card className={`flex flex-col sm:flex-row overflow-hidden hover:shadow-md transition-all duration-200 border-border/60 bg-white dark:bg-card ${compact ? 'mb-1.5 sm:mb-2' : 'mb-2 sm:mb-4'}`}>
+    <Card 
+      onClick={() => router.push(`/properties/${property.id}`)}
+      className={`flex flex-col sm:flex-row overflow-hidden hover:shadow-md transition-all duration-200 border-border/60 bg-white dark:bg-card cursor-pointer ${compact ? 'mb-1.5 sm:mb-2' : 'mb-2 sm:mb-4'}`}
+    >
 
       {/* ────────────────────────────────────────────────
           MOBILE LAYOUT
@@ -135,13 +141,13 @@ export default function PropertyCard({ property, compact = false }) {
 
           {/* Action buttons */}
           <div className="flex items-center gap-1.5">
-            <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="flex-1">
+            <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
               <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-1 font-semibold text-[10px] h-7 rounded-md shadow-sm px-2">
                 <FaPhone className="h-2.5 w-2.5" />
                 Call Now
               </Button>
             </a>
-            <Button variant="outline" className="flex-1 border-primary text-primary hover:bg-primary/10 font-semibold text-[10px] h-7 rounded-md shadow-sm px-2">
+            <Button variant="outline" onClick={(e) => e.stopPropagation()} className="flex-1 border-primary text-primary hover:bg-primary/10 font-semibold text-[10px] h-7 rounded-md shadow-sm px-2">
               <FaWhatsapp className="h-2.5 w-2.5" />
               WhatsApp
             </Button>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { properties } from '@/data/properties';
 import PropertyGrid from '@/components/PropertyGrid';
 import FilterSidebar from '@/components/FilterSidebar';
@@ -226,24 +226,76 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
 // ─── Main Page ────────────────────────────────────────────────
 export default function PropertiesPage() {
   const searchParams = useSearchParams();
-  const [filters, setFilters] = useState(defaultFilters);
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Pre-populate from hero search URL params
-  useEffect(() => {
-    const f = {
-      type: searchParams.get('type') || '',
-      purpose: searchParams.get('purpose') || '',
+  const filters = useMemo(() => {
+    let purpose = '';
+    let type = '';
+
+    const types = searchParams.getAll('type');
+    types.forEach(t => {
+      const lower = t.toLowerCase();
+      if (lower === 'buy') purpose = 'Sale';
+      else if (lower === 'rent') purpose = 'Rent';
+      else type = t.charAt(0).toUpperCase() + t.slice(1);
+    });
+
+    return {
+      type,
+      purpose,
       locality: searchParams.get('locality') || '',
       priceMin: searchParams.get('priceMin') || '',
       priceMax: searchParams.get('priceMax') || '',
     };
-    setFilters(f);
   }, [searchParams]);
 
-  const handleFilterChange = (partial) => setFilters((prev) => ({ ...prev, ...partial }));
-  const handleClearFilter = (key) => setFilters((prev) => ({ ...prev, [key]: '' }));
-  const handleClearAll = () => { setFilters(defaultFilters); setSearchQuery(''); };
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  // Update local search query if URL changes (e.g. back button)
+  useEffect(() => {
+    setSearchQuery(searchParams.get('q') || '');
+  }, [searchParams]);
+
+  const updateUrl = useCallback((newFilters, newQuery) => {
+    const params = new URLSearchParams();
+    
+    if (newFilters.purpose === 'Sale') params.append('type', 'buy');
+    else if (newFilters.purpose === 'Rent') params.append('type', 'rent');
+    
+    if (newFilters.type) params.append('type', newFilters.type.toLowerCase());
+    
+    if (newFilters.locality) params.set('locality', newFilters.locality);
+    if (newFilters.priceMin) params.set('priceMin', newFilters.priceMin);
+    if (newFilters.priceMax) params.set('priceMax', newFilters.priceMax);
+    if (newQuery) params.set('q', newQuery);
+    
+    const query = params.toString();
+    router.push(`${pathname}${query ? `?${query}` : ''}`, { scroll: false });
+  }, [pathname, router]);
+
+  const handleFilterChange = (partial) => {
+    updateUrl({ ...filters, ...partial }, searchQuery);
+  };
+  
+  const handleClearFilter = (key) => {
+    updateUrl({ ...filters, [key]: '' }, searchQuery);
+  };
+  
+  const handleClearAll = () => {
+    setSearchQuery('');
+    updateUrl(defaultFilters, '');
+  };
+
+  // Debounced search query sync
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchQuery !== (searchParams.get('q') || '')) {
+        updateUrl(filters, searchQuery);
+      }
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery, filters, searchParams, updateUrl]);
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 

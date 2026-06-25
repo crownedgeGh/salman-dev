@@ -73,7 +73,7 @@ const HERO_BUTTONS = [
     description: 'Houses, Flats & Villas',
     icon: FaHome,
     listings: '15 listings',
-    href: '/properties?purpose=Sale',
+    href: '/properties?type=buy',
     bgColor: 'bg-blue-600 hover:bg-blue-700',
   },
   {
@@ -81,7 +81,7 @@ const HERO_BUTTONS = [
     description: 'Monthly rental listings',
     icon: FaTag,
     listings: '8 listings',
-    href: '/properties?purpose=Rent',
+    href: '/properties?type=rent',
     bgColor: 'bg-violet-600 hover:bg-violet-700',
   },
   {
@@ -89,7 +89,7 @@ const HERO_BUTTONS = [
     description: 'Residential & commercial land',
     icon: FaChartArea,
     listings: '4 listings',
-    href: '/properties?type=Plot',
+    href: '/properties?type=plot',
     bgColor: 'bg-emerald-600 hover:bg-emerald-700',
   },
   {
@@ -97,7 +97,7 @@ const HERO_BUTTONS = [
     description: 'Shops & offices',
     icon: FaStore,
     listings: '10 listings',
-    href: '/properties?type=Shop',
+    href: '/properties?type=shop',
     bgColor: 'bg-orange-500 hover:bg-orange-600',
   },
 ];
