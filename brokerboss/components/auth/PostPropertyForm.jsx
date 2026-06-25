@@ -23,7 +23,6 @@ function genPropertyId() {
 // ── Config ─────────────────────────────────────────────────────────────────
 const PROPERTY_TYPES = ['Flat', 'House', 'Shop', 'Plot', 'Office', 'Warehouse'];
 const PURPOSES       = ['Sale', 'Rent'];
-const PRICE_UNITS    = ['Lakh', 'Crore'];
 const FURNISHINGS    = ['Unfurnished', 'Semi-Furnished', 'Furnished'];
 const FACINGS        = ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
 const PREFERRED_FOR  = ['Any', 'Family', 'Bachelor', 'Company / Firm'];
@@ -93,7 +92,6 @@ export default function PostPropertyForm() {
     parking:         '',
     facing:          '',
     price:           '',
-    priceUnit:       'Lakh',
     negotiable:      '',
     maintenanceCharge: '',
     availableFrom:   '',
@@ -234,15 +232,40 @@ export default function PostPropertyForm() {
 
       {/* ── 3. Property Details ───────────────────────────────────── */}
       <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <SectionHead icon={FaBuilding} title="Property Details" subtitle="Specifications and features" />
+        <SectionHead icon={FaBuilding} title="Property Details & Pricing" subtitle="Specifications, features, and price" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Price */}
+          <Field id="prop-price" label="Price (₹)" required error={errors.price}>
+            <div className="relative">
+              <FaRupeeSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input id="prop-price" type="number" min="0" value={form.price} onChange={set('price')}
+                className={`${input} pl-8`} placeholder="Enter total amount" />
+            </div>
+          </Field>
+
+          {/* Negotiable */}
+          <Field id="prop-negotiable" label="Price Negotiable?">
+            <div className="flex gap-2">
+              {['Yes', 'No'].map((v) => (
+                <button key={v} type="button"
+                  onClick={() => setForm((p) => ({ ...p, negotiable: v }))}
+                  className={`flex-1 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
+                    form.negotiable === v
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-card text-muted-foreground hover:border-primary'
+                  }`}
+                >{v}</button>
+              ))}
+            </div>
+          </Field>
 
           {/* Area Size + Unit */}
           <Field id="prop-area" label="Total Area" required error={errors.areaSize}>
             <div className="flex gap-2">
               <input id="prop-area" type="number" min="1" value={form.areaSize} onChange={set('areaSize')}
-                className={`${input} flex-1`} />
-              <select value={form.areaUnit} onChange={set('areaUnit')} className={`${select} w-28`}>
+                className={`${input} flex-1`} placeholder="Area size" />
+              <select value={form.areaUnit} onChange={set('areaUnit')} className={`${select.replace('w-full', '')} w-28 flex-none`}>
                 {AREA_UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
               </select>
             </div>
@@ -312,51 +335,6 @@ export default function PostPropertyForm() {
             </select>
           </Field>
 
-          {/* Preferred For */}
-          <Field id="prop-preferred" label="Preferred For (optional)">
-            <select id="prop-preferred" value={form.preferredFor} onChange={set('preferredFor')} className={select}>
-              <option value=""></option>
-              {PREFERRED_FOR.map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </Field>
-        </div>
-      </div>
-
-      {/* ── 4. Pricing ───────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <SectionHead icon={FaRupeeSign} title="Pricing" subtitle="Set your asking price" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {/* Price + Unit */}
-          <Field id="prop-price" label="Price" required error={errors.price}>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <FaRupeeSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <input id="prop-price" type="number" min="1" value={form.price} onChange={set('price')}
-                  className={`${input} pl-8`} />
-              </div>
-              <select value={form.priceUnit} onChange={set('priceUnit')} className={`${select} w-28`}>
-                {PRICE_UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
-              </select>
-            </div>
-          </Field>
-
-          {/* Negotiable */}
-          <Field id="prop-negotiable" label="Price Negotiable?">
-            <div className="flex gap-2">
-              {['Yes', 'No'].map((v) => (
-                <button key={v} type="button"
-                  onClick={() => setForm((p) => ({ ...p, negotiable: v }))}
-                  className={`flex-1 py-2.5 rounded-lg border-2 text-sm font-medium transition-all ${
-                    form.negotiable === v
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-card text-muted-foreground hover:border-primary'
-                  }`}
-                >{v}</button>
-              ))}
-            </div>
-          </Field>
-
           {/* Maintenance — flat/office only */}
           {['Flat', 'Office'].includes(form.type) && (
             <Field id="prop-maintenance" label="Maintenance Charge / Month (optional)">
@@ -372,6 +350,14 @@ export default function PostPropertyForm() {
           <Field id="prop-available" label="Available From (optional)">
             <input id="prop-available" type="date" value={form.availableFrom}
               onChange={set('availableFrom')} className={input} />
+          </Field>
+
+          {/* Preferred For */}
+          <Field id="prop-preferred" label="Preferred For (optional)">
+            <select id="prop-preferred" value={form.preferredFor} onChange={set('preferredFor')} className={select}>
+              <option value=""></option>
+              {PREFERRED_FOR.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
           </Field>
         </div>
       </div>
