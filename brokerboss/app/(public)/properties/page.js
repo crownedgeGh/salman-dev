@@ -224,7 +224,10 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
 }
 
 // ─── Main Page ────────────────────────────────────────────────
-export default function PropertiesPage() {
+import { Suspense } from 'react';
+
+function PropertiesPageInner() {
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -417,5 +420,13 @@ export default function PropertiesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-muted-foreground">Loading properties…</div>}>
+      <PropertiesPageInner />
+    </Suspense>
   );
 }

@@ -2,8 +2,6 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/context/AuthContext';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import './globals.css';
 
 const geistSans = Geist({
@@ -45,9 +43,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <TooltipProvider>
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
+              {children}
             </TooltipProvider>
           </AuthProvider>
         </ThemeProvider>
@@ -55,3 +51,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
