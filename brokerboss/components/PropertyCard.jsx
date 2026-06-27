@@ -4,151 +4,296 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import {
-  FaMapMarkerAlt,
-  FaRulerCombined,
-  FaPhone,
-  FaHome,
-  FaStore,
-  FaBuilding,
-  FaWarehouse,
-  FaChartArea,
-  FaWhatsapp,
-  FaCheckCircle,
-} from 'react-icons/fa';
+  Heart,
+  Share2,
+  ChevronDown,
+  Phone,
+  Star,
+  MapPin,
+  User,
+  CheckCircle2,
+} from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 
-const typeIconMap = {
-  House: FaHome,
-  Flat: FaBuilding,
-  Shop: FaStore,
-  Plot: FaChartArea,
-  Home: FaHome,
-  Office: FaBuilding,
-  Warehouse: FaWarehouse,
-};
+// Helper to generate consistent, realistic mocked specs based on property id & type
+function getPropertySpecs(property) {
+  const idNum = parseInt(property.id.replace(/\D/g, '')) || 7;
+  const isRent = property.purpose === 'Rent';
 
-const typeColorMap = {
-  House: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  Flat: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  Shop: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
-  Plot: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  Home: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-  Office: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-  Warehouse: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-};
+  // Photo Count
+  const photoCount = ((idNum * 3) % 12) + 6;
 
-function CallBrokerButtons({ broker, compact }) {
-  return (
-    <div className={`flex flex-wrap items-center gap-2 w-full sm:w-auto ${compact ? 'mt-2' : 'mt-4 sm:mt-0'}`}>
-      <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="flex-1 sm:flex-none" onClick={(e) => e.stopPropagation()}>
-        <Button size={compact ? 'sm' : 'default'} className={`w-full gap-1.5 shadow-sm font-medium ${compact ? 'h-8 text-xs px-3' : ''}`}>
-          <FaPhone className={compact ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
-          Call Now
-        </Button>
-      </a>
-      <Button
-        variant="outline"
-        size={compact ? 'sm' : 'default'}
-        onClick={(e) => e.stopPropagation()}
-        className={`flex-1 sm:flex-none gap-1.5 border-primary text-primary hover:bg-primary/10 shadow-sm font-medium ${compact ? 'h-8 text-xs px-3' : ''}`}
-      >
-        <FaWhatsapp className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
-        WhatsApp
-      </Button>
-    </div>
-  );
+  // Age/Updated
+  const updateDays = (idNum * 2) % 5;
+  const updatedText = updateDays === 0 ? 'Updated today' : `Updated ${updateDays} days ago`;
+
+  // Extracted BHK if present in title
+  const bhkMatch = property.title.match(/(\d)\s*BHK/i);
+  const bhk = bhkMatch ? bhkMatch[1] : '2';
+
+  // Price formatting and deposit
+  let formattedPrice = property.price;
+  let depositText = 'See other charges';
+  if (isRent) {
+    const numericPriceStr = property.price.replace(/[^\d]/g, '');
+    const priceVal = parseInt(numericPriceStr) || 15000;
+    const depositVal = priceVal * 2;
+    formattedPrice = `₹${priceVal.toLocaleString('en-IN')}`;
+    depositText = `Security Deposit: ₹${depositVal.toLocaleString('en-IN')}`;
+  } else {
+    // Sale
+    depositText = 'Stamp Duty & Registration Charges Extra';
+  }
+
+  // Specifications based on Type
+  const specs = [];
+  if (['House', 'Flat', 'Home'].includes(property.type)) {
+    const furnishingOptions = ['Semi-Furnished', 'Fully Furnished', 'Unfurnished'];
+    const furnishing = furnishingOptions[idNum % furnishingOptions.length];
+
+    const tenantOptions = ['Family/Bachelors', 'Family Only', 'Bachelors Only'];
+    const tenant = tenantOptions[(idNum + 1) % tenantOptions.length];
+
+    specs.push({ label: 'BHK', value: `${bhk} BHK` });
+    specs.push({ label: 'FURNISHING', value: furnishing });
+    specs.push({ label: 'BATHROOM', value: `${parseInt(bhk) || 2}` });
+    specs.push({ label: 'TENANT PREFERRED', value: tenant });
+  } else if (['Plot'].includes(property.type)) {
+    const facingOptions = ['East', 'North', 'West', 'South'];
+    const facing = facingOptions[idNum % facingOptions.length];
+
+    const boundaryOptions = ['Yes', 'No'];
+    const boundary = boundaryOptions[(idNum + 2) % boundaryOptions.length];
+
+    specs.push({ label: 'FACES', value: facing });
+    specs.push({ label: 'BOUNDARY WALL', value: boundary });
+    specs.push({ label: 'LAND AUTHORITY', value: 'RERA Approved' });
+  } else {
+    // Commercial / Shop / Office / Warehouse
+    const availabilityOptions = ['Immediately', '15 Days', '30 Days'];
+    const availability = availabilityOptions[idNum % availabilityOptions.length];
+
+    const parkingOptions = ['Available', 'Covered', 'Not Available'];
+    const parking = parkingOptions[(idNum + 1) % parkingOptions.length];
+
+    specs.push({ label: 'AVAILABILITY', value: availability });
+    specs.push({ label: 'PARKING', value: parking });
+    specs.push({ label: 'LIFT', value: idNum % 2 === 0 ? 'Yes' : 'No' });
+  }
+
+  return {
+    photoCount,
+    updatedText,
+    formattedPrice,
+    depositText,
+    specs,
+  };
 }
 
-/**
- * PropertyCard
- * @param {object}  property
- * @param {boolean} [compact=false]  – reduces card height for dense listing views
- *
- * Image ratio is always 9:16 (portrait). Card height is fixed and does NOT
- * grow with the image — the image is contained inside its aspect-ratio box.
- */
 export default function PropertyCard({ property, compact = false }) {
   const router = useRouter();
-  const typeColor = typeColorMap[property.type] || 'bg-gray-100 text-gray-800';
+  const [isLiked, setIsLiked] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const { photoCount, updatedText, formattedPrice, depositText, specs } = getPropertySpecs(property);
+  const isRent = property.purpose === 'Rent';
+
+  const handleCardClick = () => {
+    router.push(`/properties/${property.id}`);
+  };
+
+  const handleAction = (e, callback) => {
+    e.stopPropagation();
+    if (callback) callback();
+  };
+
+  // Image Source - fallback to a nice placeholder if broker image isn't available
+  const imageUrl = property.broker?.image || '/badge.png';
+
+  // Specifications logic: only collapse when there are 5 or 6 specs in total.
+  // We combine the base specs and the AREA spec.
+  const allFeatures = [...specs, { label: 'AREA', value: property.area }];
+  const hasCollapse = allFeatures.length >= 5;
+  const visibleFeatures = (hasCollapse && !isExpanded) ? allFeatures.slice(0, 3) : allFeatures;
 
   return (
-    <Card 
-      onClick={() => router.push(`/properties/${property.id}`)}
-      className={`flex flex-col sm:flex-row overflow-hidden hover:shadow-md transition-all duration-200 border-border/60 bg-white dark:bg-card cursor-pointer ${compact ? 'mb-1.5 sm:mb-2' : 'mb-2 sm:mb-4'}`}
+    <Card
+      onClick={handleCardClick}
+      className={`group relative flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all duration-300 border border-border/80 bg-white dark:bg-card cursor-pointer rounded-2xl ${
+        compact ? 'mb-2' : 'mb-4'
+      }`}
     >
-
       {/* ────────────────────────────────────────────────
-          MOBILE LAYOUT
+          LEFT COLUMN: IMAGE & BADGES
           ──────────────────────────────────────────────── */}
-      <div className="flex sm:hidden w-full">
-        {/*
-          Image column — fixed width, 9:16 portrait ratio.
-          We achieve 9:16 by setting width and calculating height:
-          compact: w=80px  → h = 80 * (16/9) ≈ 142px
-          normal:  w=96px  → h = 96 * (16/9) ≈ 170px
-        */}
-        <div className={`shrink-0 relative bg-muted overflow-hidden rounded-l-lg ${compact ? 'w-[80px] h-[142px]' : 'w-[96px] h-[170px]'}`}>
+      <div className="relative shrink-0 w-full md:w-[260px] bg-muted overflow-hidden flex flex-col border-r border-border/50">
+        {/* Aspect Ratio Box for Image */}
+        <div className="relative w-full aspect-[16/10] md:aspect-[4/3] overflow-hidden">
           <img
-            src={property.broker.image}
-            alt={property.broker.name}
-            className="absolute inset-0 w-full h-full object-cover"
+            src={imageUrl}
+            alt={property.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Type + Purpose badges */}
-          <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
-            <Badge className="bg-black/60 hover:bg-black/80 backdrop-blur-sm border-none text-[9px] px-1.5 py-0">
-              {property.type}
-            </Badge>
-            <Badge className={`backdrop-blur-sm border-none text-[9px] px-1.5 py-0 ${property.purpose === 'Sale' ? 'bg-green-600/80' : 'bg-blue-600/80'}`}>
-              {property.purpose}
-            </Badge>
+          
+          {/* Overlay: Photo Count */}
+          <div className="absolute top-3 left-3">
+            <span className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-[11px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
+              {photoCount}+ Photos
+            </span>
+          </div>
+
+          {/* Overlay: Updated tag */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
+            <span className="text-white text-[11px] font-semibold tracking-wide drop-shadow-sm">
+              {updatedText}
+            </span>
           </div>
         </div>
 
-        {/* Content column */}
-        <div className={`flex-1 min-w-0 flex flex-col justify-between p-2.5 ${compact ? 'py-2' : 'py-3'}`}>
-          {/* Title */}
-          <h3 className="font-bold text-[12px] leading-tight text-foreground line-clamp-2 mb-1">
-            {property.title}
-          </h3>
-
-          {/* Price — prominent, under title */}
-          <p className="text-primary font-extrabold text-[13px] mb-1">{property.price}</p>
-
-          {/* Broker name + verified */}
-          <div className="flex items-center gap-1 mb-0.5">
-            <span className="font-medium text-foreground text-[10px] line-clamp-1">
+        {/* Below Image Section (Desktop & Mobile unified) */}
+        <div className="p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1.5 border-t border-border/40 text-xs">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <span className="font-semibold text-foreground truncate">
               {property.broker.name}
             </span>
-            <div className="flex items-center gap-0.5 text-blue-600 font-bold text-[8px] bg-blue-50 px-1 py-[1px] rounded border border-blue-100 shrink-0">
-              <FaCheckCircle className="h-2 w-2" />
-              Verified
+            <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium">
+              Broker
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 fill-emerald-100 dark:fill-none" />
+            Verified Trusted Partner
+          </div>
+
+          <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold text-[10px] uppercase tracking-wider mt-0.5">
+            <Star className="h-3 w-3 fill-amber-500 text-amber-500 shrink-0" />
+            Premium Member
+          </div>
+        </div>
+      </div>
+
+      {/* ────────────────────────────────────────────────
+          MIDDLE COLUMN: PROPERTY SPECS & DESCRIPTION
+          ──────────────────────────────────────────────── */}
+      <div className="flex-1 flex flex-col justify-between p-4 md:p-5 min-w-0">
+        <div>
+          {/* Header Row: Title & Action Icons */}
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <h3 className="font-extrabold text-foreground text-sm md:text-base leading-snug line-clamp-2 hover:text-primary transition-colors flex-1">
+              {property.title}
+            </h3>
+            
+            {/* Quick Actions (Heart, Share, Info) */}
+            <div className="flex items-center gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => handleAction(e, () => setIsLiked(!isLiked))}
+                className={`h-8 w-8 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 text-muted-foreground ${
+                  isLiked ? 'text-red-500 fill-red-500' : 'hover:text-red-500'
+                }`}
+                aria-label="Add to wishlist"
+              >
+                <Heart className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => handleAction(e, () => {
+                  if (navigator.share) {
+                    navigator.share({ title: property.title, url: window.location.origin + `/properties/${property.id}` });
+                  }
+                })}
+                className="h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground hover:text-blue-500"
+                aria-label="Share property"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Location */}
-          <div className="text-muted-foreground text-[10px] font-medium flex items-center gap-1 mb-2">
-            <FaMapMarkerAlt className="h-2.5 w-2.5 shrink-0" />
-            <span className="line-clamp-1">{property.locality}, {property.city}</span>
+          {/* Location details */}
+          <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold mb-3">
+            <MapPin className="h-3.5 w-3.5 text-muted-foreground/80 shrink-0" />
+            <span className="truncate">{property.locality}, {property.city}</span>
           </div>
 
-          {/* Area tag */}
-          <div className="mb-2">
-            <span className="bg-muted text-muted-foreground text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-border/50">
-              <FaRulerCombined className="inline mr-1 h-2.5 w-2.5" />
-              {property.area}
+          {/* Dynamic Specifications Grid (Magicbricks style) */}
+          <div 
+            onClick={(e) => {
+              if (hasCollapse) {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }
+            }}
+            className={`bg-gray-50/70 dark:bg-muted/30 border border-border/50 rounded-xl p-3 mb-3 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2.5 relative group/specs ${
+              hasCollapse ? 'cursor-pointer hover:bg-gray-100/50 dark:hover:bg-muted/40 transition-colors' : ''
+            }`}
+          >
+            {visibleFeatures.map((spec, idx) => (
+              <div key={idx} className="min-w-0 border-r border-border/30 last:border-none pr-1">
+                <span className="block text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">
+                  {spec.label}
+                </span>
+                <span className="block text-xs font-bold text-foreground truncate">
+                  {spec.value}
+                </span>
+              </div>
+            ))}
+            
+            {/* Small Dropdown arrow to match the design */}
+            {hasCollapse && (
+              <div className="absolute right-2.5 bottom-2 text-gray-400 group-hover/specs:text-foreground transition-all">
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+              </div>
+            )}
+          </div>
+
+          {/* Description Snippet */}
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-2 relative pr-4">
+            {property.description}
+            <span className="inline-block text-primary font-semibold text-[10px] ml-1 hover:underline whitespace-nowrap cursor-pointer">
+              Read more...
             </span>
+          </p>
+        </div>
+
+        {/* Mobile-only Price and CTA area (hidden on desktop) */}
+        <div className="flex md:hidden items-center justify-between border-t border-border/40 pt-3 mt-2">
+          <div className="flex flex-col">
+            <span className="text-base font-black text-foreground">{formattedPrice}</span>
+            <span className="text-[10px] text-muted-foreground leading-none">{isRent ? '/month' : ''}</span>
           </div>
 
-          {/* Action buttons */}
           <div className="flex items-center gap-1.5">
-            <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground gap-1 font-semibold text-[10px] h-7 rounded-md shadow-sm px-2">
-                <FaPhone className="h-2.5 w-2.5" />
+            <a
+              href={`tel:${property.broker.phone.replace(/\s/g, '')}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-block"
+            >
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-8 text-[11px] px-3 shadow-sm rounded-lg flex items-center gap-1">
+                <Phone className="h-3 w-3" />
                 Call Now
               </Button>
             </a>
-            <Button variant="outline" onClick={(e) => e.stopPropagation()} className="flex-1 border-primary text-primary hover:bg-primary/10 font-semibold text-[10px] h-7 rounded-md shadow-sm px-2">
-              <FaWhatsapp className="h-2.5 w-2.5" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => handleAction(e, () => {
+                window.open(`https://wa.me/${property.broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
+              })}
+              className="border-primary text-primary hover:bg-primary/10 font-bold h-8 text-[11px] px-3 rounded-lg flex items-center gap-1 bg-transparent"
+            >
+              <FaWhatsapp className="h-3.5 w-3.5" />
               WhatsApp
             </Button>
           </div>
@@ -156,91 +301,44 @@ export default function PropertyCard({ property, compact = false }) {
       </div>
 
       {/* ────────────────────────────────────────────────
-          DESKTOP LAYOUT
+          RIGHT COLUMN: PRICE & ACTION PANEL (DESKTOP)
           ──────────────────────────────────────────────── */}
-      {/*
-        Image column — fixed width + explicit height enforcing 9:16.
-        compact: w=120px → h = 120 * (16/9) ≈ 213px
-        normal:  w=160px → h = 160 * (16/9) ≈ 284px
-        The card height is driven by the content column and the image
-        is constrained inside its box (object-cover), so card height
-        stays constant regardless of image content.
-      */}
-      <div className={`hidden sm:block relative shrink-0 bg-muted border-r border-border/40 overflow-hidden ${compact ? 'w-[120px] h-[213px]' : 'w-[160px] h-[284px]'}`}>
-        <img
-          src={property.broker.image}
-          alt={property.broker.name}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-          <Badge className="bg-black/60 hover:bg-black/80 backdrop-blur-sm border-none text-[10px] px-1.5 py-0">
-            {property.type}
-          </Badge>
-          <Badge className={`backdrop-blur-sm border-none text-[10px] px-1.5 py-0 ${property.purpose === 'Sale' ? 'bg-green-600/80' : 'bg-blue-600/80'}`}>
-            {property.purpose}
-          </Badge>
-        </div>
-      </div>
-
-      {/* Right: Details */}
-      <div className={`hidden sm:flex flex-1 flex-col justify-between min-w-0 ${compact ? 'p-3' : 'p-5'}`}>
-        <div>
-          {/* Title — full width, no price on the right */}
-          <h3 className={`font-bold leading-tight text-foreground mb-1 ${compact ? 'text-sm line-clamp-1' : 'text-lg line-clamp-2'}`}>
-            {property.title}
-          </h3>
-
-          {/* Price — under the title, prominent */}
-          <p className={`font-extrabold text-primary mb-2 ${compact ? 'text-sm' : 'text-xl'}`}>
-            {property.price}
-          </p>
-
-          {/* Broker Info */}
-          <div className={`flex flex-col ${compact ? 'gap-0.5 mb-2' : 'gap-1.5 mb-3'}`}>
-            <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground text-xs">By</span>
-              <span className={`font-semibold text-foreground ${compact ? 'text-xs' : 'text-sm'}`}>
-                {property.broker.name}
-              </span>
-              <div className={`flex items-center gap-1 text-blue-600 font-bold bg-blue-50 px-1 rounded border border-blue-100 ${compact ? 'text-[9px] py-[1px]' : 'text-[10px] py-0.5 ml-1'}`}>
-                <FaCheckCircle className={compact ? 'h-2 w-2' : 'h-2.5 w-2.5'} />
-                Verified
-              </div>
-            </div>
-
-            {!compact && (
-              <div className="flex items-center gap-1.5">
-                <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1">
-                  4.8 <span className="text-[9px]">★</span>
-                </span>
-                <span className="text-muted-foreground text-xs font-medium">156 Ratings</span>
-              </div>
-            )}
+      <div className="hidden md:flex shrink-0 w-[180px] bg-[#f4faff] dark:bg-blue-950/10 border-l border-border/50 flex-col justify-between p-5 text-center">
+        {/* Price display */}
+        <div className="mt-2">
+          <div className="flex items-center justify-center gap-1 text-2xl font-black text-gray-900 dark:text-white leading-none">
+            {formattedPrice}
+            {isRent && <span className="text-xs font-semibold text-muted-foreground mt-1">/mo</span>}
           </div>
-
-          {/* Location */}
-          <div className={`flex items-center gap-1.5 text-foreground font-medium ${compact ? 'text-xs mb-1.5' : 'text-sm mb-3'}`}>
-            <FaMapMarkerAlt className={`text-muted-foreground shrink-0 ${compact ? 'h-3 w-3' : 'h-4 w-4'}`} />
-            {property.locality}, {property.city}
-          </div>
-
-          {/* Area tag */}
-          <div className={`flex flex-wrap items-center gap-1.5 ${compact ? 'mb-1' : 'mb-3'}`}>
-            <span className={`bg-muted text-muted-foreground font-medium rounded-full border border-border/50 shadow-sm ${compact ? 'text-[10px] px-2 py-0.5' : 'text-xs px-2.5 py-1'}`}>
-              <FaRulerCombined className="inline mr-1 h-3 w-3" />
-              {property.area}
-            </span>
-          </div>
-
-          {!compact && (
-            <p className="text-sm text-muted-foreground line-clamp-2 border-t pt-3 border-border/50 mb-2">
-              {property.description}
-            </p>
-          )}
+          <span className="block text-[10px] text-muted-foreground font-semibold mt-1.5 hover:underline decoration-dotted cursor-pointer leading-tight">
+            {depositText}
+          </span>
         </div>
 
-        {/* Action Buttons */}
-        <CallBrokerButtons broker={property.broker} compact={compact} />
+        {/* Buttons */}
+        <div className="flex flex-col gap-2.5 w-full mt-4">
+          <a
+            href={`tel:${property.broker.phone.replace(/\s/g, '')}`}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full"
+          >
+            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs h-9 shadow-sm rounded-lg transition-colors flex items-center justify-center gap-1.5">
+              <Phone className="h-3.5 w-3.5" />
+              Contact Broker
+            </Button>
+          </a>
+
+          <Button
+            variant="outline"
+            onClick={(e) => handleAction(e, () => {
+              window.open(`https://wa.me/${property.broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
+            })}
+            className="w-full border-primary text-primary hover:bg-primary/10 font-bold text-xs h-9 rounded-lg transition-colors flex items-center justify-center gap-1.5 bg-transparent"
+          >
+            <FaWhatsapp className="h-4 w-4" />
+            WhatsApp
+          </Button>
+        </div>
       </div>
     </Card>
   );
