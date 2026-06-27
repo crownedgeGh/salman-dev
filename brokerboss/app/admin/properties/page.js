@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Trash2, ExternalLink, Filter } from "lucide-react";
+import { Search, Trash2, Eye, Filter, Plus, Pencil } from "lucide-react";
+import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -97,9 +98,21 @@ export default function PropertiesPage() {
             size="sm"
             variant="outline"
             className="h-7 text-xs gap-1.5"
-            onClick={() => window.open(`/properties/${val}`, "_blank")}
+            asChild
           >
-            <ExternalLink className="w-3.5 h-3.5" /> View
+            <Link href={`/admin/properties/view/${row.id}`}>
+              <Eye className="w-3.5 h-3.5" /> View
+            </Link>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5 border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600"
+            asChild
+          >
+            <Link href={`/admin/properties/${row.id}`}>
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </Link>
           </Button>
           <Button
             size="sm"
@@ -117,11 +130,19 @@ export default function PropertiesPage() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Properties</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          {properties.length} listings in total
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Properties</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {properties.length} listings in total
+          </p>
+        </div>
+        <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
+          <Link href="/admin/properties/add">
+            <Plus className="w-4 h-4" />
+            <span>Add Property</span>
+          </Link>
+        </Button>
       </div>
 
       {/* Filters row */}
