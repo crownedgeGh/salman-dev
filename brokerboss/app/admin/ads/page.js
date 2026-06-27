@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Trash2, Pause, Play } from "lucide-react";
+import { Search, Trash2, Pause, Play, Eye, Pencil, Plus } from "lucide-react";
+import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
-import AdImageUploader from "@/components/admin/AdImageUploader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +102,26 @@ export default function AdsPage() {
       label: "Actions",
       render: (_, row) => (
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5"
+            asChild
+          >
+            <Link href={`/admin/ads/view/${row.id}`}>
+              <Eye className="w-3.5 h-3.5" /> View
+            </Link>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5 border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600"
+            asChild
+          >
+            <Link href={`/admin/ads/edit/${row.id}`}>
+              <Pencil className="w-3.5 h-3.5" /> Edit
+            </Link>
+          </Button>
           {row.status !== "Expired" && (
             <Button
               size="sm"
@@ -132,27 +152,19 @@ export default function AdsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Ads</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Manage ad creatives and monitor performance
-        </p>
-      </div>
-
-      {/* ── Image Upload Section ── */}
-      <div className="p-5 rounded-xl border border-border bg-card shadow-sm space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Upload Ad Creative</h2>
-        <p className="text-xs text-muted-foreground">
-          Upload images for banner and story ad formats. Images will be previewed in their exact display ratios.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-          <AdImageUploader label="Banner Ad" aspectRatio="16/9" />
-          <div className="flex justify-center">
-            <div className="w-full max-w-[280px]">
-              <AdImageUploader label="Story Ad" aspectRatio="9/16" />
-            </div>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Ads</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Manage ad creatives and monitor performance
+          </p>
         </div>
+        <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
+          <Link href="/admin/ads/newAd">
+            <Plus className="w-4 h-4" />
+            <span>New Ad Post</span>
+          </Link>
+        </Button>
       </div>
 
       {/* ── Ads Table ── */}

@@ -1,8 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Trash2, ShieldBan, ShieldCheck } from "lucide-react";
+import { Search, Trash2, ShieldBan, ShieldCheck, Eye, Filter } from "lucide-react";
+import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,6 +28,7 @@ import { MOCK_USERS } from "@/data/adminMock";
 export default function UsersPage() {
   const [users, setUsers] = useState(MOCK_USERS);
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -43,6 +52,12 @@ export default function UsersPage() {
     showToast(`User "${deleteTarget.username}" deleted successfully.`);
     setDeleteTarget(null);
   };
+
+  // Filter users by role before passing to AdminTable
+  const filteredData =
+    roleFilter === "All"
+      ? users
+      : users.filter((u) => u.role === roleFilter.toLowerCase());
 
   const USERS_COLUMNS = [
     {
@@ -93,6 +108,16 @@ export default function UsersPage() {
             size="sm"
             variant="outline"
             className="h-7 text-xs gap-1.5"
+            asChild
+          >
+            <Link href={`/admin/users/${row.id}`}>
+              <Eye className="w-3.5 h-3.5" /> View
+            </Link>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs gap-1.5"
             onClick={() => handleBlock(row.id)}
           >
             {row.status === "Active" ? (
@@ -130,21 +155,35 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by name or email…"
-          className="pl-9"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      {/* Filters Row */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or email…"
+            className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Select value={roleFilter} onValueChange={setRoleFilter}>
+          <SelectTrigger className="w-40 gap-2">
+            <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
+            <SelectValue placeholder="Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All Roles</SelectItem>
+            <SelectItem value="broker">Broker</SelectItem>
+            <SelectItem value="owner">Owner</SelectItem>
+            <SelectItem value="buyer">Buyer</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Table */}
       <AdminTable
         columns={USERS_COLUMNS}
-        data={users}
+        data={filteredData}
         searchQuery={searchQuery}
         pageSize={10}
       />
