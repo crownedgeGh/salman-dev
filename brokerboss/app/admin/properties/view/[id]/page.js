@@ -10,11 +10,19 @@ import {
   Calendar,
   FileText,
   Coins,
-  Pencil
+  Pencil,
+  Phone,
+  Home,
+  Store,
+  Layers,
+  Warehouse,
+  Briefcase,
+  Hash,
+  Clock,
+  Car
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
@@ -24,13 +32,13 @@ const STATUS_COLORS = {
 
 export default function ViewPropertyPage({ params }) {
   const { id } = use(params);
-  const propertyId = parseInt(id, 10);
+  const propertyIdParam = parseInt(id, 10);
 
-  // Find the property in the mock list
-  const property = [].find((p) => p.id === propertyId) || [][0];
+  // Mock property with extensive fields
+  const property = [].find((p) => p.id === propertyIdParam) || {};
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Back Button */}
       <div>
         <Button asChild variant="ghost" className="gap-2 -ml-2 text-muted-foreground hover:text-foreground">
@@ -52,7 +60,7 @@ export default function ViewPropertyPage({ params }) {
 
         {/* Edit Button */}
         <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href={`/admin/properties/${property?.id}`}>
+          <Link href={`/admin/properties/${propertyIdParam}`}>
             <Pencil className="w-4 h-4" />
             <span>Edit Property</span>
           </Link>
@@ -63,90 +71,163 @@ export default function ViewPropertyPage({ params }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Thumbnail Column */}
-        <div className="md:col-span-1 p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col items-center justify-center gap-4">
-          <img
-            src={property?.thumbnail || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop"}
-            alt={property?.title}
-            className="w-full aspect-[4/3] object-cover rounded-lg border border-border"
-          />
-          <Badge variant="outline" className={`w-full py-1 text-center justify-center font-semibold text-sm ${STATUS_COLORS[property?.status]}`}>
-            {property?.status}
-          </Badge>
+        <div className="md:col-span-1 space-y-6">
+          <div className="p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col items-center justify-center gap-4">
+            <img
+              src={property?.thumbnail || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop"}
+              alt={property?.title || "Property Thumbnail"}
+              className="w-full aspect-[4/3] object-cover rounded-lg border border-border"
+            />
+            <Badge variant="outline" className={`w-full py-1 text-center justify-center font-semibold text-sm ${STATUS_COLORS[property?.status || "Active"]}`}>
+              {property?.status || "Active"}
+            </Badge>
+          </div>
+          
+          <div className="p-6 rounded-xl border border-border bg-card shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 border-b pb-2">
+              <User className="w-4 h-4 text-primary" /> Contact Information
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <span className="text-xs text-muted-foreground block">Contact Name</span>
+                <span className="text-sm font-medium">{property?.contactName || property?.owner || 'N/A'}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">Contact Phone</span>
+                <span className="text-sm font-medium">{property?.contactPhone || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Details Column */}
         <div className="md:col-span-2 p-6 rounded-xl border border-border bg-card shadow-sm space-y-6">
           <div>
             <h2 className="text-xl font-bold text-foreground leading-tight">
-              {property?.title}
+              {property?.title || "Untitled Property"}
             </h2>
             <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-primary shrink-0" />
-              {property?.location}
+              {property?.locality ? `${property.locality}, ` : ''}{property?.city || 'Unknown City'}
+              {property?.landmark && ` (Near ${property.landmark})`}
             </p>
           </div>
 
           <hr className="border-border" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-            
-            {/* Price */}
+          <h3 className="font-semibold text-foreground">Basic Information & Pricing</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
             <div className="flex items-start gap-3">
               <Coins className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs text-muted-foreground block font-medium">Price / Budget</span>
+                <span className="text-xs text-muted-foreground block font-medium">Price</span>
                 <span className="text-base font-semibold text-amber-600 dark:text-amber-400">
-                  {property?.price}
+                  {property?.price || "N/A"}
                 </span>
+                {property?.negotiable === "Yes" && <span className="text-[10px] block text-green-600">Negotiable</span>}
               </div>
             </div>
-
-            {/* Type */}
             <div className="flex items-start gap-3">
               <Building className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs text-muted-foreground block font-medium">Property Type</span>
-                <span className="text-base font-medium text-foreground">
-                  {property?.type}
-                </span>
+                <span className="text-sm font-medium text-foreground">{property?.type || "N/A"}</span>
               </div>
             </div>
-
-            {/* Owner / Lister */}
             <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <Briefcase className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs text-muted-foreground block font-medium">Owner / Lister</span>
-                <span className="text-base font-medium text-foreground">
-                  @{property?.owner}
-                </span>
+                <span className="text-xs text-muted-foreground block font-medium">Purpose</span>
+                <span className="text-sm font-medium text-foreground">{property?.purpose || "N/A"}</span>
               </div>
             </div>
-
-            {/* Listed On */}
             <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <Layers className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs text-muted-foreground block font-medium">Date Listed</span>
-                <span className="text-base font-medium text-foreground">
-                  {property?.dateListed}
-                </span>
+                <span className="text-xs text-muted-foreground block font-medium">Area</span>
+                <span className="text-sm font-medium text-foreground">{property?.areaSize || "N/A"} {property?.areaUnit}</span>
               </div>
             </div>
-
+            <div className="flex items-start gap-3">
+              <Coins className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Maintenance</span>
+                <span className="text-sm font-medium text-foreground">{property?.maintenanceCharge || "N/A"}</span>
+              </div>
+            </div>
           </div>
 
           <hr className="border-border" />
 
-          {/* Description Placeholder */}
+          <h3 className="font-semibold text-foreground">Property Specifications</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
+            <div className="flex items-start gap-3">
+              <Home className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Bedrooms</span>
+                <span className="text-sm font-medium text-foreground">{property?.bedrooms || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Home className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Bathrooms</span>
+                <span className="text-sm font-medium text-foreground">{property?.bathrooms || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Building className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Floor</span>
+                <span className="text-sm font-medium text-foreground">{property?.floorNo || "N/A"} / {property?.totalFloors || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Home className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Furnishing</span>
+                <span className="text-sm font-medium text-foreground">{property?.furnishing || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Car className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Parking</span>
+                <span className="text-sm font-medium text-foreground">{property?.parking || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Hash className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Facing</span>
+                <span className="text-sm font-medium text-foreground">{property?.facing || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Available From</span>
+                <span className="text-sm font-medium text-foreground">{property?.availableFrom || "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <User className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Preferred For</span>
+                <span className="text-sm font-medium text-foreground">{property?.preferredFor || "N/A"}</span>
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-border" />
+
+          {/* Description */}
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <FileText className="w-4 h-4 text-primary" /> Listing Description
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              This property is listed as active and located in {property?.location}. 
-              For further queries or negotiation regarding this {property?.type.toLowerCase()}, 
-              please contact the owner @{property?.owner}.
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line bg-muted/30 p-4 rounded-lg">
+              {property?.description || "No description provided."}
             </p>
           </div>
 

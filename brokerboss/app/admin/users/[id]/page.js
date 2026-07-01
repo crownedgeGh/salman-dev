@@ -12,12 +12,19 @@ import {
   Building,
   ShieldCheck,
   ShieldAlert,
-  Fingerprint
+  Fingerprint,
+  Phone,
+  Briefcase,
+  Layers,
+  FileText,
+  Clock,
+  IdCard,
+  Hash,
+  Coins
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-
 
 export default function UserDetailsPage({ params }) {
   const { id } = use(params);
@@ -26,6 +33,7 @@ export default function UserDetailsPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // In mock setup or real api
     api.get(`/users/${id}`)
       .then(res => {
         setUser(res.data);
@@ -46,7 +54,7 @@ export default function UserDetailsPage({ params }) {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       {/* Back Button */}
       <div>
         <Button asChild variant="ghost" className="gap-2 -ml-2 text-muted-foreground hover:text-foreground">
@@ -70,11 +78,11 @@ export default function UserDetailsPage({ params }) {
         {/* Profile Info block */}
         <div className="md:col-span-1 p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col items-center text-center gap-4">
           <Avatar className="w-20 h-20 text-xl font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-            <AvatarFallback>{user?.avatar}</AvatarFallback>
+            <AvatarFallback>{user?.avatar || user?.name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
           
           <div>
-            <h2 className="text-lg font-bold text-foreground">@{user?.username}</h2>
+            <h2 className="text-lg font-bold text-foreground">{user?.name || user?.username || "Unnamed User"}</h2>
             <Badge variant="outline" className="mt-1.5 capitalize bg-primary/5 text-primary border-primary/20">
               {user?.role || "user"}
             </Badge>
@@ -99,17 +107,16 @@ export default function UserDetailsPage({ params }) {
         {/* Detailed Metadata fields */}
         <div className="md:col-span-2 p-6 rounded-xl border border-border bg-card shadow-sm space-y-6">
           <h3 className="text-base font-semibold text-foreground border-b border-border pb-2">
-            Profile Metadata
+            Basic Profile
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
             {/* User ID */}
             <div className="flex items-center gap-3">
               <Fingerprint className="w-4 h-4 text-primary shrink-0" />
               <div>
                 <span className="text-xs text-muted-foreground block font-medium">User ID</span>
-                <span className="text-sm font-medium text-foreground">{user?.id}</span>
+                <span className="text-sm font-medium text-foreground">{user?.id || id}</span>
               </div>
             </div>
 
@@ -118,16 +125,25 @@ export default function UserDetailsPage({ params }) {
               <Mail className="w-4 h-4 text-primary shrink-0" />
               <div>
                 <span className="text-xs text-muted-foreground block font-medium">Email Address</span>
-                <span className="text-sm font-medium text-foreground break-all">{user?.email}</span>
+                <span className="text-sm font-medium text-foreground break-all">{user?.email || 'N/A'}</span>
               </div>
             </div>
 
-            {/* Location */}
+            {/* Phone */}
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-primary shrink-0" />
+              <div>
+                <span className="text-xs text-muted-foreground block font-medium">Phone Number</span>
+                <span className="text-sm font-medium text-foreground break-all">{user?.phone || 'N/A'}</span>
+              </div>
+            </div>
+
+            {/* Location / City */}
             <div className="flex items-center gap-3">
               <MapPin className="w-4 h-4 text-primary shrink-0" />
               <div>
-                <span className="text-xs text-muted-foreground block font-medium">Location</span>
-                <span className="text-sm font-medium text-foreground">{user?.location}</span>
+                <span className="text-xs text-muted-foreground block font-medium">City / Location</span>
+                <span className="text-sm font-medium text-foreground">{user?.city || user?.location || 'N/A'}</span>
               </div>
             </div>
 
@@ -136,32 +152,126 @@ export default function UserDetailsPage({ params }) {
               <Calendar className="w-4 h-4 text-primary shrink-0" />
               <div>
                 <span className="text-xs text-muted-foreground block font-medium">Date Joined</span>
-                <span className="text-sm font-medium text-foreground">{user?.joinDate}</span>
+                <span className="text-sm font-medium text-foreground">{user?.joinDate || user?.createdAt || 'N/A'}</span>
               </div>
             </div>
 
-            {/* Properties Listed */}
-            <div className="flex items-center gap-3">
-              <Building className="w-4 h-4 text-primary shrink-0" />
-              <div>
-                <span className="text-xs text-muted-foreground block font-medium">Properties Listed</span>
-                <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
-                  {user?.propertiesListed} listings
-                </span>
+            {/* Properties Listed (for Owner/Broker) */}
+            {(user?.role === 'owner' || user?.role === 'broker') && (
+              <div className="flex items-center gap-3">
+                <Building className="w-4 h-4 text-primary shrink-0" />
+                <div>
+                  <span className="text-xs text-muted-foreground block font-medium">Properties Listed</span>
+                  <span className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                    {user?.propertiesListed || 0} listings
+                  </span>
+                </div>
               </div>
-            </div>
-
+            )}
           </div>
 
           <hr className="border-border" />
 
-          {/* Description / Bio based on User Role */}
+          <h3 className="text-base font-semibold text-foreground border-b border-border pb-2">
+            Role Specific Details
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            {/* Broker Specific Details */}
+            {user?.role === 'broker' && (
+              <>
+                <div className="flex items-center gap-3">
+                  <Briefcase className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Firm Name</span>
+                    <span className="text-sm font-medium text-foreground">{user?.firmName || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Areas of Operation</span>
+                    <span className="text-sm font-medium text-foreground">{user?.areasOfOperation || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <IdCard className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">RERA Number</span>
+                    <span className="text-sm font-medium text-foreground">{user?.reraNumber || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Years of Experience</span>
+                    <span className="text-sm font-medium text-foreground">{user?.yearsOfExperience || 'N/A'}</span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Buyer Specific Details */}
+            {user?.role === 'buyer' && (
+              <>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Preferred Area</span>
+                    <span className="text-sm font-medium text-foreground">{user?.preferredArea || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Coins className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Budget Range</span>
+                    <span className="text-sm font-medium text-foreground">{user?.budgetRange || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 sm:col-span-2">
+                  <Building className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Property Types</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {Array.isArray(user?.propertyTypes) ? user.propertyTypes.join(', ') : (user?.propertyTypes || 'N/A')}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Owner Specific Details */}
+            {user?.role === 'owner' && (
+              <>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Area / Locality</span>
+                    <span className="text-sm font-medium text-foreground">{user?.area || 'N/A'}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Building className="w-4 h-4 text-primary shrink-0" />
+                  <div>
+                    <span className="text-xs text-muted-foreground block font-medium">Property Type Offered</span>
+                    <span className="text-sm font-medium text-foreground">{user?.propertyType || 'N/A'}</span>
+                  </div>
+                </div>
+              </>
+            )}
+            
+          </div>
+
+          <hr className="border-border" />
+
+          {/* Description / Bio / Notes */}
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-foreground">User Overview</h4>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              This user is registered as a <span className="font-semibold capitalize text-foreground">{user?.role}</span> on the BrokerBoss platform. 
-              They are based in {user?.location} and joined on {user?.joinDate}. 
-              They currently have {user?.propertiesListed} property listings registered in our system.
+            <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" /> Additional Details
+            </h4>
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line bg-muted/30 p-4 rounded-lg">
+              {user?.bio || user?.description || user?.notes || "No additional description or notes provided."}
             </p>
           </div>
 

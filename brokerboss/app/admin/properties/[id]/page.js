@@ -18,11 +18,11 @@ import {
   Layers,
   Warehouse,
   Coins,
-  ShieldAlert
+  ShieldAlert,
+  Hash
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 
 const PROPERTY_TYPES = [
   { id: "flat", label: "Flat", icon: Building },
@@ -35,16 +35,35 @@ const PROPERTY_TYPES = [
 export default function EditPropertyPage({ params }) {
   const router = useRouter();
   const { id } = use(params);
-  const propertyId = parseInt(id, 10);
+  const propertyIdParam = parseInt(id, 10);
 
-  // Find the property in the mock list
-  const property = [].find((p) => p.id === propertyId) || [][0];
+  // Mock property with all possible fields
+  const property = [].find((p) => p.id === propertyIdParam) || {};
 
   const [form, setForm] = useState({
     title: property?.title || "",
-    type: property?.type || "Apartment",
-    location: property?.location || "",
+    type: property?.type || "",
+    purpose: property?.purpose || "",
+    city: property?.city || "Raipur",
+    locality: property?.locality || "",
+    landmark: property?.landmark || "",
+    areaSize: property?.areaSize || "",
+    areaUnit: property?.areaUnit || "sq ft",
+    floorNo: property?.floorNo || "",
+    totalFloors: property?.totalFloors || "",
+    bedrooms: property?.bedrooms || "",
+    bathrooms: property?.bathrooms || "",
+    furnishing: property?.furnishing || "",
+    parking: property?.parking || "",
+    facing: property?.facing || "",
     price: property?.price || "",
+    negotiable: property?.negotiable || "No",
+    maintenanceCharge: property?.maintenanceCharge || "",
+    availableFrom: property?.availableFrom || "",
+    preferredFor: property?.preferredFor || "",
+    description: property?.description || "",
+    contactName: property?.contactName || "",
+    contactPhone: property?.contactPhone || "",
     status: property?.status || "Active",
     owner: property?.owner || "",
   });
@@ -68,9 +87,10 @@ export default function EditPropertyPage({ params }) {
     e.preventDefault();
     const e2 = {};
     if (!form.title.trim()) e2.title = "Property Title is required";
-    if (!form.location.trim()) e2.location = "Location is required";
+    if (!form.city.trim()) e2.city = "City is required";
+    if (!form.locality.trim()) e2.locality = "Locality is required";
     if (!form.price.trim()) e2.price = "Price is required";
-    if (!form.owner.trim()) e2.owner = "Owner is required";
+    if (!form.owner.trim() && !form.contactName.trim()) e2.owner = "Owner/Contact Name is required";
 
     if (Object.keys(e2).length) {
       setErrors(e2);
@@ -112,7 +132,7 @@ export default function EditPropertyPage({ params }) {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Edit Property Listing</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Modify details for: <strong className="text-foreground">{property?.title}</strong>
+            Modify details for: <strong className="text-foreground">{form.title || 'Property'}</strong>
           </p>
         </div>
         
@@ -140,6 +160,8 @@ export default function EditPropertyPage({ params }) {
           </div>
         ) : (
           <form onSubmit={handleUpdateSubmit} noValidate className="space-y-6">
+            
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Title */}
               <div className="space-y-1.5 md:col-span-2">
@@ -160,72 +182,29 @@ export default function EditPropertyPage({ params }) {
               {/* Type */}
               <div className="space-y-1.5">
                 <label htmlFor="prop-type" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Building className="h-4 w-4 text-primary" /> Property Type *
+                  <Building className="h-4 w-4 text-primary" /> Property Type
                 </label>
-                <select
-                  id="prop-type"
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="Apartment">Apartment</option>
+                <select id="prop-type" name="type" value={form.type} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  <option value="Flat">Flat</option>
                   <option value="House">House</option>
+                  <option value="Shop">Shop</option>
                   <option value="Plot">Plot</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Industrial">Industrial</option>
-                  <option value="Farmhouse">Farmhouse</option>
+                  <option value="Office">Office</option>
+                  <option value="Warehouse">Warehouse</option>
                 </select>
               </div>
 
-              {/* Price */}
+              {/* Purpose */}
               <div className="space-y-1.5">
-                <label htmlFor="prop-price" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Coins className="h-4 w-4 text-primary" /> Price / Budget *
+                <label htmlFor="prop-purpose" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-primary" /> Purpose
                 </label>
-                <Input
-                  id="prop-price"
-                  name="price"
-                  type="text"
-                  value={form.price}
-                  onChange={handleChange}
-                  placeholder="e.g. ₹68 Lac or ₹1.2 Cr"
-                  className={errors.price ? "border-destructive focus:ring-destructive" : ""}
-                />
-                {errors.price && <p className="text-xs text-destructive">{errors.price}</p>}
-              </div>
-
-              {/* Location */}
-              <div className="space-y-1.5">
-                <label htmlFor="prop-location" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-primary" /> Location *
-                </label>
-                <Input
-                  id="prop-location"
-                  name="location"
-                  type="text"
-                  value={form.location}
-                  onChange={handleChange}
-                  className={errors.location ? "border-destructive focus:ring-destructive" : ""}
-                />
-                {errors.location && <p className="text-xs text-destructive">{errors.location}</p>}
-              </div>
-
-              {/* Owner */}
-              <div className="space-y-1.5">
-                <label htmlFor="prop-owner" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" /> Owner / Lister *
-                </label>
-                <Input
-                  id="prop-owner"
-                  name="owner"
-                  type="text"
-                  value={form.owner}
-                  onChange={handleChange}
-                  className={errors.owner ? "border-destructive focus:ring-destructive" : ""}
-                />
-                {errors.owner && <p className="text-xs text-destructive">{errors.owner}</p>}
+                <select id="prop-purpose" name="purpose" value={form.purpose} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  <option value="Sale">Sale</option>
+                  <option value="Rent">Rent</option>
+                </select>
               </div>
 
               {/* Status */}
@@ -233,13 +212,7 @@ export default function EditPropertyPage({ params }) {
                 <label htmlFor="prop-status" className="text-sm font-medium text-foreground flex items-center gap-2">
                   <FileText className="h-4 w-4 text-primary" /> Status *
                 </label>
-                <select
-                  id="prop-status"
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
+                <select id="prop-status" name="status" value={form.status} onChange={handleChange} className={inputClass}>
                   <option value="Active">Active</option>
                   <option value="Sold">Sold</option>
                   <option value="Pending">Pending</option>
@@ -247,7 +220,201 @@ export default function EditPropertyPage({ params }) {
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-6">Location & Pricing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* City */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-city" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary" /> City *
+                </label>
+                <Input id="prop-city" name="city" type="text" value={form.city} onChange={handleChange} className={errors.city ? "border-destructive focus:ring-destructive" : ""} />
+                {errors.city && <p className="text-xs text-destructive">{errors.city}</p>}
+              </div>
+
+              {/* Locality */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-locality" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary" /> Locality *
+                </label>
+                <Input id="prop-locality" name="locality" type="text" value={form.locality} onChange={handleChange} className={errors.locality ? "border-destructive focus:ring-destructive" : ""} />
+                {errors.locality && <p className="text-xs text-destructive">{errors.locality}</p>}
+              </div>
+
+              {/* Landmark */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label htmlFor="prop-landmark" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-primary" /> Landmark
+                </label>
+                <Input id="prop-landmark" name="landmark" type="text" value={form.landmark} onChange={handleChange} />
+              </div>
+
+              {/* Price */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-price" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" /> Price (₹) *
+                </label>
+                <Input id="prop-price" name="price" type="text" value={form.price} onChange={handleChange} className={errors.price ? "border-destructive focus:ring-destructive" : ""} />
+                {errors.price && <p className="text-xs text-destructive">{errors.price}</p>}
+              </div>
+
+              {/* Negotiable */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-negotiable" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" /> Negotiable
+                </label>
+                <select id="prop-negotiable" name="negotiable" value={form.negotiable} onChange={handleChange} className={inputClass}>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              {/* Maintenance Charge */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-maintenance" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-primary" /> Maintenance Charge
+                </label>
+                <Input id="prop-maintenance" name="maintenanceCharge" type="text" value={form.maintenanceCharge} onChange={handleChange} />
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-6">Property Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Area Size */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-areaSize" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-primary" /> Area Size
+                </label>
+                <div className="flex gap-2">
+                  <Input id="prop-areaSize" name="areaSize" type="text" value={form.areaSize} onChange={handleChange} className="flex-1" />
+                  <select name="areaUnit" value={form.areaUnit} onChange={handleChange} className={`${inputClass} w-28`}>
+                    <option value="sq ft">sq ft</option>
+                    <option value="sq yards">sq yards</option>
+                    <option value="Marla">Marla</option>
+                    <option value="Bigha">Bigha</option>
+                    <option value="Acre">Acre</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Bedrooms */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-bedrooms" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Home className="h-4 w-4 text-primary" /> Bedrooms
+                </label>
+                <select id="prop-bedrooms" name="bedrooms" value={form.bedrooms} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  {['1 RK', '1', '2', '3', '4', '5', '6+'].map(b => <option key={b} value={b}>{b} BHK</option>)}
+                </select>
+              </div>
+
+              {/* Bathrooms */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-bathrooms" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Home className="h-4 w-4 text-primary" /> Bathrooms
+                </label>
+                <select id="prop-bathrooms" name="bathrooms" value={form.bathrooms} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  {['1', '2', '3', '4', '5+'].map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
+              </div>
+
+              {/* Floor Info */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-floorNo" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Building className="h-4 w-4 text-primary" /> Floor No
+                </label>
+                <Input id="prop-floorNo" name="floorNo" type="text" value={form.floorNo} onChange={handleChange} />
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="prop-totalFloors" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Building className="h-4 w-4 text-primary" /> Total Floors
+                </label>
+                <Input id="prop-totalFloors" name="totalFloors" type="text" value={form.totalFloors} onChange={handleChange} />
+              </div>
+
+              {/* Furnishing */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-furnishing" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Home className="h-4 w-4 text-primary" /> Furnishing
+                </label>
+                <select id="prop-furnishing" name="furnishing" value={form.furnishing} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  {['Unfurnished', 'Semi-Furnished', 'Furnished'].map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
+
+              {/* Parking */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-parking" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Warehouse className="h-4 w-4 text-primary" /> Parking
+                </label>
+                <select id="prop-parking" name="parking" value={form.parking} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              {/* Facing */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-facing" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Hash className="h-4 w-4 text-primary" /> Facing Direction
+                </label>
+                <select id="prop-facing" name="facing" value={form.facing} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  {['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'].map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
+
+              {/* Available From */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-availableFrom" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-primary" /> Available From
+                </label>
+                <Input id="prop-availableFrom" name="availableFrom" type="date" value={form.availableFrom} onChange={handleChange} />
+              </div>
+
+              {/* Preferred For */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-preferredFor" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" /> Preferred For
+                </label>
+                <select id="prop-preferredFor" name="preferredFor" value={form.preferredFor} onChange={handleChange} className={inputClass}>
+                  <option value="">Select...</option>
+                  {['Any', 'Family', 'Bachelor', 'Company / Firm'].map(f => <option key={f} value={f}>{f}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-6">Description & Contact</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Description */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label htmlFor="prop-description" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" /> Description
+                </label>
+                <textarea id="prop-description" name="description" rows={4} value={form.description} onChange={handleChange} className={inputClass + " resize-none"} />
+              </div>
+
+              {/* Contact Name */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-contactName" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" /> Contact / Owner Name
+                </label>
+                <Input id="prop-contactName" name="contactName" type="text" value={form.contactName || form.owner} onChange={handleChange} />
+              </div>
+
+              {/* Contact Phone */}
+              <div className="space-y-1.5">
+                <label htmlFor="prop-contactPhone" className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-primary" /> Contact Phone
+                </label>
+                <Input id="prop-contactPhone" name="contactPhone" type="text" value={form.contactPhone} onChange={handleChange} />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4 mt-6">
               <Button type="button" variant="outline" asChild className="flex-1">
                 <Link href="/admin/properties">Cancel</Link>
               </Button>
