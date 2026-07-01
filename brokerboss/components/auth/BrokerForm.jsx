@@ -23,6 +23,8 @@ const initialState = {
   reraNumber: '',
   yearsOfExperience: '',
   bio: '',
+  password: '',
+  confirmPassword: '',
 };
 
 function FormField({ id, label, icon: Icon, error, children }) {
@@ -60,6 +62,9 @@ export default function BrokerForm() {
     else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.areasOfOperation.trim()) e.areasOfOperation = 'Areas of operation are required';
+    if (!form.password) e.password = 'Password is required';
+    else if (form.password.length < 6) e.password = 'Password must be at least 6 characters';
+    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
     return e;
   };
 
@@ -75,14 +80,14 @@ export default function BrokerForm() {
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
     const email = `${form.phone}@example.com`;
-    const password = form.phone;
+    const password = form.password;
 
     const res = await register('broker', { ...form, email, password });
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);
     } else {
-      setErrors({ name: res?.error || 'Registration failed' });
+      setErrors({ phone: res?.error || 'Registration failed' });
     }
   };
 
@@ -189,6 +194,30 @@ export default function BrokerForm() {
             max="60"
             placeholder=""
             value={form.yearsOfExperience}
+            onChange={handleChange}
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField id="broker-password" label="Password *" icon={FaCheckCircle} error={errors.password}>
+          <input
+            id="broker-password"
+            name="password"
+            type="password"
+            placeholder="Min 6 characters"
+            value={form.password}
+            onChange={handleChange}
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField id="broker-confirm-password" label="Confirm Password *" icon={FaCheckCircle} error={errors.confirmPassword}>
+          <input
+            id="broker-confirm-password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Re-enter password"
+            value={form.confirmPassword}
             onChange={handleChange}
             className={inputClass}
           />

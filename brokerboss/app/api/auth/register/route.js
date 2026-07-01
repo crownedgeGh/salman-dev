@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import connectToDatabase from '@/lib/mongodb';
 import User from '@/lib/models/User';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_change_in_production';
 
 export async function POST(request) {
   try {
@@ -27,7 +30,22 @@ export async function POST(request) {
       ...otherFields
     });
 
-    return NextResponse.json({ message: 'User registered successfully', userId: user._id }, { status: 201 });
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    const response = NextResponse.json({ message: 'User registered successfully', userId: user._id, role: user.role }, { status: 201 });
+    
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 // 1 day
+    });
+
+    return response;
   } catch (error) {
     console.error("Error in registration:", error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

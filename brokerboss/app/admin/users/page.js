@@ -91,16 +91,12 @@ export default function UsersPage() {
       ),
     },
     {
-      key: "status",
-      label: "Status",
+      key: "role",
+      label: "User Type",
       render: (val) => (
         <Badge
           variant="outline"
-          className={
-            val === "Active"
-              ? "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400"
-              : "border-red-300 text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-400"
-          }
+          className="capitalize bg-primary/10 text-primary border-primary/20"
         >
           {val}
         </Badge>

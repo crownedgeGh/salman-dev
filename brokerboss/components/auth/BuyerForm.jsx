@@ -40,6 +40,8 @@ const initialProfile = {
   preferredArea: '',
   budgetRange: '',
   notes: '',
+  password: '',
+  confirmPassword: '',
 };
 
 function FormField({ id, label, icon: Icon, error, children }) {
@@ -85,6 +87,9 @@ export default function BuyerForm() {
     else if (!/^\d{10}$/.test(profile.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!profile.city.trim()) e.city = 'City is required';
     if (!profile.budgetRange) e.budgetRange = 'Please select a budget range';
+    if (!profile.password) e.password = 'Password is required';
+    else if (profile.password.length < 6) e.password = 'Password must be at least 6 characters';
+    if (profile.password !== profile.confirmPassword) e.confirmPassword = 'Passwords do not match';
     return e;
   };
 
@@ -100,14 +105,14 @@ export default function BuyerForm() {
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
     const email = `${profile.phone}@example.com`;
-    const password = profile.phone;
+    const password = profile.password;
 
     const res = await register('buyer', { ...profile, propertyTypes: selectedTypes, email, password });
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);
     } else {
-      setErrors({ name: res?.error || 'Registration failed' });
+      setErrors({ phone: res?.error || 'Registration failed' });
     }
   };
 
@@ -222,6 +227,30 @@ export default function BuyerForm() {
               <option key={value} value={value}>{label}</option>
             ))}
           </select>
+        </FormField>
+
+        <FormField id="buyer-password" label="Password *" icon={FaCheckCircle} error={errors.password}>
+          <input
+            id="buyer-password"
+            name="password"
+            type="password"
+            placeholder="Min 6 characters"
+            value={profile.password}
+            onChange={handleChange}
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField id="buyer-confirm-password" label="Confirm Password *" icon={FaCheckCircle} error={errors.confirmPassword}>
+          <input
+            id="buyer-confirm-password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Re-enter password"
+            value={profile.confirmPassword}
+            onChange={handleChange}
+            className={inputClass}
+          />
         </FormField>
       </div>
 

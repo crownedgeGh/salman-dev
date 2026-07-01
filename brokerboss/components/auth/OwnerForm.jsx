@@ -21,6 +21,8 @@ const initialState = {
   area: '',
   propertyType: '',
   description: '',
+  password: '',
+  confirmPassword: '',
 };
 
 function FormField({ id, label, icon: Icon, error, children }) {
@@ -58,6 +60,9 @@ export default function OwnerForm() {
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.area.trim()) e.area = 'Area / locality is required';
     if (!form.propertyType) e.propertyType = 'Please select a property type';
+    if (!form.password) e.password = 'Password is required';
+    else if (form.password.length < 6) e.password = 'Password must be at least 6 characters';
+    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
     return e;
   };
 
@@ -73,14 +78,14 @@ export default function OwnerForm() {
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
     const email = `${form.phone}@example.com`;
-    const password = form.phone;
+    const password = form.password;
     
     const res = await register('owner', { ...form, email, password });
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);
     } else {
-      setErrors({ name: res?.error || 'Registration failed' });
+      setErrors({ phone: res?.error || 'Registration failed' });
     }
   };
 
@@ -165,6 +170,30 @@ export default function OwnerForm() {
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+        </FormField>
+
+        <FormField id="owner-password" label="Password *" icon={FaCheckCircle} error={errors.password}>
+          <input
+            id="owner-password"
+            name="password"
+            type="password"
+            placeholder="Min 6 characters"
+            value={form.password}
+            onChange={handleChange}
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField id="owner-confirm-password" label="Confirm Password *" icon={FaCheckCircle} error={errors.confirmPassword}>
+          <input
+            id="owner-confirm-password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Re-enter password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            className={inputClass}
+          />
         </FormField>
       </div>
 

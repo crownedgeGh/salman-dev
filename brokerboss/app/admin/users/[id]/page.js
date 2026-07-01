@@ -1,7 +1,8 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import api from "@/lib/axios";
 import {
   ArrowLeft,
   User,
@@ -20,10 +21,29 @@ import { Badge } from "@/components/ui/badge";
 
 export default function UserDetailsPage({ params }) {
   const { id } = use(params);
-  const userId = parseInt(id, 10);
+  
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Find user by ID
-  const user = [].find((u) => u.id === userId) || [][0];
+  useEffect(() => {
+    api.get(`/users/${id}`)
+      .then(res => {
+        setUser(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading user details...</div>;
+  }
+
+  if (!user) {
+    return <div className="p-12 text-center text-destructive">User not found</div>;
+  }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

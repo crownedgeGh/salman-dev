@@ -23,8 +23,7 @@ export function AuthProvider({ children }) {
         .then(res => {
           setIsLoggedIn(true);
           setUserProfile(res.data);
-          // Assuming role is derived from profile or default to buyer
-          setUserRole('buyer'); 
+          setUserRole(res.data.role || 'buyer'); 
         })
         .catch(() => {
           setIsLoggedIn(false);
@@ -37,8 +36,8 @@ export function AuthProvider({ children }) {
   const register = async (role, profile) => {
     try {
       const api = (await import('@/lib/axios')).default;
-      // We assume profile contains name, email, password
-      const res = await api.post('/auth/register', profile);
+      // We assume profile contains name, email, password, etc.
+      const res = await api.post('/auth/register', { ...profile, role });
       // After register, you might want to login automatically or just set state
       setIsLoggedIn(true);
       setUserRole(role);
@@ -56,8 +55,7 @@ export function AuthProvider({ children }) {
       const res = await api.post('/auth/login', { email, password });
       setIsLoggedIn(true);
       setUserProfile(res.data.user);
-      // defaulting role to buyer for now
-      setUserRole('buyer');
+      setUserRole(res.data.user.role || 'buyer');
       return { success: true, data: res.data };
     } catch (error) {
       console.error("Login failed:", error);

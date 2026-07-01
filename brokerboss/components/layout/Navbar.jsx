@@ -174,9 +174,11 @@ export default function Navbar() {
                   <FaUserPlus className="h-3.5 w-3.5" />
                   Register
                 </Button>
-                <Button variant="default" size="sm" className="gap-2 shadow-sm" id="navbar-login">
-                  <FaUser className="h-3.5 w-3.5" />
-                  Login
+                <Button variant="default" size="sm" className="gap-2 shadow-sm" id="navbar-login" asChild>
+                  <Link href="/login">
+                    <FaUser className="h-3.5 w-3.5" />
+                    Login
+                  </Link>
                 </Button>
               </>
             )}
@@ -293,9 +295,12 @@ export default function Navbar() {
                         size="sm"
                         className="w-full gap-2 rounded-xl py-3 h-auto shadow-sm"
                         id="mobile-login"
+                        asChild
                       >
-                        <FaUser className="h-3.5 w-3.5" />
-                        Login
+                        <Link href="/login" onClick={() => setMobileOpen(false)}>
+                          <FaUser className="h-3.5 w-3.5" />
+                          Login
+                        </Link>
                       </Button>
                     </>
                   )}
