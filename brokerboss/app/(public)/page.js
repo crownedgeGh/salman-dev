@@ -184,8 +184,10 @@ function FeaturedCard({ property }) {
             </div>
           </div>
           <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="shrink-0">
-            <button className="bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] sm:text-[10px] font-semibold px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg flex items-center gap-1 transition-colors shadow-sm whitespace-nowrap">
-              <FaPhone className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> <span className="hidden xs:inline">Call</span>
+            <button className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-blue-700 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full flex items-center gap-1.5 transition-all shadow-[0_2px_10px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.4)] active:scale-95 group">
+              <div className="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-full" />
+              <FaPhone className="h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 relative z-10" /> 
+              <span className="relative z-10">Call</span>
             </button>
           </a>
         </div>
@@ -275,9 +277,11 @@ export default function HomePage() {
             - Desktop (lg): 4 columns
             We show all 4 cards but only 2 are visible on mobile (rest wrap naturally)
           */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+          <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-x-auto md:overflow-visible pb-6 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {featuredProperties.map((property) => (
-              <FeaturedCard key={property.id} property={property} />
+              <div key={property.id} className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 snap-center md:snap-none">
+                <FeaturedCard property={property} />
+              </div>
             ))}
           </div>
         </div>
