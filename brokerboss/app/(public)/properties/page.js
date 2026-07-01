@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { properties } from '@/data/properties';
+import api from '@/lib/axios';
 import PropertyGrid from '@/components/PropertyGrid';
 import FilterSidebar from '@/components/FilterSidebar';
 import FilterSheet from '@/components/FilterSheet';
@@ -19,41 +19,6 @@ const defaultFilters = {
   priceMin: '',
   priceMax: '',
 };
-
-const INTENT_TILES = [
-  {
-    label: 'Buy a Home',
-    sub: 'Houses, Flats & Villas for sale',
-    filter: { purpose: 'Sale', type: '' },
-    icon: FaHome,
-    gradient: 'from-blue-500 to-blue-700',
-    count: properties.filter((p) => p.purpose === 'Sale').length,
-  },
-  {
-    label: 'Rent a Property',
-    sub: 'Monthly rental listings',
-    filter: { purpose: 'Rent', type: '' },
-    icon: FaTag,
-    gradient: 'from-violet-500 to-violet-700',
-    count: properties.filter((p) => p.purpose === 'Rent').length,
-  },
-  {
-    label: 'Buy a Plot',
-    sub: 'Residential & commercial land',
-    filter: { type: 'Plot', purpose: '' },
-    icon: FaChartArea,
-    gradient: 'from-emerald-500 to-emerald-700',
-    count: properties.filter((p) => p.type === 'Plot').length,
-  },
-  {
-    label: 'Commercial',
-    sub: 'Shops, offices & warehouses',
-    filter: { type: 'Shop', purpose: '' },
-    icon: FaStore,
-    gradient: 'from-amber-500 to-amber-700',
-    count: properties.filter((p) => ['Shop', 'Office', 'Warehouse'].includes(p.type)).length,
-  },
-];
 
 const LOCALITIES = [
   'Shankar Nagar', 'Telibandha', 'Pandri', 'Mowa',
@@ -77,7 +42,42 @@ function parsePriceLakh(priceStr) {
 }
 
 // ─── Discovery UI ─────────────────────────────────────────────
-function DiscoveryState({ onFilterChange, onSearch }) {
+function DiscoveryState({ onFilterChange, onSearch, properties }) {
+  const INTENT_TILES = [
+    {
+      label: 'Buy a Home',
+      sub: 'Houses, Flats & Villas for sale',
+      filter: { purpose: 'Sale', type: '' },
+      icon: FaHome,
+      gradient: 'from-blue-500 to-blue-700',
+      count: properties.filter((p) => p.purpose === 'Sale').length,
+    },
+    {
+      label: 'Rent a Property',
+      sub: 'Monthly rental listings',
+      filter: { purpose: 'Rent', type: '' },
+      icon: FaTag,
+      gradient: 'from-violet-500 to-violet-700',
+      count: properties.filter((p) => p.purpose === 'Rent').length,
+    },
+    {
+      label: 'Buy a Plot',
+      sub: 'Residential & commercial land',
+      filter: { type: 'Plot', purpose: '' },
+      icon: FaChartArea,
+      gradient: 'from-emerald-500 to-emerald-700',
+      count: properties.filter((p) => p.type === 'Plot').length,
+    },
+    {
+      label: 'Commercial',
+      sub: 'Shops, offices & warehouses',
+      filter: { type: 'Shop', purpose: '' },
+      icon: FaStore,
+      gradient: 'from-amber-500 to-amber-700',
+      count: properties.filter((p) => ['Shop', 'Office', 'Warehouse'].includes(p.type)).length,
+    },
+  ];
+
   return (
     <div className="animate-in fade-in duration-300">
       {/* Big intent question */}
@@ -227,6 +227,18 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
 import { Suspense } from 'react';
 
 function PropertiesPageInner() {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get('/properties').then(res => {
+      setProperties(res.data);
+      setLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+  }, []);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -369,6 +381,7 @@ function PropertiesPageInner() {
         <DiscoveryState
           onFilterChange={handleFilterChange}
           onSearch={setSearchQuery}
+          properties={properties}
         />
       )}
 

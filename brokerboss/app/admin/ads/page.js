@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Trash2, Pause, Play, Eye, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
+import api from "@/lib/axios";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,6 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { MOCK_ADS } from "@/data/adminMock";
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
@@ -26,13 +26,30 @@ const STATUS_COLORS = {
 const FORMAT_COLORS = {
   Banner: "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
   Story: "border-purple-300 text-purple-700 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-400",
+  'Sponsored Property': "border-amber-300 text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400",
+  'Sidebar Ad': "border-indigo-300 text-indigo-700 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400"
 };
 
 export default function AdsPage() {
-  const [ads, setAds] = useState(MOCK_ADS);
+  const [ads, setAds] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    api.get('/ads')
+      .then(res => {
+        const formatted = res.data.map(ad => ({
+          ...ad,
+          id: ad._id,
+          format: ad.type,
+          owner: ad.owner || "Admin",
+          expiryDate: "N/A"
+        }));
+        setAds(formatted);
+      })
+      .catch(console.error);
+  }, []);
 
   const showToast = (msg) => {
     setToast(msg);

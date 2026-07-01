@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdImageUploader from "@/components/admin/AdImageUploader";
-import { MOCK_ADS } from "@/data/adminMock";
+
 
 export default function EditAdPage({ params }) {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function EditAdPage({ params }) {
   const adId = parseInt(id, 10);
 
   // Find corresponding ad
-  const ad = MOCK_ADS.find((a) => a.id === adId) || MOCK_ADS[0];
+  const ad = [].find((a) => a.id === adId) || [][0];
 
   const [form, setForm] = useState({
     title: ad?.title || "",

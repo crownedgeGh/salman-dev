@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { properties } from '@/data/properties';
+import api from '@/lib/axios';
 import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaKey, FaMoneyBillWave, FaChartBar, FaCity, FaBolt, FaTag } from 'react-icons/fa';
 
 const typeIconMap = {
@@ -21,11 +21,6 @@ const typeBadgeColor = {
   Office: 'bg-indigo-100 text-indigo-700',
   Warehouse: 'bg-orange-100 text-orange-700',
 };
-
-// Featured cards – pick 4 diverse listings
-const featuredProperties = properties.slice(0, 4);
-
-// Category quick links
 const categories = [
   { label: 'Houses', icon: FaHome, type: 'House', color: 'bg-blue-50 text-blue-600 border-blue-100' },
   { label: 'Flats', icon: FaBuilding, type: 'Flat', color: 'bg-purple-50 text-purple-600 border-purple-100' },
@@ -140,6 +135,13 @@ function HeroCTA() {
 
 function FeaturedCard({ property }) {
   const badgeColor = typeBadgeColor[property.type] || 'bg-gray-100 text-gray-700';
+  
+  // Fallback for missing broker data from test script
+  const broker = property.broker || {
+    name: 'BrokerBoss Agent',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
+    phone: '+919876543210'
+  };
 
   return (
     <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
@@ -149,9 +151,9 @@ function FeaturedCard({ property }) {
       */}
       <div className="relative w-full overflow-hidden bg-white" style={{ paddingTop: '75%' }}>
         <img
-          src={property.broker.image}
+          src={property.images?.[0] || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000'}
           alt={property.title}
-          className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 p-2"
         />
 
       </div>
@@ -164,7 +166,7 @@ function FeaturedCard({ property }) {
         </h3>
 
         {/* Price — bold, right under title (not on image) */}
-        <p className="text-primary font-extrabold text-sm sm:text-base mb-1 sm:mb-1.5">{property.price}</p>
+        <p className="text-primary font-extrabold text-sm sm:text-base mb-1 sm:mb-1.5">₹ {property.price}</p>
 
         {/* Location */}
         <div className="flex items-center gap-1 text-muted-foreground text-[10px] sm:text-[11px] mb-2 sm:mb-3">
@@ -175,15 +177,15 @@ function FeaturedCard({ property }) {
         {/* Broker row */}
         <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40">
           <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
-            <img src={property.broker.image} alt={property.broker.name} className="w-full h-full object-cover" />
+            <img src={broker.image} alt={broker.name} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1">{property.broker.name}</p>
+            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1">{broker.name}</p>
             <div className="flex items-center gap-0.5 text-blue-600 text-[8px] sm:text-[9px] font-bold">
               <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
             </div>
           </div>
-          <a href={`tel:${property.broker.phone.replace(/\s/g, '')}`} className="shrink-0">
+          <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="shrink-0">
             <button className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-blue-700 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full flex items-center gap-1.5 transition-all shadow-[0_2px_10px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.4)] active:scale-95 group">
               <div className="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-full" />
               <FaPhone className="h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 relative z-10" /> 
@@ -196,7 +198,15 @@ function FeaturedCard({ property }) {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  let featuredProperties = [];
+  try {
+    const res = await api.get('/properties');
+    featuredProperties = res.data.slice(0, 4);
+  } catch (err) {
+    console.error("Failed to fetch featured properties:", err.message);
+  }
+
   return (
     <>
       {/* ── Hero Section ─────────────────────────────── */}
@@ -279,7 +289,7 @@ export default function HomePage() {
           */}
           <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-x-auto md:overflow-visible pb-6 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {featuredProperties.map((property) => (
-              <div key={property.id} className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 snap-center md:snap-none">
+              <div key={property._id} className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 snap-center md:snap-none">
                 <FeaturedCard property={property} />
               </div>
             ))}

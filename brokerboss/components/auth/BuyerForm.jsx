@@ -94,13 +94,21 @@ export default function BuyerForm() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    register('buyer', { ...profile, propertyTypes: selectedTypes });
-    setSubmitted(true);
-    setTimeout(() => router.push('/'), 1200);
+    
+    const email = `${profile.phone}@example.com`;
+    const password = profile.phone;
+
+    const res = await register('buyer', { ...profile, propertyTypes: selectedTypes, email, password });
+    if (res && res.success) {
+      setSubmitted(true);
+      setTimeout(() => router.push('/'), 1200);
+    } else {
+      setErrors({ name: res?.error || 'Registration failed' });
+    }
   };
 
   if (submitted) {

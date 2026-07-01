@@ -69,13 +69,21 @@ export default function BrokerForm() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    register('broker', { ...form });
-    setSubmitted(true);
-    setTimeout(() => router.push('/'), 1200);
+    
+    const email = `${form.phone}@example.com`;
+    const password = form.phone;
+
+    const res = await register('broker', { ...form, email, password });
+    if (res && res.success) {
+      setSubmitted(true);
+      setTimeout(() => router.push('/'), 1200);
+    } else {
+      setErrors({ name: res?.error || 'Registration failed' });
+    }
   };
 
   if (submitted) {

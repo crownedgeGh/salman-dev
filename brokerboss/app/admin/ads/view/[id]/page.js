@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_ADS } from "@/data/adminMock";
+
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
@@ -34,7 +34,7 @@ export default function ViewAdPage({ params }) {
   const adId = parseInt(id, 10);
 
   // Find dynamic ad or default to first mock ad
-  const ad = MOCK_ADS.find((a) => a.id === adId) || MOCK_ADS[0];
+  const ad = [].find((a) => a.id === adId) || [][0];
 
   const ctr = ad ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0.0";
 

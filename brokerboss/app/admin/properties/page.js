@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Trash2, Eye, Filter, Plus, Pencil } from "lucide-react";
 import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
@@ -22,7 +22,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { MOCK_PROPERTIES } from "@/data/adminMock";
+import api from '@/lib/axios';
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
@@ -31,11 +31,15 @@ const STATUS_COLORS = {
 };
 
 export default function PropertiesPage() {
-  const [properties, setProperties] = useState(MOCK_PROPERTIES);
+  const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    api.get('/properties').then(res => setProperties(res.data)).catch(console.error);
+  }, []);
 
   const showToast = (msg) => {
     setToast(msg);

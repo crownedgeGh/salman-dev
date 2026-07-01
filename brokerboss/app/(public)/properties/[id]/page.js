@@ -1,5 +1,5 @@
-import { properties } from '@/data/properties';
 import { notFound } from 'next/navigation';
+import api from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -12,7 +12,14 @@ import {
 
 export default async function PropertyDetailsPage({ params }) {
   const { id } = await params;
-  const property = properties.find((p) => p.id === id);
+  
+  let property = null;
+  try {
+    const res = await api.get(`/properties/${id}`);
+    property = res.data;
+  } catch (err) {
+    console.error("Failed to fetch property details:", err.message);
+  }
 
   if (!property) {
     notFound();

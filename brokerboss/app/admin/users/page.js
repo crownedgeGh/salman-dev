@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Trash2, ShieldBan, ShieldCheck, Eye, Filter } from "lucide-react";
 import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
+import api from "@/lib/axios";
 import {
   Select,
   SelectContent,
@@ -23,14 +24,20 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { MOCK_USERS } from "@/data/adminMock";
+
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    api.get('/users')
+      .then(res => setUsers(res.data))
+      .catch(console.error);
+  }, []);
 
   const showToast = (msg) => {
     setToast(msg);

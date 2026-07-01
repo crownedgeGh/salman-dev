@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MOCK_PROPERTIES } from "@/data/adminMock";
+
 
 const PROPERTY_TYPES = [
   { id: "flat", label: "Flat", icon: Building },
@@ -38,7 +38,7 @@ export default function EditPropertyPage({ params }) {
   const propertyId = parseInt(id, 10);
 
   // Find the property in the mock list
-  const property = MOCK_PROPERTIES.find((p) => p.id === propertyId) || MOCK_PROPERTIES[0];
+  const property = [].find((p) => p.id === propertyId) || [][0];
 
   const [form, setForm] = useState({
     title: property?.title || "",

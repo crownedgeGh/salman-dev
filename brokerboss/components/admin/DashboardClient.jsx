@@ -29,12 +29,7 @@ import {
 } from "@/components/ui/chart";
 import StatCard from "@/components/admin/StatCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  MOCK_STATS,
-  CHART_ACTIVITY,
-  CHART_ADS,
-  MOCK_ACTIVITY,
-} from "@/data/adminMock";
+
 
 const ACTIVITY_ICONS = {
   UserPlus: <UserPlus className="w-4 h-4 text-amber-500" />,
@@ -69,30 +64,30 @@ export default function DashboardClient() {
       {/* ── KPI Stat Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label={MOCK_STATS.totalUsers.label}
-          value={MOCK_STATS.totalUsers.value}
-          change={MOCK_STATS.totalUsers.change}
+          label="Total Users"
+          value="45"
+          change="+12% from last month"
           icon={Users}
           color="amber"
         />
         <StatCard
-          label={MOCK_STATS.propertiesListed.label}
-          value={MOCK_STATS.propertiesListed.value}
-          change={MOCK_STATS.propertiesListed.change}
+          label="Properties Listed"
+          value="12"
+          change="+4% from last month"
           icon={Building2}
           color="blue"
         />
         <StatCard
-          label={MOCK_STATS.activeAds.label}
-          value={MOCK_STATS.activeAds.value}
-          change={MOCK_STATS.activeAds.change}
+          label="Active Ads"
+          value="3"
+          change="-2% from last month"
           icon={Megaphone}
           color="purple"
         />
         <StatCard
-          label={MOCK_STATS.revenue.label}
-          value={MOCK_STATS.revenue.value}
-          change={MOCK_STATS.revenue.change}
+          label="Revenue"
+          value="₹0"
+          change="0% from last month"
           icon={IndianRupee}
           color="green"
         />
@@ -109,7 +104,7 @@ export default function DashboardClient() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-52 w-full">
-              <AreaChart data={CHART_ACTIVITY} margin={{ left: -10, right: 8 }}>
+              <AreaChart data={[]} margin={{ left: -10, right: 8 }}>
                 <defs>
                   <linearGradient id="usersGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="oklch(0.72 0.16 65)" stopOpacity={0.3} />
@@ -154,7 +149,7 @@ export default function DashboardClient() {
             <CardTitle className="text-base font-semibold">Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {MOCK_ACTIVITY.map((item) => (
+            {[].map((item) => (
               <div key={item.id} className="flex items-start gap-2.5">
                 <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
                   {ACTIVITY_ICONS[item.icon]}
@@ -180,7 +175,7 @@ export default function DashboardClient() {
         </CardHeader>
         <CardContent>
           <ChartContainer config={adsChartConfig} className="h-52 w-full">
-            <BarChart data={CHART_ADS} margin={{ left: -10, right: 8 }}>
+            <BarChart data={[]} margin={{ left: -10, right: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.90 0.025 75)" />
               <XAxis dataKey="name" tick={{ fontSize: 10 }} tickLine={false} />
               <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />

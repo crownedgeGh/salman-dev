@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_PROPERTIES } from "@/data/adminMock";
+
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
@@ -27,7 +27,7 @@ export default function ViewPropertyPage({ params }) {
   const propertyId = parseInt(id, 10);
 
   // Find the property in the mock list
-  const property = MOCK_PROPERTIES.find((p) => p.id === propertyId) || MOCK_PROPERTIES[0];
+  const property = [].find((p) => p.id === propertyId) || [][0];
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

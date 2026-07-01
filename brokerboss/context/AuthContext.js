@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext({
   isLoggedIn: false,
@@ -16,31 +16,69 @@ export function AuthProvider({ children }) {
   const [userRole, setUserRole] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
 
-  /** Register a user with a role and profile data */
-  const register = (role, profile) => {
-    setIsLoggedIn(true);
-    setUserRole(role);
-    setUserProfile(profile);
+  // Check session on mount
+  useEffect(() => {
+    import('@/lib/axios').then(({ default: api }) => {
+      api.get('/users/profile')
+        .then(res => {
+          setIsLoggedIn(true);
+          setUserProfile(res.data);
+          // Assuming role is derived from profile or default to buyer
+          setUserRole('buyer'); 
+        })
+        .catch(() => {
+          setIsLoggedIn(false);
+          setUserProfile(null);
+          setUserRole(null);
+        });
+    });
+  }, []);
+
+  const register = async (role, profile) => {
+    try {
+      const api = (await import('@/lib/axios')).default;
+      // We assume profile contains name, email, password
+      const res = await api.post('/auth/register', profile);
+      // After register, you might want to login automatically or just set state
+      setIsLoggedIn(true);
+      setUserRole(role);
+      setUserProfile(profile);
+      return { success: true, data: res.data };
+    } catch (error) {
+      console.error("Registration failed:", error);
+      return { success: false, error: error.response?.data?.error || error.message };
+    }
   };
 
-  /** Log out and reset all auth state */
+  const login = async (email, password) => {
+    try {
+      const api = (await import('@/lib/axios')).default;
+      const res = await api.post('/auth/login', { email, password });
+      setIsLoggedIn(true);
+      setUserProfile(res.data.user);
+      // defaulting role to buyer for now
+      setUserRole('buyer');
+      return { success: true, data: res.data };
+    } catch (error) {
+      console.error("Login failed:", error);
+      return { success: false, error: error.response?.data?.error || error.message };
+    }
+  };
+
   const logout = () => {
     setIsLoggedIn(false);
     setUserRole(null);
     setUserProfile(null);
+    // Ideally call a logout endpoint to clear HTTP cookie, but for now just clear state
   };
 
-  /** @deprecated Use logout() instead */
   const toggleLogin = () => {
-    if (isLoggedIn) {
-      logout();
-    } else {
-      setIsLoggedIn(true);
-    }
+    if (isLoggedIn) logout();
+    else setIsLoggedIn(true);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userRole, userProfile, register, logout, toggleLogin }}>
+    <AuthContext.Provider value={{ isLoggedIn, userRole, userProfile, register, login, logout, toggleLogin }}>
       {children}
     </AuthContext.Provider>
   );

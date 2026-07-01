@@ -19,7 +19,8 @@ import { FaWhatsapp } from 'react-icons/fa';
 
 // Helper to generate consistent, realistic mocked specs based on property id & type
 function getPropertySpecs(property) {
-  const idNum = parseInt(property.id.replace(/\D/g, '')) || 7;
+  const propId = property._id || property.id || '123';
+  const idNum = parseInt(propId.replace(/\D/g, '')) || 7;
   const isRent = property.purpose === 'Rent';
 
   // Photo Count
@@ -105,8 +106,9 @@ export default function PropertyCard({ property, compact = false }) {
   const { photoCount, updatedText, formattedPrice, depositText, specs } = getPropertySpecs(property);
   const isRent = property.purpose === 'Rent';
 
+  const propId = property._id || property.id;
   const handleCardClick = () => {
-    router.push(`/properties/${property.id}`);
+    if (propId) router.push(`/properties/${propId}`);
   };
 
   const handleAction = (e, callback) => {
@@ -114,8 +116,15 @@ export default function PropertyCard({ property, compact = false }) {
     if (callback) callback();
   };
 
-  // Image Source - fallback to a nice placeholder if broker image isn't available
-  const imageUrl = property.broker?.image || '/badge.png';
+  // Broker fallback in case it's missing (e.g., from test data)
+  const broker = property.broker || {
+    name: 'BrokerBoss Agent',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
+    phone: '+919876543210'
+  };
+
+  // Image Source - fallback to property image or broker image
+  const imageUrl = property.images?.[0] || broker.image || '/badge.png';
 
   // Specifications logic: only collapse when there are 5 or 6 specs in total.
   // We combine the base specs and the AREA spec.
@@ -162,7 +171,7 @@ export default function PropertyCard({ property, compact = false }) {
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
             <span className="font-semibold text-foreground truncate">
-              {property.broker.name}
+              {broker.name}
             </span>
             <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium">
               Broker
@@ -209,8 +218,8 @@ export default function PropertyCard({ property, compact = false }) {
                 variant="ghost"
                 size="icon"
                 onClick={(e) => handleAction(e, () => {
-                  if (navigator.share) {
-                    navigator.share({ title: property.title, url: window.location.origin + `/properties/${property.id}` });
+                  if (navigator.share && propId) {
+                    navigator.share({ title: property.title, url: window.location.origin + `/properties/${propId}` });
                   }
                 })}
                 className="h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground hover:text-blue-500"
@@ -276,7 +285,7 @@ export default function PropertyCard({ property, compact = false }) {
 
           <div className="flex items-center gap-1.5">
             <a
-              href={`tel:${property.broker.phone.replace(/\s/g, '')}`}
+              href={`tel:${broker.phone.replace(/\s/g, '')}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-block"
             >
@@ -289,7 +298,7 @@ export default function PropertyCard({ property, compact = false }) {
               variant="outline"
               size="sm"
               onClick={(e) => handleAction(e, () => {
-                window.open(`https://wa.me/${property.broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
+                window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
               })}
               className="border-primary text-primary hover:bg-primary/10 font-bold h-8 text-[11px] px-3 rounded-lg flex items-center gap-1 bg-transparent"
             >
@@ -318,7 +327,7 @@ export default function PropertyCard({ property, compact = false }) {
         {/* Buttons */}
         <div className="flex flex-col gap-2.5 w-full mt-4">
           <a
-            href={`tel:${property.broker.phone.replace(/\s/g, '')}`}
+            href={`tel:${broker.phone.replace(/\s/g, '')}`}
             onClick={(e) => e.stopPropagation()}
             className="w-full"
           >
@@ -331,7 +340,7 @@ export default function PropertyCard({ property, compact = false }) {
           <Button
             variant="outline"
             onClick={(e) => handleAction(e, () => {
-              window.open(`https://wa.me/${property.broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
+              window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
             })}
             className="w-full border-primary text-primary hover:bg-primary/10 font-bold text-xs h-9 rounded-lg transition-colors flex items-center justify-center gap-1.5 bg-transparent"
           >
