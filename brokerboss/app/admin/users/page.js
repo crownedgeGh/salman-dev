@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Trash2, ShieldBan, ShieldCheck, Eye, Filter } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Trash2, ShieldBan, ShieldCheck, Eye, Filter, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
 import api from "@/lib/axios";
@@ -27,16 +28,20 @@ import {
 
 
 export default function UsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
+  const fetchUsers = () => {
+    api.get('/users').then(res => setUsers(res.data)).catch(console.error);
+  };
+
   useEffect(() => {
-    api.get('/users')
-      .then(res => setUsers(res.data))
-      .catch(console.error);
+    fetchUsers();
   }, []);
 
   const showToast = (msg) => {
@@ -55,9 +60,19 @@ export default function UsersPage() {
   };
 
   const handleDelete = () => {
-    setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
-    showToast(`User "${deleteTarget.username}" deleted successfully.`);
-    setDeleteTarget(null);
+    api.delete(`/users/${deleteTarget.id || deleteTarget._id}`).then(() => {
+      setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+      showToast(`User "${deleteTarget.username}" deleted successfully.`);
+      setDeleteTarget(null);
+    }).catch(console.error);
+  };
+
+  const handleDeleteAll = () => {
+    api.delete('/users').then(() => {
+      setUsers([]);
+      showToast('All users deleted successfully.');
+      setDeleteAllConfirm(false);
+    }).catch(console.error);
   };
 
   // Filter users by role before passing to AdminTable
@@ -106,7 +121,7 @@ export default function UsersPage() {
       key: "actions",
       label: "Actions",
       render: (_, row) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           <Button
             size="sm"
             variant="outline"
@@ -156,6 +171,16 @@ export default function UsersPage() {
             {users.length} registered users
           </p>
         </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Button onClick={fetchUsers} variant="outline" className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4" />
+            <span>Refresh</span>
+          </Button>
+          <Button onClick={() => setDeleteAllConfirm(true)} variant="outline" className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20">
+            <Trash2 className="w-4 h-4" />
+            <span>Delete All</span>
+          </Button>
+        </div>
       </div>
 
       {/* Filters Row */}
@@ -188,7 +213,7 @@ export default function UsersPage() {
         columns={USERS_COLUMNS}
         data={filteredData}
         searchQuery={searchQuery}
-        pageSize={10}
+        onRowClick={(row) => router.push(`/admin/users/${row.id}`)}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -197,7 +222,7 @@ export default function UsersPage() {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete{" "}
+              Are you sure you want to delete user{" "}
               <strong>{deleteTarget?.username}</strong>? This action cannot be
               undone.
             </DialogDescription>
@@ -216,7 +241,30 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Toast */}
+      {/* Delete All Confirmation Dialog */}
+      <Dialog open={deleteAllConfirm} onOpenChange={setDeleteAllConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete All Users</DialogTitle>
+            <DialogDescription>
+              Are you absolutely sure you want to delete <strong>ALL</strong> users? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteAllConfirm(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteAll}
+            >
+              Yes, Delete All
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-foreground text-background text-sm px-4 py-2.5 rounded-xl shadow-lg animate-in slide-in-from-bottom-4 duration-300">
           {toast}

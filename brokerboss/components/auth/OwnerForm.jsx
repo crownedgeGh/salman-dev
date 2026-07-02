@@ -12,7 +12,7 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 
-const PROPERTY_TYPES = ['Flat', 'House', 'Shop', 'Plot', 'Office'];
+const PROPERTY_TYPES = ['Flat', 'House', 'Shop', 'Plot', 'Office', 'Multiples'];
 
 const initialState = {
   name: '',

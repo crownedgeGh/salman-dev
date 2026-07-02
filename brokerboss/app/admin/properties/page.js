@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Trash2, Eye, Filter, Plus, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Trash2, Eye, Filter, Plus, Pencil, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import AdminTable from "@/components/admin/AdminTable";
 import { Badge } from "@/components/ui/badge";
@@ -31,14 +32,20 @@ const STATUS_COLORS = {
 };
 
 export default function PropertiesPage() {
+  const router = useRouter();
   const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
+  const fetchProperties = () => {
     api.get('/properties').then(res => setProperties(res.data)).catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchProperties();
   }, []);
 
   const showToast = (msg) => {
@@ -47,34 +54,51 @@ export default function PropertiesPage() {
   };
 
   const handleDelete = () => {
-    setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-    showToast(`Property "${deleteTarget.title}" deleted.`);
-    setDeleteTarget(null);
+    api.delete(`/properties/${deleteTarget.id || deleteTarget._id}`).then(() => {
+      setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      showToast(`Property "${deleteTarget.title}" deleted.`);
+      setDeleteTarget(null);
+    }).catch(console.error);
+  };
+
+  const handleDeleteAll = () => {
+    api.delete('/properties').then(() => {
+      setProperties([]);
+      showToast('All properties deleted successfully.');
+      setDeleteAllConfirm(false);
+    }).catch(console.error);
   };
 
   // Apply status filter before passing to AdminTable
   const filteredData =
     statusFilter === "All"
       ? properties
-      : properties.filter((p) => p.status === statusFilter);
+      : properties.filter((p) => (p.status || "Active") === statusFilter);
 
   const PROPERTIES_COLUMNS = [
     {
       key: "title",
       label: "Property",
-      render: (val, row) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={row.thumbnail}
-            alt={val}
-            className="w-12 h-9 object-cover rounded-lg shrink-0 border border-border"
-          />
-          <span className="font-medium text-foreground line-clamp-1 max-w-[180px]">{val}</span>
-        </div>
-      ),
+      render: (val, row) => {
+        const imageUrl = row.images?.[0] || row.broker?.image || '/badge.png';
+        return (
+          <div className="flex items-center gap-3">
+            <img
+              src={imageUrl}
+              alt={val}
+              className="w-12 h-9 object-cover rounded-lg shrink-0 border border-border bg-muted"
+            />
+            <span className="font-medium text-foreground line-clamp-1 max-w-[180px]">{val}</span>
+          </div>
+        );
+      },
     },
     { key: "type", label: "Type" },
-    { key: "location", label: "Location" },
+    { 
+      key: "location", 
+      label: "Location",
+      render: (_, row) => <span>{row.locality || row.area || row.city || '—'}</span>
+    },
     {
       key: "price",
       label: "Price",
@@ -85,26 +109,40 @@ export default function PropertiesPage() {
     {
       key: "status",
       label: "Status",
-      render: (val) => (
-        <Badge variant="outline" className={STATUS_COLORS[val]}>
-          {val}
-        </Badge>
-      ),
+      render: (_, row) => {
+        const stat = row.status || 'Active';
+        return (
+          <Badge variant="outline" className={STATUS_COLORS[stat] || STATUS_COLORS["Active"]}>
+            {stat}
+          </Badge>
+        );
+      },
     },
-    { key: "owner", label: "Owner" },
-    { key: "dateListed", label: "Listed On" },
+    { 
+      key: "owner", 
+      label: "Owner",
+      render: (_, row) => <span>{row.broker?.name || row.owner?.name || '—'}</span>
+    },
+    { 
+      key: "dateListed", 
+      label: "Listed On",
+      render: (_, row) => {
+        const dateStr = row.postedAt || row.createdAt;
+        return <span>{dateStr ? new Date(dateStr).toLocaleDateString() : '—'}</span>;
+      }
+    },
     {
       key: "actions",
       label: "Actions",
       render: (val, row) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           <Button
             size="sm"
             variant="outline"
             className="h-7 text-xs gap-1.5"
             asChild
           >
-            <Link href={`/admin/properties/view/${row.id}`}>
+            <Link href={`/admin/properties/view/${row._id || row.id}`}>
               <Eye className="w-3.5 h-3.5" /> View
             </Link>
           </Button>
@@ -114,7 +152,7 @@ export default function PropertiesPage() {
             className="h-7 text-xs gap-1.5 border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-600"
             asChild
           >
-            <Link href={`/admin/properties/${row.id}`}>
+            <Link href={`/admin/properties/${row._id || row.id}`}>
               <Pencil className="w-3.5 h-3.5" /> Edit
             </Link>
           </Button>
@@ -141,12 +179,22 @@ export default function PropertiesPage() {
             {properties.length} listings in total
           </p>
         </div>
-        <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href="/admin/properties/add">
-            <Plus className="w-4 h-4" />
-            <span>Add Property</span>
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Button onClick={fetchProperties} variant="outline" className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4" />
+            <span>Refresh</span>
+          </Button>
+          <Button onClick={() => setDeleteAllConfirm(true)} variant="outline" className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20">
+            <Trash2 className="w-4 h-4" />
+            <span>Delete All</span>
+          </Button>
+          <Button asChild className="flex items-center gap-2">
+            <Link href="/admin/properties/add">
+              <Plus className="w-4 h-4" />
+              <span>Add Property</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Filters row */}
@@ -179,7 +227,7 @@ export default function PropertiesPage() {
         columns={PROPERTIES_COLUMNS}
         data={filteredData}
         searchQuery={searchQuery}
-        pageSize={10}
+        onRowClick={(row) => router.push(`/admin/properties/view/${row._id || row.id}`)}
       />
 
       {/* Delete Dialog */}
@@ -201,6 +249,29 @@ export default function PropertiesPage() {
               onClick={handleDelete}
             >
               Delete Property
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete All Dialog */}
+      <Dialog open={deleteAllConfirm} onOpenChange={setDeleteAllConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete All Properties</DialogTitle>
+            <DialogDescription>
+              Are you absolutely sure you want to delete <strong>ALL</strong> properties? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeleteAllConfirm(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteAll}
+            >
+              Yes, Delete All
             </Button>
           </DialogFooter>
         </DialogContent>

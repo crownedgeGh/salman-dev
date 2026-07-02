@@ -1,7 +1,8 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
+import api from "@/lib/axios";
 import {
   ArrowLeft,
   User,
@@ -32,10 +33,25 @@ const STATUS_COLORS = {
 
 export default function ViewPropertyPage({ params }) {
   const { id } = use(params);
-  const propertyIdParam = parseInt(id, 10);
+  
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock property with extensive fields
-  const property = [].find((p) => p.id === propertyIdParam) || {};
+  useEffect(() => {
+    api.get(`/properties/${id}`)
+      .then(res => {
+        setProperty(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch property details", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8 text-center text-muted-foreground">Loading property details...</div>;
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -60,7 +76,7 @@ export default function ViewPropertyPage({ params }) {
 
         {/* Edit Button */}
         <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href={`/admin/properties/${propertyIdParam}`}>
+          <Link href={`/admin/properties/${id}`}>
             <Pencil className="w-4 h-4" />
             <span>Edit Property</span>
           </Link>

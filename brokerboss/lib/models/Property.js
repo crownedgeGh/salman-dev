@@ -17,6 +17,11 @@ const propertySchema = new mongoose.Schema({
     yearsExperience: Number,
     image: String
   }
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
-export default mongoose.models.Property || mongoose.model('Property', propertySchema);
+// Clear the model cache to ensure schema updates are applied during Next.js HMR
+if (mongoose.models.Property) {
+  delete mongoose.models.Property;
+}
+
+export default mongoose.model('Property', propertySchema);

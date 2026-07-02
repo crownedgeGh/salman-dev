@@ -12,7 +12,19 @@ const userSchema = new mongoose.Schema({
   reraNumber: { type: String },
   yearsOfExperience: { type: Number },
   bio: { type: String },
+  description: { type: String },
+  notes: { type: String },
+  area: { type: String },
+  propertyType: { type: String },
+  preferredArea: { type: String },
+  budgetRange: { type: String },
+  propertyTypes: { type: [String] },
   status: { type: String, default: 'Active' },
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
-export default mongoose.models.User || mongoose.model('User', userSchema);
+// Clear the model cache to ensure schema updates are applied during Next.js HMR
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
+
+export default mongoose.model('User', userSchema);

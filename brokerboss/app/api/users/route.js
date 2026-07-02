@@ -26,3 +26,14 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await connectToDatabase();
+    await User.deleteMany({});
+    return NextResponse.json({ message: 'All users deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting all users:", error);
+    return NextResponse.json({ error: 'Failed to delete all users' }, { status: 500 });
+  }
+}

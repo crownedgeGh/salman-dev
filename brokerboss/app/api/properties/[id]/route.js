@@ -7,9 +7,9 @@ export async function GET(request, { params }) {
     await connectToDatabase();
     const { id } = await params;
     
-    let property = await Property.findById(id).catch(() => null);
+    let property = await Property.findById(id).lean().catch(() => null);
     if (!property) {
-      property = await Property.findOne({ id: id }).catch(() => null);
+      property = await Property.findOne({ id: id }).lean().catch(() => null);
     }
     
     if (!property) {

@@ -5,8 +5,9 @@ import { ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function AdminTable({ columns = [], data = [], pageSize = 10, searchQuery = "" }) {
+export default function AdminTable({ columns = [], data = [], defaultPageSize = 15, searchQuery = "", onRowClick }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
 
   // Filter data by searchQuery
   const filtered = useMemo(() => {
@@ -59,7 +60,8 @@ export default function AdminTable({ columns = [], data = [], pageSize = 10, sea
             {paginated.map((row, i) => (
               <tr
                 key={row.id ?? i}
-                className="border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors"
+                onClick={() => onRowClick && onRowClick(row)}
+                className={`border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
               >
                 {columns.map((col, ci) => (
                   <td key={`td-${col.key}-${ci}`} className="px-4 py-3 text-foreground align-middle">
@@ -75,7 +77,11 @@ export default function AdminTable({ columns = [], data = [], pageSize = 10, sea
       {/* ── Mobile / Tablet Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden">
         {paginated.map((row, i) => (
-          <Card key={row.id ?? i} className="overflow-hidden shadow-sm">
+          <Card 
+            key={row.id ?? i} 
+            onClick={() => onRowClick && onRowClick(row)}
+            className={`overflow-hidden shadow-sm ${onRowClick ? 'cursor-pointer hover:bg-muted/30 transition-colors' : ''}`}
+          >
             <CardContent className="p-4 space-y-2.5">
               {columns.map((col, ci) => (
                 <div
@@ -104,12 +110,31 @@ export default function AdminTable({ columns = [], data = [], pageSize = 10, sea
       </div>
 
       {/* ── Pagination ── */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
           <p className="text-xs text-muted-foreground">
-            Showing {(safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, filtered.length)} of {filtered.length}
+            Showing {filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, filtered.length)} of {filtered.length}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">Rows per page:</span>
+            <select
+              className="text-xs border border-border rounded-md px-1.5 py-0.5 bg-card text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              <option value={15}>15</option>
+              <option value={30}>30</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
+        </div>
+        
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center sm:justify-end gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -132,8 +157,8 @@ export default function AdminTable({ columns = [], data = [], pageSize = 10, sea
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

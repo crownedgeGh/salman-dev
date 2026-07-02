@@ -131,12 +131,20 @@ export default function PostPropertyForm() {
     return e;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    setSubmitted(true);
-    setTimeout(() => router.push('/'), 2000);
+    
+    try {
+      const { default: api } = await import('@/lib/axios');
+      await api.post('/properties', form);
+      setSubmitted(true);
+      setTimeout(() => router.push('/'), 2000);
+    } catch (error) {
+      console.error("Failed to post property", error);
+      alert("Failed to post property. Please try again.");
+    }
   };
 
   if (submitted) {

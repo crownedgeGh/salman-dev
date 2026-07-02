@@ -36,3 +36,14 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to create property' }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await connectToDatabase();
+    await Property.deleteMany({});
+    return NextResponse.json({ message: 'All properties deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting all properties:", error);
+    return NextResponse.json({ error: 'Failed to delete all properties' }, { status: 500 });
+  }
+}

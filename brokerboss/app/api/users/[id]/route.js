@@ -12,15 +12,15 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
-    const user = await User.findById(id, { password: 0 });
+    const user = await User.findById(id, { password: 0 }).lean();
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
     
     const formattedUser = {
+      ...user,
       id: user._id.toString(),
       username: user.name || 'Unknown',
-      email: user.email,
       location: user.city || 'Not specified',
       role: user.role || 'user',
       status: user.status || 'Active',
