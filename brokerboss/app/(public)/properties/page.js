@@ -231,11 +231,13 @@ function PropertiesPageInner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/properties').then(res => {
+    api.get('/properties', { params: { _t: Date.now() } }).then(res => {
+      console.log('Fetched properties length:', res.data.length);
+      console.log('Fetched properties:', res.data);
       setProperties(res.data);
       setLoading(false);
     }).catch(err => {
-      console.error(err);
+      console.error('Error fetching properties:', err);
       setLoading(false);
     });
   }, []);
@@ -274,17 +276,17 @@ function PropertiesPageInner() {
 
   const updateUrl = useCallback((newFilters, newQuery) => {
     const params = new URLSearchParams();
-    
+
     if (newFilters.purpose === 'Sale') params.append('type', 'buy');
     else if (newFilters.purpose === 'Rent') params.append('type', 'rent');
-    
+
     if (newFilters.type) params.append('type', newFilters.type.toLowerCase());
-    
+
     if (newFilters.locality) params.set('locality', newFilters.locality);
     if (newFilters.priceMin) params.set('priceMin', newFilters.priceMin);
     if (newFilters.priceMax) params.set('priceMax', newFilters.priceMax);
     if (newQuery) params.set('q', newQuery);
-    
+
     const query = params.toString();
     router.push(`${pathname}${query ? `?${query}` : ''}`, { scroll: false });
   }, [pathname, router]);
@@ -292,11 +294,11 @@ function PropertiesPageInner() {
   const handleFilterChange = (partial) => {
     updateUrl({ ...filters, ...partial }, searchQuery);
   };
-  
+
   const handleClearFilter = (key) => {
     updateUrl({ ...filters, [key]: '' }, searchQuery);
   };
-  
+
   const handleClearAll = () => {
     setSearchQuery('');
     updateUrl(defaultFilters, '');
@@ -345,7 +347,7 @@ function PropertiesPageInner() {
       }
       return true;
     });
-  }, [filters, searchQuery]);
+  }, [filters, searchQuery, properties]);
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-7xl">

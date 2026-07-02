@@ -5,12 +5,12 @@ import Property from '@/lib/models/Property';
 export async function GET(request) {
   try {
     await connectToDatabase();
-    
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const purpose = searchParams.get('purpose');
     const locality = searchParams.get('locality');
-    
+
     // Build query
     const query = {};
     if (type) query.type = { $regex: new RegExp(type, 'i') };

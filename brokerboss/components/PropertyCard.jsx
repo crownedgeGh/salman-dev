@@ -36,16 +36,24 @@ function getPropertySpecs(property) {
 
   // Price formatting and deposit
   let formattedPrice = property.price;
-  let depositText = 'See other charges';
+  let depositText = '';
+  const numericPriceStr = property.price ? property.price.toString().replace(/[^\d]/g, '') : '';
+  const priceVal = parseInt(numericPriceStr) || 0;
+
   if (isRent) {
-    const numericPriceStr = property.price.replace(/[^\d]/g, '');
-    const priceVal = parseInt(numericPriceStr) || 15000;
     const depositVal = priceVal * 2;
-    formattedPrice = `₹${priceVal.toLocaleString('en-IN')}`;
-    depositText = `Security Deposit: ₹${depositVal.toLocaleString('en-IN')}`;
+    formattedPrice = priceVal ? `₹${priceVal.toLocaleString('en-IN')}` : property.price;
+    depositText = depositVal ? `Security Deposit: ₹${depositVal.toLocaleString('en-IN')}` : '';
   } else {
     // Sale
-    depositText = 'Stamp Duty & Registration Charges Extra';
+    formattedPrice = priceVal ? `₹${priceVal.toLocaleString('en-IN')}` : property.price;
+    
+    // Calculate Rate
+    const areaVal = property.areaSize ? parseInt(property.areaSize.toString().replace(/[^\d]/g, '')) : 0;
+    if (priceVal && areaVal) {
+      const rate = Math.round(priceVal / areaVal);
+      depositText = `₹${rate.toLocaleString('en-IN')} / ${property.areaUnit || 'sq ft'}`;
+    }
   }
 
   // Specifications based on Type
@@ -135,7 +143,7 @@ export default function PropertyCard({ property, compact = false }) {
   return (
     <Card
       onClick={handleCardClick}
-      className={`group relative flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all duration-300 border border-border/80 bg-white dark:bg-card cursor-pointer rounded-2xl ${
+      className={`group relative flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all duration-300 border border-border/80 bg-white dark:bg-card cursor-pointer rounded-2xl p-0 ${
         compact ? 'mb-2' : 'mb-4'
       }`}
     >
