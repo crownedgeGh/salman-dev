@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true); // true until first profile check resolves
 
   // Check session on mount
   useEffect(() => {
@@ -23,12 +24,15 @@ export function AuthProvider({ children }) {
         .then(res => {
           setIsLoggedIn(true);
           setUserProfile(res.data);
-          setUserRole(res.data.role || 'buyer'); 
+          setUserRole(res.data.role || 'buyer');
         })
         .catch(() => {
           setIsLoggedIn(false);
           setUserProfile(null);
           setUserRole(null);
+        })
+        .finally(() => {
+          setAuthLoading(false);
         });
     });
   }, []);
@@ -63,6 +67,10 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateProfile = (newData) => {
+    setUserProfile((prev) => ({ ...prev, ...newData }));
+  };
+
   const logout = () => {
     setIsLoggedIn(false);
     setUserRole(null);
@@ -76,7 +84,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userRole, userProfile, register, login, logout, toggleLogin }}>
+    <AuthContext.Provider value={{ isLoggedIn, authLoading, userRole, userProfile, register, login, logout, toggleLogin, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

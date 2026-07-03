@@ -14,6 +14,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import RegisterModal from '@/components/auth/RegisterModal';
+import UserPanelSheet from '@/components/user/UserPanelSheet';
 import {
   FaHome,
   FaBuilding,
@@ -27,6 +28,7 @@ import {
   FaUserPlus,
   FaPlusCircle,
   FaChevronRight,
+  FaIdCard,
 } from 'react-icons/fa';
 
 const navLinks = [
@@ -71,6 +73,7 @@ export default function Navbar() {
   const { isLoggedIn, userRole, userProfile, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const isActive = (href) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -84,6 +87,7 @@ export default function Navbar() {
   return (
     <>
       <RegisterModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
+      <UserPanelSheet open={panelOpen} onClose={() => setPanelOpen(false)} />
 
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur-md">
         <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -140,7 +144,13 @@ export default function Navbar() {
 
             {isLoggedIn ? (
               <>
-                <div className="flex items-center gap-1.5 bg-accent rounded-full pl-3 pr-1 py-1">
+                {/* Clickable profile pill — opens user panel */}
+                <button
+                  id="navbar-profile-pill"
+                  onClick={() => setPanelOpen(true)}
+                  className="flex items-center gap-1.5 bg-accent hover:bg-accent/80 rounded-full pl-3 pr-1 py-1 transition-all cursor-pointer"
+                  aria-label="Open My Account panel"
+                >
                   <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0">
                     <FaUser className="h-2.5 w-2.5 text-primary-foreground" />
                   </div>
@@ -150,7 +160,7 @@ export default function Navbar() {
                   <span className="text-[10px] text-muted-foreground bg-background rounded-full px-1.5 py-0.5 capitalize border border-border">
                     {roleLabels[userRole]}
                   </span>
-                </div>
+                </button>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -267,6 +277,17 @@ export default function Navbar() {
                           <p className="text-xs text-muted-foreground capitalize">{roleLabels[userRole]}</p>
                         </div>
                       </div>
+                      {/* My Account — opens user panel */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        id="mobile-my-account"
+                        onClick={() => { setMobileOpen(false); setTimeout(() => setPanelOpen(true), 150); }}
+                        className="w-full gap-2 rounded-xl py-3 h-auto"
+                      >
+                        <FaIdCard className="h-3.5 w-3.5" />
+                        My Account
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"

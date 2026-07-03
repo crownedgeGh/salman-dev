@@ -27,3 +27,44 @@ export async function GET(request) {
     return NextResponse.json({ error: 'Unauthorized or invalid token' }, { status: 401 });
   }
 }
+
+export async function PUT(request) {
+  try {
+    await connectToDatabase();
+
+    const token = request.cookies.get('token')?.value;
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return NextResponse.json({ error: 'Unauthorized or invalid token' }, { status: 401 });
+    }
+
+    const data = await request.json();
+
+    // Never allow updating password or role via this endpoint
+    delete data.password;
+    delete data.role;
+    delete data._id;
+    delete data.__v;
+
+    const user = await User.findByIdAndUpdate(
+      decoded.userId,
+      { $set: data },
+      { new: true }
+    ).select('-password');
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+  }
+}

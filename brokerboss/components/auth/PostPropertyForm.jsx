@@ -138,7 +138,16 @@ export default function PostPropertyForm() {
     
     try {
       const { default: api } = await import('@/lib/axios');
-      await api.post('/properties', form);
+      // Attach the logged-in user's ID as broker.id so /api/properties/mine can filter
+      const payload = {
+        ...form,
+        broker: {
+          id:    userProfile?._id?.toString() || userProfile?.id?.toString() || '',
+          name:  userProfile?.name  || form.contactName  || '',
+          phone: userProfile?.phone || form.contactPhone || '',
+        },
+      };
+      await api.post('/properties', payload);
       setSubmitted(true);
       setTimeout(() => router.push('/'), 2000);
     } catch (error) {

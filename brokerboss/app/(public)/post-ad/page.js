@@ -8,16 +8,18 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function PostAdPage() {
-  const { isLoggedIn, userRole } = useAuth();
+  const { isLoggedIn, authLoading, userRole } = useAuth();
   const router = useRouter();
 
   // Guard: only owners and brokers can access this page
+  // Wait for authLoading to resolve before checking
   useEffect(() => {
-    if (!isLoggedIn || (userRole !== 'owner' && userRole !== 'broker')) {
+    if (!authLoading && (!isLoggedIn || (userRole !== 'owner' && userRole !== 'broker'))) {
       router.replace('/');
     }
-  }, [isLoggedIn, userRole, router]);
+  }, [authLoading, isLoggedIn, userRole, router]);
 
+  if (authLoading) return null;  // wait — don't flash redirect
   if (!isLoggedIn) return null;
 
   return (
