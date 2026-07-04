@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       // After register, you might want to login automatically or just set state
       setIsLoggedIn(true);
       setUserRole(role);
-      setUserProfile(profile);
+      setUserProfile({ ...profile, _id: res.data.userId, id: res.data.userId });
       return { success: true, data: res.data };
     } catch (error) {
       console.error("Registration failed:", error);
