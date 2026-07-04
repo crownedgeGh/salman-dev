@@ -59,7 +59,6 @@ export default function BrokerForm() {
     if (!form.name.trim()) e.name = 'Full name is required';
     if (!form.firmName.trim()) e.firmName = 'Firm / agency name is required';
     if (!form.phone.trim()) e.phone = 'Phone number is required';
-    else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.areasOfOperation.trim()) e.areasOfOperation = 'Areas of operation are required';
     if (!form.password) e.password = 'Password is required';

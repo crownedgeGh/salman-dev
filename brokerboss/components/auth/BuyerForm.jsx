@@ -84,7 +84,6 @@ export default function BuyerForm() {
     if (selectedTypes.length === 0) e.propertyTypes = 'Please select at least one property type';
     if (!profile.name.trim()) e.name = 'Full name is required';
     if (!profile.phone.trim()) e.phone = 'Phone number is required';
-    else if (!/^\d{10}$/.test(profile.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!profile.city.trim()) e.city = 'City is required';
     if (!profile.budgetRange) e.budgetRange = 'Please select a budget range';
     if (!profile.password) e.password = 'Password is required';

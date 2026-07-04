@@ -56,7 +56,6 @@ export default function OwnerForm() {
     const e = {};
     if (!form.name.trim()) e.name = 'Full name is required';
     if (!form.phone.trim()) e.phone = 'Phone number is required';
-    else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.area.trim()) e.area = 'Area / locality is required';
     if (!form.propertyType) e.propertyType = 'Please select a property type';
@@ -108,7 +107,7 @@ export default function OwnerForm() {
             id="owner-name"
             name="name"
             type="text"
-            placeholder=""
+            placeholder="Enter your full name"
             value={form.name}
             onChange={handleChange}
             className={inputClass}

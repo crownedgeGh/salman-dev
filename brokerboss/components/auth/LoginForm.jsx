@@ -36,7 +36,6 @@ export default function LoginForm() {
   const validate = () => {
     const e = {};
     if (!form.phone.trim()) e.phone = 'Phone number is required';
-    else if (!/^\d{10}$/.test(form.phone.replace(/\s/g, ''))) e.phone = 'Enter a valid 10-digit number';
     if (!form.password) e.password = 'Password is required';
     return e;
   };

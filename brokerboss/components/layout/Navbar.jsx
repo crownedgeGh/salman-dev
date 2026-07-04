@@ -161,16 +161,7 @@ export default function Navbar() {
                     {roleLabels[userRole]}
                   </span>
                 </button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={logout}
-                  className="gap-2 text-muted-foreground hover:text-foreground"
-                  id="navbar-logout"
-                >
-                  <FaSignOutAlt className="h-3.5 w-3.5" />
-                  Logout
-                </Button>
+
               </>
             ) : (
               <>
@@ -288,16 +279,7 @@ export default function Navbar() {
                         <FaIdCard className="h-3.5 w-3.5" />
                         My Account
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { logout(); setMobileOpen(false); }}
-                        className="w-full gap-2 rounded-xl py-3 h-auto"
-                        id="mobile-logout"
-                      >
-                        <FaSignOutAlt className="h-3.5 w-3.5" />
-                        Logout
-                      </Button>
+
                     </>
                   ) : (
                     <>

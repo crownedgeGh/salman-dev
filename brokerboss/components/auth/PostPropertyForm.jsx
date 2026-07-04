@@ -127,7 +127,6 @@ export default function PostPropertyForm() {
     if (!form.price.trim() || isNaN(Number(form.price)))       e.price    = 'Enter a valid price';
     if (!form.contactName.trim())  e.contactName  = 'Contact name is required';
     if (!form.contactPhone.trim()) e.contactPhone = 'Contact number is required';
-    else if (!/^\d{10}$/.test(form.contactPhone.replace(/\s/g, ''))) e.contactPhone = 'Enter a valid 10-digit number';
     return e;
   };
 
