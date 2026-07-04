@@ -78,7 +78,7 @@ const HERO_BUTTONS = [
     icon: FaTag,
     listings: '8 listings',
     href: '/properties?type=rent',
-    bgColor: 'bg-violet-600 hover:bg-violet-700',
+    bgColor: 'bg-orange-500 hover:bg-orange-600',
   },
   {
     label: 'Buy a Plot',
@@ -88,21 +88,13 @@ const HERO_BUTTONS = [
     href: '/properties?type=plot',
     bgColor: 'bg-emerald-600 hover:bg-emerald-700',
   },
-  {
-    label: 'Commercial',
-    description: 'Shops & offices',
-    icon: FaStore,
-    listings: '10 listings',
-    href: '/properties?type=shop',
-    bgColor: 'bg-orange-500 hover:bg-orange-600',
-  },
 ];
 
 function HeroCTA() {
   return (
     <div className="w-full max-w-4xl mx-auto mt-6 px-2">
-      {/* 4 Buttons — 2×2 on mobile, 4-col on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      {/* 3 Buttons — 1 full + 2 on mobile or similar, or just grid-cols-1 sm:grid-cols-3 */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {HERO_BUTTONS.map(({ label, description, icon: Icon, href, listings, bgColor }) => (
           <Link
             key={label}

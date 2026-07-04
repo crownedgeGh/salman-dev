@@ -48,8 +48,8 @@ function Toast({ toast }) {
   const ok = toast.type === 'success';
   return (
     <div className={`fixed bottom-24 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl border text-sm font-semibold whitespace-nowrap ${ok
-        ? 'bg-green-50 dark:bg-green-950/90 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
-        : 'bg-red-50 dark:bg-red-950/90 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
+      ? 'bg-green-50 dark:bg-green-950/90 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
+      : 'bg-red-50 dark:bg-red-950/90 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
       }`}>
       {ok ? <FaCheckCircle className="h-4 w-4 shrink-0" /> : <FaExclamationCircle className="h-4 w-4 shrink-0" />}
       {toast.msg}

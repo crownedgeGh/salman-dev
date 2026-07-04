@@ -49,7 +49,16 @@ export default function RegisterModal({ open, onClose }) {
   const handleSelect = (role) => {
     if (role.tester) {
       // Instantly log in as an owner so POST PROPERTIES button is visible
-      register('owner', { name: 'Tester', phone: '0000000000', city: 'Raipur', area: 'Test Area', propertyType: 'Flat' });
+      const randomStr = Math.random().toString(36).substring(2, 8);
+      register('owner', { 
+        name: 'Tester', 
+        email: `tester_${randomStr}@test.com`,
+        password: 'testerpassword',
+        phone: '0000000000', 
+        city: 'Raipur', 
+        area: 'Test Area', 
+        propertyType: 'Flat' 
+      });
       onClose();
       return;
     }

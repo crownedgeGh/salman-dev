@@ -7,7 +7,7 @@ async function makeRequest(method, url, data) {
       'Content-Type': 'application/json'
     }
   };
-  
+
   if (data) {
     options.body = JSON.stringify(data);
   }
@@ -24,7 +24,7 @@ async function makeRequest(method, url, data) {
     clearTimeout(timeout);
     return { status: 'Timeout/Error', data: { error: e.message } };
   }
-  
+
   const text = await response.text();
   let json;
   try {
@@ -32,7 +32,7 @@ async function makeRequest(method, url, data) {
   } catch (e) {
     json = { error: 'Non-JSON response', body: text };
   }
-  
+
   return { status: response.status, data: json };
 }
 
@@ -45,11 +45,11 @@ async function runTests() {
     { name: 'Ramesh Broker', email: 'ramesh.broker@example.com', password: 'pass', role: 'broker', city: 'Raipur', phone: '9876543210' },
     { name: 'Suresh Broker', email: 'suresh.broker@example.com', password: 'pass', role: 'broker', city: 'Bhilai', phone: '9876543211' },
     { name: 'Mahesh Broker', email: 'mahesh.broker@example.com', password: 'pass', role: 'broker', city: 'Bilaspur', phone: '9876543212' },
-    
+
     { name: 'Anita Owner', email: 'anita.owner@example.com', password: 'pass', role: 'owner', city: 'Raipur' },
     { name: 'Sunita Owner', email: 'sunita.owner@example.com', password: 'pass', role: 'owner', city: 'Durg' },
     { name: 'Kavita Owner', email: 'kavita.owner@example.com', password: 'pass', role: 'owner', city: 'Raipur' },
-    
+
     { name: 'Rahul Buyer', email: 'rahul.buyer@example.com', password: 'pass', role: 'buyer', city: 'Raipur' },
     { name: 'Amit Buyer', email: 'amit.buyer@example.com', password: 'pass', role: 'buyer', city: 'Korba' },
     { name: 'Sumit Buyer', email: 'sumit.buyer@example.com', password: 'pass', role: 'buyer', city: 'Raigarh' }
