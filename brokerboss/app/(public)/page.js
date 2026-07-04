@@ -148,21 +148,21 @@ function FeaturedCard({ property }) {
           alt={property.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {/* Overlay: Property ID */}
-        <div className="absolute top-2 left-2 z-10">
-          <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
-            {property.propertyId || `BB${100 + ((parseInt((property._id || property.id || '123').replace(/\D/g, '')) || 7) % 900)}`}
-          </span>
-        </div>
+
 
       </div>
 
       {/* Card Body */}
       <div className="p-2.5 sm:p-4 flex flex-col flex-1">
         {/* Title */}
-        <h3 className="font-bold text-xs sm:text-sm text-foreground line-clamp-2 leading-snug mb-1 group-hover:text-primary transition-colors">
-          {property.title}
-        </h3>
+        <div className="flex flex-col items-start gap-1 mb-1">
+          <span className="inline-block bg-muted text-muted-foreground text-[9px] font-bold px-1.5 py-0.5 rounded border border-border/50">
+            ID: {property.propertyId || `BB${100 + ((parseInt((property._id || property.id || '123').replace(/\D/g, '')) || 7) % 900)}`}
+          </span>
+          <h3 className="font-bold text-xs sm:text-sm text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+            {property.title}
+          </h3>
+        </div>
 
         {/* Price — bold, right under title (not on image) */}
         <p className="text-primary font-extrabold text-sm sm:text-base mb-1 sm:mb-1.5">

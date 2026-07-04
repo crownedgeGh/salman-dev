@@ -159,12 +159,7 @@ export default function PropertyCard({ property, compact = false }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           
-          {/* Overlay: Property ID */}
-          <div className="absolute top-3 left-3">
-            <span className="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-              {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
-            </span>
-          </div>
+
 
           {/* Overlay: Updated tag */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
@@ -217,9 +212,14 @@ export default function PropertyCard({ property, compact = false }) {
         <div>
           {/* Header Row: Title & Action Icons */}
           <div className="flex items-start justify-between gap-3 mb-2">
-            <h3 className="font-extrabold text-foreground text-sm md:text-base leading-snug line-clamp-2 hover:text-primary transition-colors flex-1">
-              {property.title}
-            </h3>
+            <div className="flex flex-col items-start gap-1 flex-1">
+              <span className="inline-block bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border/50">
+                ID: {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
+              </span>
+              <h3 className="font-extrabold text-foreground text-sm md:text-base leading-snug line-clamp-2 hover:text-primary transition-colors">
+                {property.title}
+              </h3>
+            </div>
             
             {/* Quick Actions (Heart, Share, Info) */}
             <div className="flex items-center gap-1 shrink-0">
