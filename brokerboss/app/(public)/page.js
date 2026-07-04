@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LocalImage from '@/components/LocalImage';
 import connectToDatabase from '@/lib/mongodb';
 import Property from '@/lib/models/Property';
 import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaKey, FaMoneyBillWave, FaChartBar, FaCity, FaBolt, FaTag } from 'react-icons/fa';
@@ -207,8 +208,9 @@ export default async function HomePage() {
     <>
       {/* ── Hero Section ─────────────────────────────── */}
       <section className="relative overflow-hidden flex items-center justify-center min-h-[85vh] md:min-h-[90vh]">
-        <img
-          src="/homebb.jpg"
+        <LocalImage
+          srcKey="hero-bg-webp"
+          srcUrl="/homebb.webp"
           alt="Real Estate Hero Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
