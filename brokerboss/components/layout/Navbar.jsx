@@ -167,17 +167,17 @@ export default function Navbar() {
               <>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={() => setRegisterOpen(true)}
-                  className="gap-2"
+                  className="gap-2 text-sm font-semibold px-4"
                   id="navbar-register"
                 >
-                  <FaUserPlus className="h-3.5 w-3.5" />
+                  <FaUserPlus className="h-4 w-4" />
                   Register
                 </Button>
-                <Button variant="default" size="sm" className="gap-2 shadow-sm" id="navbar-login" asChild>
+                <Button variant="default" size="default" className="gap-2 shadow-sm text-sm font-semibold px-5" id="navbar-login" asChild>
                   <Link href="/login">
-                    <FaUser className="h-3.5 w-3.5" />
+                    <FaUser className="h-4 w-4" />
                     Login
                   </Link>
                 </Button>

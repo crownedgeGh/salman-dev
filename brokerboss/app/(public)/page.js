@@ -148,6 +148,12 @@ function FeaturedCard({ property }) {
           alt={property.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        {/* Overlay: Property ID */}
+        <div className="absolute top-2 left-2 z-10">
+          <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
+            {property.propertyId || `BB${100 + ((parseInt((property._id || property.id || '123').replace(/\D/g, '')) || 7) % 900)}`}
+          </span>
+        </div>
 
       </div>
 
@@ -170,17 +176,35 @@ function FeaturedCard({ property }) {
         </div>
 
         {/* Broker row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative group/broker overflow-visible">
           <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
             <img src={broker.image} alt={broker.name} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1">{broker.name}</p>
-            <div className="flex items-center gap-0.5 text-blue-600 text-[8px] sm:text-[9px] font-bold">
+            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1 hover:underline cursor-pointer">{broker.name}</p>
+            <div className="flex items-center gap-0.5 text-emerald-600 text-[8px] sm:text-[9px] font-bold">
               <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
             </div>
           </div>
-          <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="shrink-0">
+          
+          {/* Broker Hover Card */}
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50">
+            <div className="flex items-center gap-3">
+              <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
+              <div>
+                <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{broker.role || property.ownerType || 'Broker'}</p>
+              </div>
+            </div>
+            <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">
+              <FaCheckCircle className="h-3.5 w-3.5" /> Verified Partner
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground font-medium flex items-center gap-1">
+              <FaPhone className="h-3 w-3" /> {broker.phone}
+            </div>
+          </div>
+
+          <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="shrink-0 z-10">
             <button className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-blue-700 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full flex items-center gap-1.5 transition-all shadow-[0_2px_10px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.4)] active:scale-95 group">
               <div className="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-full" />
               <FaPhone className="h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 relative z-10" />
@@ -309,7 +333,8 @@ export default async function HomePage() {
               { icon: FaUsers, title: 'Direct Broker Contact', desc: 'Connect directly with brokers — no middlemen, no hidden commissions.', color: 'text-green-600 bg-green-50' },
               { icon: FaHandshake, title: 'Fast Deal Closure', desc: 'Our streamlined process helps buyers and brokers close deals in record time.', color: 'text-purple-600 bg-purple-50' },
             ].map(({ icon: Icon, title, desc, color }) => (
-              <div key={title} className="bg-background rounded-2xl border border-border/60 p-6 hover:shadow-md transition-shadow">
+              <div key={title} className="bg-background rounded-2xl border border-border/60 p-6 hover:shadow-md transition-shadow relative">
+                <div className="absolute top-4 right-4 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">FREE</div>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${color}`}>
                   <Icon className="h-6 w-6" />
                 </div>

@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
-  Heart,
+  Bookmark,
   Share2,
   ChevronDown,
   Phone,
@@ -159,10 +159,10 @@ export default function PropertyCard({ property, compact = false }) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           
-          {/* Overlay: Photo Count */}
+          {/* Overlay: Property ID */}
           <div className="absolute top-3 left-3">
-            <span className="bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-[11px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 shadow-sm">
-              {photoCount}+ Photos
+            <span className="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+              {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
             </span>
           </div>
 
@@ -175,25 +175,37 @@ export default function PropertyCard({ property, compact = false }) {
         </div>
 
         {/* Below Image Section (Desktop & Mobile unified) */}
-        <div className="p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1.5 border-t border-border/40 text-xs">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
+        <div className="p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1.5 border-t border-border/40 text-xs overflow-visible">
+          <div className="flex items-center gap-1.5 text-muted-foreground relative group/broker">
             <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-            <span className="font-semibold text-foreground truncate">
+            <span className="font-semibold text-foreground truncate cursor-pointer hover:underline">
               {broker.name}
             </span>
-            <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium">
-              Broker
+            <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium capitalize">
+              {broker.role || property.ownerType || 'Broker'}
             </span>
+            
+            {/* Broker Hover Card */}
+            <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50">
+              <div className="flex items-center gap-3">
+                <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
+                <div>
+                  <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
+                  <p className="text-[10px] text-muted-foreground capitalize">{broker.role || property.ownerType || 'Broker'}</p>
+                </div>
+              </div>
+              <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Verified Partner
+              </div>
+              <div className="mt-2 text-xs text-muted-foreground font-medium">
+                <Phone className="h-3 w-3 inline mr-1" /> {broker.phone}
+              </div>
+            </div>
           </div>
 
           <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
             <CheckCircle2 className="h-3.5 w-3.5 shrink-0 fill-emerald-100 dark:fill-none" />
             Verified Trusted Partner
-          </div>
-
-          <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold text-[10px] uppercase tracking-wider mt-0.5">
-            <Star className="h-3 w-3 fill-amber-500 text-amber-500 shrink-0" />
-            Premium Member
           </div>
         </div>
       </div>
@@ -215,12 +227,12 @@ export default function PropertyCard({ property, compact = false }) {
                 variant="ghost"
                 size="icon"
                 onClick={(e) => handleAction(e, () => setIsLiked(!isLiked))}
-                className={`h-8 w-8 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 text-muted-foreground ${
-                  isLiked ? 'text-red-500 fill-red-500' : 'hover:text-red-500'
+                className={`h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground ${
+                  isLiked ? 'text-primary fill-primary' : 'hover:text-primary'
                 }`}
-                aria-label="Add to wishlist"
+                aria-label="Save property"
               >
-                <Heart className="h-4 w-4" />
+                <Bookmark className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -292,6 +304,17 @@ export default function PropertyCard({ property, compact = false }) {
           </div>
 
           <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => handleAction(e, () => {
+                window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
+              })}
+              className="border-primary text-primary hover:bg-primary/10 font-bold h-8 text-[11px] px-3 rounded-lg flex items-center gap-1 bg-transparent"
+            >
+              <FaWhatsapp className="h-3.5 w-3.5" />
+              WhatsApp
+            </Button>
             <a
               href={`tel:${broker.phone.replace(/\s/g, '')}`}
               onClick={(e) => e.stopPropagation()}
@@ -302,17 +325,6 @@ export default function PropertyCard({ property, compact = false }) {
                 Call Now
               </Button>
             </a>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => handleAction(e, () => {
-                window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
-              })}
-              className="border-primary text-primary hover:bg-primary/10 font-bold h-8 text-[11px] px-3 rounded-lg flex items-center gap-1 bg-transparent"
-            >
-              <FaWhatsapp className="h-3.5 w-3.5" />
-              WhatsApp
-            </Button>
           </div>
         </div>
       </div>
@@ -334,6 +346,17 @@ export default function PropertyCard({ property, compact = false }) {
 
         {/* Buttons */}
         <div className="flex flex-col gap-2.5 w-full mt-4">
+          <Button
+            variant="outline"
+            onClick={(e) => handleAction(e, () => {
+              window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
+            })}
+            className="w-full border-primary text-primary hover:bg-primary/10 font-bold text-xs h-9 rounded-lg transition-colors flex items-center justify-center gap-1.5 bg-transparent"
+          >
+            <FaWhatsapp className="h-4 w-4" />
+            WhatsApp
+          </Button>
+
           <a
             href={`tel:${broker.phone.replace(/\s/g, '')}`}
             onClick={(e) => e.stopPropagation()}
@@ -344,17 +367,6 @@ export default function PropertyCard({ property, compact = false }) {
               Contact Broker
             </Button>
           </a>
-
-          <Button
-            variant="outline"
-            onClick={(e) => handleAction(e, () => {
-              window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)}`, '_blank');
-            })}
-            className="w-full border-primary text-primary hover:bg-primary/10 font-bold text-xs h-9 rounded-lg transition-colors flex items-center justify-center gap-1.5 bg-transparent"
-          >
-            <FaWhatsapp className="h-4 w-4" />
-            WhatsApp
-          </Button>
         </div>
       </div>
     </Card>
