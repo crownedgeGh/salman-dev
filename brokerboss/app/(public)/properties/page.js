@@ -57,7 +57,7 @@ function DiscoveryState({ onFilterChange, onSearch, properties }) {
       sub: 'Monthly rental listings',
       filter: { purpose: 'Rent', type: '' },
       icon: FaTag,
-      gradient: 'from-violet-500 to-violet-700',
+      gradient: 'from-amber-500 to-amber-700',
       count: properties.filter((p) => p.purpose === 'Rent').length,
     },
     {
@@ -67,14 +67,6 @@ function DiscoveryState({ onFilterChange, onSearch, properties }) {
       icon: FaChartArea,
       gradient: 'from-emerald-500 to-emerald-700',
       count: properties.filter((p) => p.type === 'Plot').length,
-    },
-    {
-      label: 'Commercial',
-      sub: 'Shops, offices & warehouses',
-      filter: { type: 'Shop', purpose: '' },
-      icon: FaStore,
-      gradient: 'from-amber-500 to-amber-700',
-      count: properties.filter((p) => ['Shop', 'Office', 'Warehouse'].includes(p.type)).length,
     },
   ];
 
@@ -91,8 +83,8 @@ function DiscoveryState({ onFilterChange, onSearch, properties }) {
         </p>
       </div>
 
-      {/* ── 4 Intent Tiles ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-10">
+      {/* ── 3 Intent Tiles ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-10">
         {INTENT_TILES.map(({ label, sub, filter, icon: Icon, gradient, count }) => (
           <button
             key={label}

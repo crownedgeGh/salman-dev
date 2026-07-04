@@ -92,31 +92,30 @@ const HERO_BUTTONS = [
 
 function HeroCTA() {
   return (
-    <div className="w-full max-w-4xl mx-auto mt-6 px-2">
-      {/* 3 Buttons — 1 full + 2 on mobile or similar, or just grid-cols-1 sm:grid-cols-3 */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+    <div className="w-full max-w-4xl mx-auto mt-6 px-1 sm:px-2">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {HERO_BUTTONS.map(({ label, description, icon: Icon, href, listings, bgColor }) => (
           <Link
             key={label}
             href={href}
-            className={`group relative flex flex-col text-left ${bgColor} rounded-2xl p-4 sm:p-5 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] overflow-hidden`}
+            className={`group relative flex flex-col text-left ${bgColor} rounded-xl sm:rounded-2xl p-2.5 sm:p-5 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98] overflow-hidden`}
           >
             {/* Top-right decorative circle */}
-            <div className="absolute top-[-20px] right-[-20px] w-20 h-20 sm:w-24 sm:h-24 bg-white/10 rounded-full transition-transform duration-500 group-hover:scale-110" />
+            <div className="absolute top-[-10px] right-[-10px] sm:top-[-20px] sm:right-[-20px] w-14 h-14 sm:w-24 sm:h-24 bg-white/10 rounded-full transition-transform duration-500 group-hover:scale-110" />
 
             {/* Icon */}
-            <Icon className="relative z-10 h-6 w-6 sm:h-7 sm:w-7 text-white mb-2 sm:mb-3" />
+            <Icon className="relative z-10 h-4 w-4 sm:h-7 sm:w-7 text-white mb-1.5 sm:mb-3" />
 
             {/* Text content */}
             <div className="relative z-10 flex-1">
-              <p className="font-bold text-white text-sm sm:text-base leading-tight mb-0.5">{label}</p>
-              <p className="text-white/80 text-[10px] sm:text-xs leading-snug mb-3 sm:mb-4 line-clamp-1">{description}</p>
+              <p className="font-bold text-white text-[11px] sm:text-base leading-tight mb-0.5">{label}</p>
+              <p className="text-white/80 text-[8px] sm:text-xs leading-snug mb-2 sm:mb-4 line-clamp-2 sm:line-clamp-1">{description}</p>
             </div>
 
             {/* Listings Pill */}
-            <div className="relative z-10 inline-flex items-center gap-1 bg-white/20 w-fit px-2 py-0.5 rounded-full">
+            <div className="relative z-10 inline-flex items-center gap-0.5 sm:gap-1 bg-white/20 w-fit px-1.5 py-0.5 sm:px-2 sm:py-0.5 rounded-full mt-auto">
               <FaBolt className="h-2 w-2 text-white" />
-              <span className="text-white font-semibold text-[9px] sm:text-[10px]">{listings}</span>
+              <span className="text-white font-semibold text-[8px] sm:text-[10px]">{listings}</span>
             </div>
           </Link>
         ))}
@@ -213,7 +212,10 @@ export default async function HomePage() {
           alt="Real Estate Hero Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/85" />
+
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/10 md:bg-none pointer-events-none" />
+        <div className="hidden md:block absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.2)_45%,transparent_70%)] pointer-events-none" />
 
         <div className="container mx-auto px-4 md:px-6 text-center relative z-10 py-12 md:py-32">
           {/* Eyebrow */}
@@ -225,14 +227,12 @@ export default async function HomePage() {
           <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-white drop-shadow-lg mb-3 md:mb-4">
             Find Your Dream<br className="hidden sm:block" /> Property in Raipur
           </h1>
-          <p className="text-sm sm:text-lg md:text-2xl font-medium mt-2 mb-6 md:mb-10 text-white/75 max-w-lg mx-auto">
+          <p className="text-sm sm:text-lg md:text-2xl font-medium mt-2 mb-6 md:mb-10 text-white/90 max-w-2xl mx-auto drop-shadow-md">
             Brokers list. Buyers connect. Explore verified listings in Raipur, CG.
           </p>
 
           {/* ── Hero CTA Buttons ── */}
           <HeroCTA />
-
-
         </div>
 
 
