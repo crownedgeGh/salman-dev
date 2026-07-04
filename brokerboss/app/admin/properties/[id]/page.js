@@ -135,7 +135,7 @@ export default function EditPropertyPage({ params }) {
             Modify details for: <strong className="text-foreground">{form.title || 'Property'}</strong>
           </p>
         </div>
-        
+
         {/* Disable Button */}
         <Button
           type="button"
@@ -160,7 +160,7 @@ export default function EditPropertyPage({ params }) {
           </div>
         ) : (
           <form onSubmit={handleUpdateSubmit} noValidate className="space-y-6">
-            
+
             <h3 className="text-lg font-semibold border-b pb-2 mb-4">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Title */}

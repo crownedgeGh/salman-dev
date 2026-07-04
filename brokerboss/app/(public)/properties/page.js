@@ -45,7 +45,7 @@ function parsePriceLakh(priceStr) {
 function DiscoveryState({ onFilterChange, onSearch, properties }) {
   const INTENT_TILES = [
     {
-      label: 'Buy a Home',
+      label: 'Buy a Property',
       sub: 'Houses, Flats & Villas for sale',
       filter: { purpose: 'Sale', type: '' },
       icon: FaHome,
@@ -348,6 +348,15 @@ function PropertiesPageInner() {
       return true;
     });
   }, [filters, searchQuery, properties]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 md:px-6 py-24 flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="h-10 w-10 rounded-full border-4 border-primary/20 border-t-primary animate-spin mb-4" />
+        <p className="text-muted-foreground font-medium animate-pulse">Loading properties…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-7xl">

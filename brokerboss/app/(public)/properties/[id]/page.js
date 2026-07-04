@@ -1,22 +1,26 @@
 import { notFound } from 'next/navigation';
-import api from '@/lib/axios';
+import connectToDatabase from '@/lib/mongodb';
+import Property from '@/lib/models/Property';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import BackButton from '@/components/BackButton';
 import { 
-  FaMapMarkerAlt, FaRulerCombined, FaPhone, 
-  FaWhatsapp, FaHome, FaBuilding, FaStore, FaChartArea, 
-  FaCheckCircle, FaCalendarAlt, FaShareAlt, FaHeart
-} from 'react-icons/fa';
+  MapPin, Ruler, Phone, Building, Store, 
+  CheckCircle, Calendar, Share2, Heart,
+  BedDouble, Bath, CarFront, Compass, Sofa, Users, Banknote, Info
+} from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 
 export default async function PropertyDetailsPage({ params }) {
   const { id } = await params;
   
   let property = null;
   try {
-    const res = await api.get(`/properties/${id}`);
-    property = res.data;
+    await connectToDatabase();
+    property = await Property.findById(id).lean().catch(() => null);
+    if (!property) {
+      property = await Property.findOne({ id: id }).lean().catch(() => null);
+    }
   } catch (err) {
     console.error("Failed to fetch property details:", err.message);
   }
@@ -25,124 +29,175 @@ export default async function PropertyDetailsPage({ params }) {
     notFound();
   }
 
+  // Ensure fields are available even if schema strict:false was used
+  const type = property.type || 'N/A';
+  const purpose = property.purpose || 'Sale';
+  const price = property.price || 'Contact for price';
+  const area = property.area || (property.areaSize ? `${property.areaSize} ${property.areaUnit || ''}` : 'N/A');
+  const bedrooms = property.bedrooms || 'N/A';
+  const bathrooms = property.bathrooms || 'N/A';
+  const furnishing = property.furnishing || 'N/A';
+  const parking = property.parking || 'N/A';
+  const facing = property.facing || 'N/A';
+  const floorInfo = property.floorNo ? `${property.floorNo} / ${property.totalFloors || 'N/A'}` : 'N/A';
+  const maintenance = property.maintenanceCharge || 'N/A';
+  const availableFrom = property.availableFrom ? new Date(property.availableFrom).toLocaleDateString() : 'Ready to move';
+  const preferredFor = property.preferredFor || 'Any';
+  const title = property.title || 'Property Details';
+  const locality = property.locality || '';
+  const city = property.city || '';
+  const landmark = property.landmark || '';
+  const description = property.description || 'No description provided for this property.';
+  
+  const brokerName = property.broker?.name || property.contactName || property.owner || 'Unknown Broker';
+  const brokerPhone = property.broker?.phone || property.contactPhone || '';
+  const brokerImage = property.broker?.image || property.thumbnail || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop';
+  const propertyImage = property.thumbnail || property.broker?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop';
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
-      {/* Header / Nav */}
-      <div className="bg-white dark:bg-card border-b sticky top-0 z-10 px-4 py-3 flex items-center justify-between shadow-sm">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24">
+      {/* Top Navbar */}
+      <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b sticky top-0 z-20 px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <BackButton />
-          <h1 className="font-semibold text-lg line-clamp-1">Property Details</h1>
+          <h1 className="font-semibold text-lg line-clamp-1">{title}</h1>
         </div>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
-            <FaShareAlt className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-muted bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-800">
+            <Share2 className="h-4 w-4 text-gray-600 dark:text-gray-300" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
-            <FaHeart className="h-4 w-4 text-muted-foreground hover:text-red-500 transition-colors" />
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-red-50 bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-800">
+            <Heart className="h-4 w-4 text-gray-400 hover:text-red-500 transition-colors" />
           </Button>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Main Content Card */}
-        <Card className="overflow-hidden border-border/50 shadow-md bg-white dark:bg-card transition-all hover:shadow-lg">
-          <div className="flex flex-col md:flex-row">
-            {/* Image Section */}
-            <div className="relative w-full md:w-2/5 aspect-[4/3] md:aspect-auto bg-muted">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        {/* Main Content Layout */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          
+          {/* Left Column (Images & Details) */}
+          <div className="flex-1 space-y-6 overflow-hidden">
+            
+            {/* Image Gallery */}
+            <div className="relative w-full rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[21/9] bg-gray-200 shadow-md">
               <img 
-                src={property.broker.image} 
-                alt={property.title}
+                src={propertyImage} 
+                alt={title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                <Badge className="bg-black/70 hover:bg-black/80 backdrop-blur-md border-none text-xs px-2.5 py-0.5 shadow-sm">
-                  {property.type}
+              <div className="absolute top-4 left-4 flex gap-2">
+                <Badge className="bg-black/75 hover:bg-black/90 backdrop-blur-md border-none text-sm px-3 py-1 shadow-sm text-white">
+                  {type}
                 </Badge>
-                <Badge className={`backdrop-blur-md border-none text-xs px-2.5 py-0.5 shadow-sm ${property.purpose === 'Sale' ? 'bg-green-600/90' : 'bg-blue-600/90'}`}>
-                  {property.purpose}
+                <Badge className={`backdrop-blur-md border-none text-sm px-3 py-1 shadow-sm text-white ${purpose === 'Sale' ? 'bg-green-600/90' : 'bg-blue-600/90'}`}>
+                  For {purpose}
                 </Badge>
               </div>
             </div>
 
-            {/* Details Section */}
-            <div className="p-5 sm:p-6 md:w-3/5 flex flex-col justify-between">
-              <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground leading-tight mb-3">
-                  {property.title}
-                </h1>
-                
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5 text-sm text-muted-foreground font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <div className="p-1.5 bg-primary/10 rounded-full">
-                      <FaMapMarkerAlt className="text-primary h-3.5 w-3.5" />
-                    </div>
-                    <span>{property.locality}, {property.city}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="p-1.5 bg-primary/10 rounded-full">
-                      <FaRulerCombined className="text-primary h-3.5 w-3.5" />
-                    </div>
-                    <span>{property.area}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="p-1.5 bg-primary/10 rounded-full">
-                      <FaCalendarAlt className="text-primary h-3.5 w-3.5" />
-                    </div>
-                    <span>Posted on {new Date(property.postedAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                <div className="mb-6 bg-muted/30 p-4 rounded-xl border border-border/40 inline-block">
-                  <p className="text-sm text-muted-foreground font-semibold mb-0.5">Asking Price</p>
-                  <span className="text-3xl md:text-4xl font-black text-primary tracking-tight">
-                    {property.price}
-                  </span>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="font-bold text-lg mb-3 text-foreground border-b border-border/50 pb-2">Property Description</h3>
-                  <p className="text-muted-foreground text-sm md:text-base leading-relaxed whitespace-pre-line">
-                    {property.description}
+            {/* Title & Location Header */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight mb-3">
+                    {title}
+                  </h1>
+                  <p className="flex items-center text-muted-foreground text-sm sm:text-base font-medium">
+                    <MapPin className="text-primary h-4 w-4 mr-2" />
+                    {locality}{locality && city ? ', ' : ''}{city}
+                    {landmark && <span className="ml-1 text-gray-400">(Near {landmark})</span>}
                   </p>
                 </div>
-              </div>
-
-              {/* Broker Section inline */}
-              <div className="mt-4 pt-5 border-t border-border/50">
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-muted overflow-hidden border-2 border-primary/20 shadow-sm">
-                      <img src={property.broker.image} alt={property.broker.name} className="h-full w-full object-cover" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Broker</span>
-                        <div className="flex items-center gap-1 text-blue-600 font-bold bg-blue-50 dark:bg-blue-900/30 px-1.5 py-0.5 rounded text-[10px] border border-blue-100 dark:border-blue-800 shadow-sm">
-                          <FaCheckCircle className="h-2.5 w-2.5" />
-                          Verified
-                        </div>
-                      </div>
-                      <h4 className="font-bold text-foreground text-base md:text-lg">{property.broker.name}</h4>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <a href={`tel:${property.broker.phone.replace(/\\s/g, '')}`} className="w-full sm:flex-1">
-                    <Button className="w-full h-12 text-sm font-bold shadow-md hover:shadow-lg transition-all gap-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
-                      <FaPhone className="h-4 w-4" />
-                      Call {property.broker.name.split(' ')[0]}
-                    </Button>
-                  </a>
-                  <Button variant="outline" className="w-full sm:flex-1 h-12 text-sm font-bold shadow-sm hover:shadow-md transition-all gap-2 border-primary/50 text-primary hover:bg-primary/5 rounded-xl">
-                    <FaWhatsapp className="h-5 w-5" />
-                    WhatsApp
-                  </Button>
+                <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl text-right shrink-0">
+                  <p className="text-sm text-muted-foreground font-bold mb-1">Asking Price</p>
+                  <span className="text-3xl font-black text-primary tracking-tight block">
+                    {price}
+                  </span>
+                  {property.negotiable === "Yes" && <span className="text-xs text-green-600 font-bold uppercase tracking-wider mt-1 block">Negotiable</span>}
                 </div>
               </div>
             </div>
+
+            {/* Specifications Grid */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <h3 className="font-bold text-xl mb-6 text-foreground flex items-center gap-2">
+                <Info className="text-primary w-5 h-5" /> Property Overview
+              </h3>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-8 gap-x-4">
+                <SpecItem icon={<Ruler className="w-5 h-5" />} label="Area" value={area} />
+                <SpecItem icon={<BedDouble className="w-5 h-5" />} label="Bedrooms" value={bedrooms} />
+                <SpecItem icon={<Bath className="w-5 h-5" />} label="Bathrooms" value={bathrooms} />
+                <SpecItem icon={<Building className="w-5 h-5" />} label="Floor" value={floorInfo} />
+                <SpecItem icon={<Sofa className="w-5 h-5" />} label="Furnishing" value={furnishing} />
+                <SpecItem icon={<CarFront className="w-5 h-5" />} label="Parking" value={parking} />
+                <SpecItem icon={<Compass className="w-5 h-5" />} label="Facing" value={facing} />
+                <SpecItem icon={<Calendar className="w-5 h-5" />} label="Available From" value={availableFrom} />
+                <SpecItem icon={<Users className="w-5 h-5" />} label="Preferred For" value={preferredFor} />
+                <SpecItem icon={<Banknote className="w-5 h-5" />} label="Maintenance" value={maintenance} />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <h3 className="font-bold text-xl mb-4 text-foreground border-b border-border/50 pb-3">About this Property</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed whitespace-pre-line">
+                {description}
+              </p>
+            </div>
+
           </div>
-        </Card>
+
+          {/* Right Column (Sticky Broker Info) */}
+          <div className="lg:w-80 shrink-0">
+            <div className="sticky top-24 bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 mx-auto">
+                  <img src={brokerImage} alt={brokerName} className="h-full w-full object-cover" />
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 border border-blue-200 shadow-sm">
+                  <CheckCircle className="h-3 w-3" />
+                  Verified
+                </div>
+              </div>
+              
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Contact</p>
+              <h4 className="font-extrabold text-xl text-foreground mb-6">{brokerName}</h4>
+              
+              <div className="w-full space-y-3">
+                <a href={`tel:${brokerPhone?.replace(/\\s/g, '') || ''}`} className="block w-full">
+                  <Button className="w-full h-12 text-sm font-bold shadow-md hover:shadow-lg transition-all gap-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
+                    <Phone className="h-4 w-4" />
+                    Call {brokerName.split(' ')[0]}
+                  </Button>
+                </a>
+                <Button variant="outline" className="w-full h-12 text-sm font-bold shadow-sm hover:shadow-md transition-all gap-2 border-green-500/30 text-green-700 bg-green-50 hover:bg-green-100 hover:text-green-800 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/40 rounded-xl">
+                  <FaWhatsapp className="h-5 w-5" />
+                  WhatsApp
+                </Button>
+              </div>
+              
+              <p className="text-xs text-gray-400 mt-6 flex items-center justify-center gap-1">
+                <Calendar className="w-3 h-3" /> Posted on {property.postedAt ? new Date(property.postedAt).toLocaleDateString() : new Date(property.createdAt || Date.now()).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+
+        </div>
       </div>
+    </div>
+  );
+}
+
+function SpecItem({ icon, label, value }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2 text-muted-foreground mb-1">
+        <div className="text-primary/70">{icon}</div>
+        <span className="text-xs font-bold uppercase tracking-wider">{label}</span>
+      </div>
+      <span className="font-bold text-foreground text-sm sm:text-base leading-tight">{value}</span>
     </div>
   );
 }

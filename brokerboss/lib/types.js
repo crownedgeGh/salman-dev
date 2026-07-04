@@ -34,4 +34,4 @@
  * @property {string} description
  */
 
-export {};
+export { };

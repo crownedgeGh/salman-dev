@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import api from '@/lib/axios';
+import connectToDatabase from '@/lib/mongodb';
+import Property from '@/lib/models/Property';
 import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaKey, FaMoneyBillWave, FaChartBar, FaCity, FaBolt, FaTag } from 'react-icons/fa';
 
 const typeIconMap = {
@@ -64,7 +65,7 @@ const BUDGETS = [
 
 const HERO_BUTTONS = [
   {
-    label: 'Buy a Home',
+    label: 'Buy a Property',
     description: 'Houses, Flats & Villas',
     icon: FaHome,
     listings: '15 listings',
@@ -203,8 +204,10 @@ function FeaturedCard({ property }) {
 export default async function HomePage() {
   let featuredProperties = [];
   try {
-    const res = await api.get('/properties');
-    featuredProperties = res.data.slice(0, 4);
+    await connectToDatabase();
+    const properties = await Property.find({}).sort({ createdAt: -1 }).limit(4).lean();
+    // Convert ObjectIds to strings
+    featuredProperties = JSON.parse(JSON.stringify(properties));
   } catch (err) {
     console.error("Failed to fetch featured properties:", err.message);
   }

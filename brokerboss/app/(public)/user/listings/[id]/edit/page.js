@@ -8,11 +8,11 @@ import {
   FaArrowLeft, FaSave, FaSpinner, FaCheckCircle, FaExclamationCircle,
 } from 'react-icons/fa';
 
-const PROPERTY_TYPES    = ['Flat', 'House', 'Plot', 'Office', 'Shop', 'Warehouse', 'Villa', 'Other'];
-const PURPOSES          = ['Sale', 'Rent'];
+const PROPERTY_TYPES = ['Flat', 'House', 'Plot', 'Office', 'Shop', 'Warehouse', 'Villa', 'Other'];
+const PURPOSES = ['Sale', 'Rent'];
 const FURNISHING_OPTIONS = ['Unfurnished', 'Semi-Furnished', 'Fully Furnished'];
-const FACINGS           = ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
-const AREA_UNITS        = ['sq ft', 'sq yards', 'Marla', 'Bigha', 'Acre'];
+const FACINGS = ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
+const AREA_UNITS = ['sq ft', 'sq yards', 'Marla', 'Bigha', 'Acre'];
 
 // ─── Reusable field wrapper ───────────────────────────────────────────────────
 function Field({ label, required, error, children }) {
@@ -47,11 +47,10 @@ function Toast({ toast }) {
   if (!toast) return null;
   const ok = toast.type === 'success';
   return (
-    <div className={`fixed bottom-24 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl border text-sm font-semibold whitespace-nowrap ${
-      ok
+    <div className={`fixed bottom-24 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-xl border text-sm font-semibold whitespace-nowrap ${ok
         ? 'bg-green-50 dark:bg-green-950/90 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
         : 'bg-red-50 dark:bg-red-950/90 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800'
-    }`}>
+      }`}>
       {ok ? <FaCheckCircle className="h-4 w-4 shrink-0" /> : <FaExclamationCircle className="h-4 w-4 shrink-0" />}
       {toast.msg}
     </div>
@@ -84,25 +83,25 @@ export default function EditPropertyPage() {
         const p = res.data;
         setProperty(p);
         setForm({
-          title:       p.title        || '',
-          type:        p.type         || '',
-          purpose:     p.purpose      || '',
-          price:       p.price        || '',
-          area:        p.area         || '',
-          areaSize:    p.areaSize     || '',
-          areaUnit:    p.areaUnit     || 'sq ft',
-          locality:    p.locality     || '',
-          city:        p.city         || '',
-          landmark:    p.landmark     || '',
-          description: p.description  || '',
-          bhk:         p.bhk || p.BHK || p.bedrooms || '',
-          furnishing:  p.furnishing   || '',
-          bathroom:    p.bathroom     || p.bathrooms || '',
-          parking:     p.parking      || '',
-          facing:      p.facing       || '',
-          floorNo:     p.floorNo      || '',
-          totalFloors: p.totalFloors  || '',
-          contactName:  p.contactName  || '',
+          title: p.title || '',
+          type: p.type || '',
+          purpose: p.purpose || '',
+          price: p.price || '',
+          area: p.area || '',
+          areaSize: p.areaSize || '',
+          areaUnit: p.areaUnit || 'sq ft',
+          locality: p.locality || '',
+          city: p.city || '',
+          landmark: p.landmark || '',
+          description: p.description || '',
+          bhk: p.bhk || p.BHK || p.bedrooms || '',
+          furnishing: p.furnishing || '',
+          bathroom: p.bathroom || p.bathrooms || '',
+          parking: p.parking || '',
+          facing: p.facing || '',
+          floorNo: p.floorNo || '',
+          totalFloors: p.totalFloors || '',
+          contactName: p.contactName || '',
           contactPhone: p.contactPhone || '',
         });
       })
@@ -120,7 +119,7 @@ export default function EditPropertyPage() {
   const validate = () => {
     const e = {};
     if (!form.title?.trim()) e.title = 'Title is required';
-    if (!form.type)          e.type  = 'Type is required';
+    if (!form.type) e.type = 'Type is required';
     if (!form.price?.trim()) e.price = 'Price is required';
     return e;
   };
