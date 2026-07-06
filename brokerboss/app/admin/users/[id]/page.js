@@ -136,14 +136,7 @@ export default function UserDetailsPage({ params }) {
               </div>
             </div>
 
-            {/* Email */}
-            <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-primary shrink-0" />
-              <div>
-                <span className="text-xs text-muted-foreground block font-medium">Email Address</span>
-                <span className="text-sm font-medium text-foreground break-all">{user?.email || 'N/A'}</span>
-              </div>
-            </div>
+
 
             {/* Phone */}
             <div className="flex items-center gap-3">

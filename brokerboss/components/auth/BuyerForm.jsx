@@ -98,9 +98,7 @@ export default function BuyerForm() {
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
-    const email = `${profile.phone}@example.com`;
-    
-    const res = await register('buyer', { ...profile, propertyTypes: selectedTypes, email });
+    const res = await register('buyer', { ...profile, propertyTypes: selectedTypes });
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);

@@ -11,6 +11,7 @@ import {
   FaSpinner,
   FaCheckCircle,
   FaExclamationCircle,
+  FaEdit,
 } from 'react-icons/fa';
 
 // ─── Role field definitions ───────────────────────────────────────────────────
@@ -52,8 +53,8 @@ function getFieldsForRole(role) {
 function calcCompletion(profile, role) {
   if (!profile) return 0;
   const fields = getFieldsForRole(role);
-  const total = fields.length + 1; // +1 for email
-  let filled = profile.email ? 1 : 0;
+  const total = fields.length;
+  let filled = 0;
   fields.forEach(({ key }) => {
     const val = profile[key];
     if (val !== null && val !== undefined && String(val).trim() !== '') filled++;
@@ -62,9 +63,9 @@ function calcCompletion(profile, role) {
 }
 
 // ─── Field component ──────────────────────────────────────────────────────────
-function FormField({ field, value, onChange }) {
+function FormField({ field, value, onChange, disabled }) {
   const inputClass =
-    'w-full text-sm bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all';
+    'w-full text-sm bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all disabled:opacity-60 disabled:bg-muted/30 disabled:cursor-not-allowed';
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -80,6 +81,7 @@ function FormField({ field, value, onChange }) {
           onChange={(e) => onChange(field.key, e.target.value)}
           placeholder={field.hint || `Enter ${field.label.toLowerCase()}…`}
           className={`${inputClass} resize-none`}
+          disabled={disabled}
         />
       ) : (
         <input
@@ -89,6 +91,7 @@ function FormField({ field, value, onChange }) {
           onChange={(e) => onChange(field.key, e.target.value)}
           placeholder={field.hint || `Enter ${field.label.toLowerCase()}…`}
           className={inputClass}
+          disabled={disabled}
         />
       )}
     </div>
@@ -132,6 +135,7 @@ export default function MyProfilePage() {
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Re-sync if profile refreshes
   useEffect(() => { setForm(initialForm); }, [initialForm]);
@@ -160,6 +164,7 @@ export default function MyProfilePage() {
       const res = await api.put('/users/profile', form);
       updateProfile(res.data);
       showToast('success', 'Profile updated successfully!');
+      setIsEditing(false);
     } catch (err) {
       showToast('error', err?.response?.data?.error || 'Failed to save profile.');
     } finally {
@@ -225,9 +230,9 @@ export default function MyProfilePage() {
           <h2 className="text-sm font-bold text-foreground">Account Info</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Email</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Mobile Number</label>
               <p className="text-sm text-foreground bg-muted/40 border border-border rounded-xl px-4 py-3 select-all break-all">
-                {userProfile?.email || '—'}
+                {userProfile?.phone || '—'}
               </p>
             </div>
             <div className="flex flex-col gap-1">
@@ -243,9 +248,18 @@ export default function MyProfilePage() {
 
         {/* ── Editable Fields ─────────────────────────── */}
         <div className="bg-card border border-border/60 rounded-2xl p-5 flex flex-col gap-4">
-          <h2 className="text-sm font-bold text-foreground">
-            {roleLabels[userRole] || 'User'} Details
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-foreground">
+              {roleLabels[userRole] || 'User'} Details
+            </h2>
+            <button 
+              onClick={() => setIsEditing(!isEditing)} 
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 text-xs font-bold ${isEditing ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground hover:bg-foreground hover:text-background'}`}
+            >
+              <FaEdit className="w-3.5 h-3.5" />
+              {isEditing ? 'Cancel Edit' : 'Edit'}
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {fields.map((field) => (
@@ -257,6 +271,7 @@ export default function MyProfilePage() {
                   field={field}
                   value={form[field.key]}
                   onChange={handleChange}
+                  disabled={!isEditing}
                 />
               </div>
             ))}
@@ -264,23 +279,25 @@ export default function MyProfilePage() {
         </div>
 
         {/* ── Save Button (sticky on mobile) ──────────── */}
-        <div className="fixed bottom-0 left-0 right-0 sm:static bg-background/95 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none border-t sm:border-0 border-border/60 px-4 py-4 sm:px-0 sm:py-0 z-40">
-          <div className="max-w-2xl mx-auto">
-            <button
-              id="profile-save-btn"
-              onClick={handleSave}
-              disabled={saving}
-              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-primary-foreground font-bold text-sm px-6 py-4 rounded-2xl transition-all shadow-md hover:shadow-lg"
-            >
-              {saving ? (
-                <FaSpinner className="h-4 w-4 animate-spin" />
-              ) : (
-                <FaSave className="h-4 w-4" />
-              )}
-              {saving ? 'Saving changes…' : 'Save Profile'}
-            </button>
+        {isEditing && (
+          <div className="fixed bottom-0 left-0 right-0 sm:static bg-background/95 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none border-t sm:border-0 border-border/60 px-4 py-4 sm:px-0 sm:py-0 z-40 animate-in slide-in-from-bottom-2">
+            <div className="max-w-2xl mx-auto">
+              <button
+                id="profile-save-btn"
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-primary-foreground font-bold text-sm px-6 py-4 rounded-2xl transition-all shadow-md hover:shadow-lg"
+              >
+                {saving ? (
+                  <FaSpinner className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FaSave className="h-4 w-4" />
+                )}
+                {saving ? 'Saving changes…' : 'Save Profile'}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Toast notification */}

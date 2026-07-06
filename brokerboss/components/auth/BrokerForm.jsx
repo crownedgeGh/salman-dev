@@ -78,16 +78,12 @@ export default function BrokerForm() {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    
-    const email = `${form.phone}@example.com`;
-    
     const formData = new FormData();
     Object.keys(form).forEach(key => {
       if (form[key] !== null && form[key] !== '') {
         formData.append(key, form[key]);
       }
     });
-    formData.append('email', email);
 
     const res = await register('broker', formData);
     if (res && res.success) {

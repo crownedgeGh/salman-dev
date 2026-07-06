@@ -63,10 +63,10 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (phone, password) => {
     try {
       const api = (await import('@/lib/axios')).default;
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/login', { phone, password });
       setIsLoggedIn(true);
       setUserProfile(res.data.user);
       setUserRole(res.data.user.role || 'buyer');

@@ -71,9 +71,7 @@ export default function OwnerForm() {
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
-    const email = `${form.phone}@example.com`;
-    
-    const res = await register('owner', { ...form, email });
+    const res = await register('owner', { ...form });
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);

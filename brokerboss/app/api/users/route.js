@@ -12,7 +12,7 @@ export async function GET() {
     const formattedUsers = users.map(u => ({
       id: u._id.toString(),
       username: u.name || 'Unknown',
-      email: u.email,
+      phone: u.phone || 'N/A',
       location: u.city || 'Not specified',
       role: u.role || 'user',
       status: u.status || 'Active',

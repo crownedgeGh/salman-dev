@@ -49,11 +49,9 @@ export default function LoginForm() {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    
     setIsLoading(true);
-    const email = `${form.phone}@example.com`;
     
-    const res = await login(email, ''); // send empty password as we removed it
+    const res = await login(form.phone, ''); // send empty password as we removed it
     setIsLoading(false);
     
     if (res && res.success) {

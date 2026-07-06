@@ -40,27 +40,27 @@ export async function POST(request) {
       body = await request.json();
     }
 
-    const { name, email, password, role, confirmPassword, ...otherFields } = body;
+    const { name, phone, password, role, confirmPassword, ...otherFields } = body;
 
-    if (!name || !email) {
-      return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
+    if (!name || !phone) {
+      return NextResponse.json({ error: 'Name and mobile number are required' }, { status: 400 });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ phone });
     if (existingUser) {
       return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
 
     const user = await User.create({
       name,
-      email,
+      phone,
       role,
       ...otherFields,
       ...filePaths
     });
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, phone: user.phone },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
