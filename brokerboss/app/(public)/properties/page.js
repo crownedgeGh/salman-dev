@@ -224,24 +224,15 @@ function PropertiesPageInner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    api.get('/properties', { 
-      params: { _t: Date.now() },
-      timeout: 10000 // 10 second timeout
-    }).then(res => {
-      if (isMounted) {
-        console.log('Fetched properties length:', res.data?.length);
-        setProperties(Array.isArray(res.data) ? res.data : []);
-        setLoading(false);
-      }
+    api.get('/properties', { params: { _t: Date.now() } }).then(res => {
+      console.log('Fetched properties length:', res.data.length);
+      console.log('Fetched properties:', res.data);
+      setProperties(res.data);
+      setLoading(false);
     }).catch(err => {
-      if (isMounted) {
-        console.error('Error fetching properties:', err);
-        setProperties([]);
-        setLoading(false);
-      }
+      console.error('Error fetching properties:', err);
+      setLoading(false);
     });
-    return () => { isMounted = false; };
   }, []);
 
   const searchParams = useSearchParams();
@@ -326,15 +317,15 @@ function PropertiesPageInner() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((p) =>
-        p.title?.toLowerCase().includes(q) ||
-        p.type?.toLowerCase().includes(q) ||
-        p.locality?.toLowerCase().includes(q) ||
-        p.city?.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q) ||
-        p.purpose?.toLowerCase().includes(q) ||
-        p.price?.toLowerCase().includes(q) ||
-        p.area?.toLowerCase().includes(q) ||
-        p.broker?.name?.toLowerCase().includes(q)
+        p.title.toLowerCase().includes(q) ||
+        p.type.toLowerCase().includes(q) ||
+        p.locality.toLowerCase().includes(q) ||
+        p.city.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.purpose.toLowerCase().includes(q) ||
+        p.price.toLowerCase().includes(q) ||
+        p.area.toLowerCase().includes(q) ||
+        p.broker.name.toLowerCase().includes(q)
       );
     }
     return result.filter((p) => {
