@@ -23,8 +23,7 @@ const initialState = {
   reraNumber: '',
   yearsOfExperience: '',
   bio: '',
-  aadharFront: null,
-  aadharBack: null,
+  aadhar: null,
   passportPhoto: null,
 };
 
@@ -180,7 +179,7 @@ export default function BrokerForm() {
         </FormField>
 
         {/* RERA / License Number */}
-        <FormField id="broker-rera" label="RERA / License No. (optional)" icon={FaIdCard} error={errors.reraNumber}>
+        <FormField id="broker-rera" label="RERA / License No." icon={FaIdCard} error={errors.reraNumber}>
           <input
             id="broker-rera"
             name="reraNumber"
@@ -193,7 +192,7 @@ export default function BrokerForm() {
         </FormField>
 
         {/* Years of Experience */}
-        <FormField id="broker-experience" label="Years of Experience (optional)" icon={FaClock} error={errors.yearsOfExperience}>
+        <FormField id="broker-experience" label="Years of Experience" icon={FaClock} error={errors.yearsOfExperience}>
           <input
             id="broker-experience"
             name="yearsOfExperience"
@@ -207,34 +206,23 @@ export default function BrokerForm() {
           />
         </FormField>
 
-        <FormField id="broker-aadhar-front" label="Aadhar Card Front (JPG) (optional)" icon={FaIdCard} error={errors.aadharFront}>
+        <FormField id="broker-aadhar" label="Aadhar Card (JPG/PDF)" icon={FaIdCard} error={errors.aadhar}>
           <input
-            id="broker-aadhar-front"
-            name="aadharFront"
+            id="broker-aadhar"
+            name="aadhar"
             type="file"
-            accept=".jpg,.jpeg"
+            accept=".jpg,.jpeg,.png,.pdf"
             onChange={handleChange}
             className={`${inputClass} p-1.5`}
           />
         </FormField>
 
-        <FormField id="broker-aadhar-back" label="Aadhar Card Back (JPG) (optional)" icon={FaIdCard} error={errors.aadharBack}>
-          <input
-            id="broker-aadhar-back"
-            name="aadharBack"
-            type="file"
-            accept=".jpg,.jpeg"
-            onChange={handleChange}
-            className={`${inputClass} p-1.5`}
-          />
-        </FormField>
-
-        <FormField id="broker-passport-photo" label="Passport Size Photo (JPG/PDF) (optional)" icon={FaUser} error={errors.passportPhoto}>
+        <FormField id="broker-passport-photo" label="Your Profile Photo (JPG/PNG)" icon={FaUser} error={errors.passportPhoto}>
           <input
             id="broker-passport-photo"
             name="passportPhoto"
             type="file"
-            accept=".jpg,.jpeg,.pdf"
+            accept=".jpg,.jpeg,.png"
             onChange={handleChange}
             className={`${inputClass} p-1.5`}
           />
@@ -242,7 +230,7 @@ export default function BrokerForm() {
       </div>
 
       {/* Bio */}
-      <FormField id="broker-bio" label="Brief Bio (optional)" icon={FaAlignLeft} error={errors.bio}>
+      <FormField id="broker-bio" label="Brief Bio" icon={FaAlignLeft} error={errors.bio}>
         <textarea
           id="broker-bio"
           name="bio"

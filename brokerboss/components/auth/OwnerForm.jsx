@@ -167,7 +167,7 @@ export default function OwnerForm() {
       </div>
 
       {/* Description */}
-      <FormField id="owner-description" label="Brief Description (optional)" icon={FaAlignLeft} error={errors.description}>
+      <FormField id="owner-description" label="Brief Description" icon={FaAlignLeft} error={errors.description}>
         <textarea
           id="owner-description"
           name="description"

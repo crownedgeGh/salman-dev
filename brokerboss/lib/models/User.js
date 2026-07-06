@@ -19,8 +19,7 @@ const userSchema = new mongoose.Schema({
   budgetRange: { type: String },
   propertyTypes: { type: [String] },
   status: { type: String, default: 'Active' },
-  aadharFront: { type: String },
-  aadharBack: { type: String },
+  aadhar: { type: String },
   passportPhoto: { type: String },
 }, { timestamps: true, strict: false });
 

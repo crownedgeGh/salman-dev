@@ -25,12 +25,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function UserDetailsPage({ params }) {
   const { id } = use(params);
   
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [docViewer, setDocViewer] = useState({ open: false, title: "", url: "", type: "" });
+
+  const handleViewDoc = (title, url) => {
+    setDocViewer({ 
+      open: true, 
+      title, 
+      url, 
+      type: url?.includes('application/pdf') ? 'pdf' : 'image' 
+    });
+  };
 
   useEffect(() => {
     // In mock setup or real api
@@ -209,6 +225,26 @@ export default function UserDetailsPage({ params }) {
                     <span className="text-sm font-medium text-foreground">{user?.yearsOfExperience || 'N/A'}</span>
                   </div>
                 </div>
+                
+                {/* Documents section */}
+                <div className="sm:col-span-2 pt-4 mt-2 border-t border-border">
+                  <h4 className="text-sm font-semibold mb-3">Uploaded Documents</h4>
+                  <div className="flex flex-wrap gap-3">
+                    {user?.aadhar && (
+                      <Button variant="outline" size="sm" onClick={() => handleViewDoc("Aadhar Card", user.aadhar)}>
+                        <FileText className="w-4 h-4 mr-2" /> View Aadhar Card
+                      </Button>
+                    )}
+                    {user?.passportPhoto && (
+                      <Button variant="outline" size="sm" onClick={() => handleViewDoc("Profile Photo", user.passportPhoto)}>
+                        <FileText className="w-4 h-4 mr-2" /> View Profile Photo
+                      </Button>
+                    )}
+                    {!user?.aadhar && !user?.passportPhoto && (
+                      <span className="text-sm text-muted-foreground">No documents uploaded.</span>
+                    )}
+                  </div>
+                </div>
               </>
             )}
 
@@ -277,6 +313,22 @@ export default function UserDetailsPage({ params }) {
 
         </div>
       </div>
+
+      {/* Document Viewer Modal */}
+      <Dialog open={docViewer.open} onOpenChange={(open) => !open && setDocViewer({ ...docViewer, open: false })}>
+        <DialogContent className="sm:max-w-4xl w-[95vw] h-[85vh] flex flex-col p-4">
+          <DialogHeader className="mb-2 shrink-0">
+            <DialogTitle className="text-xl">{docViewer.title}</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto bg-black/5 dark:bg-white/5 rounded-lg flex items-center justify-center p-2 relative">
+            {docViewer.type === 'pdf' ? (
+              <iframe src={docViewer.url} className="w-full h-full border-0 rounded" title={docViewer.title} />
+            ) : (
+              <img src={docViewer.url} alt={docViewer.title} className="max-w-full max-h-full object-contain rounded" />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

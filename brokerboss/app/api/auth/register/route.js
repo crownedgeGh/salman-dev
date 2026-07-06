@@ -27,7 +27,7 @@ export async function POST(request) {
       }
       
       // Handle file uploads (Convert to Base64 to avoid Vercel filesystem errors)
-      const fileKeys = ['aadharFront', 'aadharBack', 'passportPhoto'];
+      const fileKeys = ['aadhar', 'passportPhoto'];
       for (const key of fileKeys) {
         const file = formData.get(key);
         if (file && file.size > 0 && typeof file !== 'string') {

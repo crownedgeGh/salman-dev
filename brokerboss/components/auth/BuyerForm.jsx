@@ -195,7 +195,7 @@ export default function BuyerForm() {
           />
         </FormField>
 
-        <FormField id="buyer-preferred-area" label="Preferred Area (optional)" icon={FaMapMarkerAlt} error={errors.preferredArea}>
+        <FormField id="buyer-preferred-area" label="Preferred Area" icon={FaMapMarkerAlt} error={errors.preferredArea}>
           <input
             id="buyer-preferred-area"
             name="preferredArea"
@@ -224,7 +224,7 @@ export default function BuyerForm() {
       </div>
 
       {/* Notes */}
-      <FormField id="buyer-notes" label="Additional Notes (optional)" icon={FaAlignLeft} error={errors.notes}>
+      <FormField id="buyer-notes" label="Additional Notes" icon={FaAlignLeft} error={errors.notes}>
         <textarea
           id="buyer-notes"
           name="notes"
