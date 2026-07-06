@@ -2,11 +2,8 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import connectToDatabase from '@/lib/mongodb';
 import User from '@/lib/models/User';
-import path from 'path';
-import fs from 'fs/promises';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_change_in_production';
-const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads');
 
 export async function POST(request) {
   try {
@@ -29,20 +26,14 @@ export async function POST(request) {
         }
       }
       
-      // Ensure upload directory exists
-      await fs.mkdir(UPLOAD_DIR, { recursive: true });
-
-      // Handle file uploads
+      // Handle file uploads (Convert to Base64 to avoid Vercel filesystem errors)
       const fileKeys = ['aadharFront', 'aadharBack', 'passportPhoto'];
       for (const key of fileKeys) {
         const file = formData.get(key);
         if (file && file.size > 0 && typeof file !== 'string') {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const ext = path.extname(file.name) || (file.type === 'application/pdf' ? '.pdf' : '.jpg');
-          const fileName = `${Date.now()}_${key}${ext}`;
-          const filePath = path.join(UPLOAD_DIR, fileName);
-          await fs.writeFile(filePath, buffer);
-          filePaths[key] = `/uploads/${fileName}`;
+          const mimeType = file.type || (file.name.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+          filePaths[key] = `data:${mimeType};base64,${buffer.toString('base64')}`;
         }
       }
     } else {
