@@ -55,7 +55,7 @@ export default async function PropertyDetailsPage({ params }) {
   const propertyImage = property.thumbnail || property.broker?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-28 lg:pb-24">
       {/* Top Navbar */}
       <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b sticky top-0 z-20 px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
@@ -72,12 +72,12 @@ export default async function PropertyDetailsPage({ params }) {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 md:py-6">
         {/* Main Content Layout */}
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-5 lg:gap-8">
           
           {/* Left Column (Images & Details) */}
-          <div className="flex-1 space-y-6 overflow-hidden">
+          <div className="flex-1 space-y-4 md:space-y-6 overflow-hidden">
             
             {/* Image Gallery */}
             <div className="relative w-full rounded-2xl overflow-hidden aspect-[16/10] md:aspect-[21/9] bg-gray-200 shadow-md">
@@ -97,10 +97,10 @@ export default async function PropertyDetailsPage({ params }) {
             </div>
 
             {/* Title & Location Header */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3 md:gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight mb-3">
+                  <h1 className="text-xl md:text-2xl sm:text-3xl font-extrabold text-foreground leading-tight mb-2 md:mb-3">
                     {title}
                   </h1>
                   <p className="flex items-center text-muted-foreground text-sm sm:text-base font-medium">
@@ -109,9 +109,9 @@ export default async function PropertyDetailsPage({ params }) {
                     {landmark && <span className="ml-1 text-gray-400">(Near {landmark})</span>}
                   </p>
                 </div>
-                <div className="bg-primary/5 border border-primary/20 p-4 rounded-xl text-right shrink-0">
-                  <p className="text-sm text-muted-foreground font-bold mb-1">Asking Price</p>
-                  <span className="text-3xl font-black text-primary tracking-tight block">
+                <div className="bg-primary/5 border border-primary/20 p-3 md:p-4 rounded-xl md:text-right shrink-0 mt-2 md:mt-0">
+                  <p className="text-xs md:text-sm text-muted-foreground font-bold mb-0.5 md:mb-1">Asking Price</p>
+                  <span className="text-2xl md:text-3xl font-black text-primary tracking-tight block">
                     {price}
                   </span>
                   {property.negotiable === "Yes" && <span className="text-xs text-green-600 font-bold uppercase tracking-wider mt-1 block">Negotiable</span>}
@@ -120,12 +120,12 @@ export default async function PropertyDetailsPage({ params }) {
             </div>
 
             {/* Specifications Grid */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
-              <h3 className="font-bold text-xl mb-6 text-foreground flex items-center gap-2">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <h3 className="font-bold text-lg md:text-xl mb-4 md:mb-6 text-foreground flex items-center gap-2">
                 <Info className="text-primary w-5 h-5" /> Property Overview
               </h3>
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-8 gap-x-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-5 md:gap-y-8 gap-x-3 md:gap-x-4">
                 <SpecItem icon={<Ruler className="w-5 h-5" />} label="Area" value={area} />
                 <SpecItem icon={<BedDouble className="w-5 h-5" />} label="Bedrooms" value={bedrooms} />
                 <SpecItem icon={<Bath className="w-5 h-5" />} label="Bathrooms" value={bathrooms} />
@@ -140,9 +140,9 @@ export default async function PropertyDetailsPage({ params }) {
             </div>
 
             {/* Description */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
-              <h3 className="font-bold text-xl mb-4 text-foreground border-b border-border/50 pb-3">About this Property</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed whitespace-pre-line">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 text-foreground border-b border-border/50 pb-2 md:pb-3">About this Property</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base leading-relaxed whitespace-pre-line">
                 {description}
               </p>
             </div>
@@ -151,9 +151,9 @@ export default async function PropertyDetailsPage({ params }) {
 
           {/* Right Column (Sticky Broker Info) */}
           <div className="lg:w-80 shrink-0">
-            <div className="sticky top-24 bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center">
-              <div className="relative mb-4">
-                <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 mx-auto">
+            <div className="sticky top-24 bg-white dark:bg-gray-900 rounded-2xl p-4 md:p-6 shadow-md border border-gray-100 dark:border-gray-800 flex flex-col items-center text-center mb-6 lg:mb-0">
+              <div className="relative mb-3 md:mb-4">
+                <div className="h-20 w-20 md:h-24 md:w-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100 mx-auto">
                   <img src={brokerImage} alt={brokerName} className="h-full w-full object-cover" />
                 </div>
                 <div className="absolute -bottom-2 -right-2 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 border border-blue-200 shadow-sm">
@@ -162,10 +162,11 @@ export default async function PropertyDetailsPage({ params }) {
                 </div>
               </div>
               
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Contact</p>
-              <h4 className="font-extrabold text-xl text-foreground mb-6">{brokerName}</h4>
+              <p className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Contact</p>
+              <h4 className="font-extrabold text-lg md:text-xl text-foreground mb-4 md:mb-6">{brokerName}</h4>
               
-              <div className="w-full space-y-3">
+              {/* Hide the contact buttons on mobile since we have a fixed bottom bar */}
+              <div className="w-full space-y-3 hidden lg:block">
                 <a href={`tel:${brokerPhone?.replace(/\\s/g, '') || ''}`} className="block w-full">
                   <Button className="w-full h-12 text-sm font-bold shadow-md hover:shadow-lg transition-all gap-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
                     <Phone className="h-4 w-4" />
@@ -186,16 +187,30 @@ export default async function PropertyDetailsPage({ params }) {
 
         </div>
       </div>
+
+      {/* Mobile Sticky CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-border/50 p-4 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] z-40 flex items-center gap-3">
+        <a href={`tel:${brokerPhone?.replace(/\\s/g, '') || ''}`} className="flex-1">
+          <Button className="w-full h-12 text-sm font-bold shadow-md gap-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
+            <Phone className="h-4 w-4" />
+            Call
+          </Button>
+        </a>
+        <Button variant="outline" className="flex-1 h-12 text-sm font-bold shadow-sm gap-2 border-green-500/30 text-green-700 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 hover:dark:bg-green-900/40 rounded-xl">
+          <FaWhatsapp className="h-5 w-5" />
+          WhatsApp
+        </Button>
+      </div>
     </div>
   );
 }
 
 function SpecItem({ icon, label, value }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center gap-2 text-muted-foreground mb-1">
-        <div className="text-primary/70">{icon}</div>
-        <span className="text-xs font-bold uppercase tracking-wider">{label}</span>
+    <div className="flex flex-col gap-1 md:gap-1.5">
+      <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground mb-0.5 md:mb-1">
+        <div className="text-primary/70 scale-90 md:scale-100 origin-left">{icon}</div>
+        <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">{label}</span>
       </div>
       <span className="font-bold text-foreground text-sm sm:text-base leading-tight">{value}</span>
     </div>

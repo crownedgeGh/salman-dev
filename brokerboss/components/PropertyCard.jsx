@@ -151,17 +151,15 @@ export default function PropertyCard({ property, compact = false }) {
       {/* ────────────────────────────────────────────────
           LEFT COLUMN: IMAGE & BADGES
           ──────────────────────────────────────────────── */}
-      <div className="relative shrink-0 w-full md:w-[260px] bg-muted overflow-hidden flex flex-col border-r border-border/50">
-        {/* Aspect Ratio Box for Image */}
-        <div className="relative w-full aspect-[16/10] md:aspect-[4/3] overflow-hidden">
+      <div className="relative shrink-0 w-full md:w-[260px] bg-transparent md:bg-muted overflow-hidden flex flex-col md:border-r border-border/50">
+        {/* Aspect Ratio Box for Image (Hidden on mobile) */}
+        <div className="hidden md:block relative w-full md:aspect-[4/3] overflow-hidden">
           <img
             src={imageUrl}
             alt={property.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           
-
-
           {/* Overlay: Updated tag */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
             <span className="text-white text-[11px] font-semibold tracking-wide drop-shadow-sm">
@@ -171,7 +169,7 @@ export default function PropertyCard({ property, compact = false }) {
         </div>
 
         {/* Below Image Section (Desktop & Mobile unified) */}
-        <div className="p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1.5 border-t border-border/40 text-xs overflow-visible">
+        <div className="px-4 py-2.5 md:p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1 md:gap-1.5 md:border-t border-b md:border-b-0 border-border/40 text-xs overflow-visible">
           <div className="flex items-center gap-1.5 text-muted-foreground relative group/broker">
             <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
             <span className="font-semibold text-foreground truncate cursor-pointer hover:underline">
@@ -198,22 +196,17 @@ export default function PropertyCard({ property, compact = false }) {
               </div>
             </div>
           </div>
-
-          <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
-            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 fill-emerald-100 dark:fill-none" />
-            Verified Trusted Partner
-          </div>
         </div>
       </div>
 
       {/* ────────────────────────────────────────────────
           MIDDLE COLUMN: PROPERTY SPECS & DESCRIPTION
           ──────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col justify-between p-4 md:p-5 min-w-0">
+      <div className="flex-1 flex flex-col justify-between px-4 pb-3 pt-1.5 md:p-5 min-w-0">
         <div>
           {/* Header Row: Title & Action Icons */}
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <div className="flex flex-col items-start gap-1 flex-1">
+          <div className="flex items-start justify-between gap-2 md:gap-3 mb-1.5 md:mb-2">
+            <div className="flex flex-col items-start gap-0.5 md:gap-1 flex-1">
               <span className="inline-block bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border/50">
                 ID: {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
               </span>
@@ -252,7 +245,7 @@ export default function PropertyCard({ property, compact = false }) {
           </div>
 
           {/* Location details */}
-          <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold mb-3">
+          <div className="flex items-center gap-1 text-muted-foreground text-xs font-semibold mb-2 md:mb-3">
             <MapPin className="h-3.5 w-3.5 text-muted-foreground/80 shrink-0" />
             <span className="truncate">{property.locality}, {property.city}</span>
           </div>
@@ -265,7 +258,7 @@ export default function PropertyCard({ property, compact = false }) {
                 setIsExpanded(!isExpanded);
               }
             }}
-            className={`bg-gray-50/70 dark:bg-muted/30 border border-border/50 rounded-xl p-3 mb-3 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2.5 relative group/specs ${
+            className={`bg-gray-50/70 dark:bg-muted/30 border border-border/50 rounded-xl p-2.5 md:p-3 mb-2 md:mb-3 grid grid-cols-2 sm:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-2 md:gap-y-2.5 relative group/specs ${
               hasCollapse ? 'cursor-pointer hover:bg-gray-100/50 dark:hover:bg-muted/40 transition-colors' : ''
             }`}
           >
@@ -298,7 +291,7 @@ export default function PropertyCard({ property, compact = false }) {
         </div>
 
         {/* Mobile-only Price and CTA area (hidden on desktop) */}
-        <div className="flex md:hidden items-center justify-between border-t border-border/40 pt-3 mt-2">
+        <div className="flex md:hidden items-center justify-between border-t border-border/40 pt-2 mt-1.5">
           <div className="flex flex-col">
             <span className="text-base font-black text-foreground">{formattedPrice}</span>
             <span className="text-[10px] text-muted-foreground leading-none">{isRent ? '/month' : ''}</span>
