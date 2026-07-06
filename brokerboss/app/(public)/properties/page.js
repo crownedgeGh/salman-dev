@@ -34,7 +34,8 @@ const QUICK_TYPES = [
 
 // ─── price helper ─────────────────────────────────────────────
 function parsePriceLakh(priceStr) {
-  const str = priceStr.toLowerCase().replace(/[₹,]/g, '');
+  if (!priceStr) return null;
+  const str = String(priceStr).toLowerCase().replace(/[₹,]/g, '');
   if (str.includes('crore') || str.includes('cr')) return parseFloat(str) * 100;
   if (str.includes('lakh') || str.includes('l')) return parseFloat(str);
   if (str.includes('/mo') || str.includes('month')) return null;
@@ -223,15 +224,24 @@ function PropertiesPageInner() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/properties', { params: { _t: Date.now() } }).then(res => {
-      console.log('Fetched properties length:', res.data.length);
-      console.log('Fetched properties:', res.data);
-      setProperties(res.data);
-      setLoading(false);
+    let isMounted = true;
+    api.get('/properties', { 
+      params: { _t: Date.now() },
+      timeout: 10000 // 10 second timeout
+    }).then(res => {
+      if (isMounted) {
+        console.log('Fetched properties length:', res.data?.length);
+        setProperties(Array.isArray(res.data) ? res.data : []);
+        setLoading(false);
+      }
     }).catch(err => {
-      console.error('Error fetching properties:', err);
-      setLoading(false);
+      if (isMounted) {
+        console.error('Error fetching properties:', err);
+        setProperties([]);
+        setLoading(false);
+      }
     });
+    return () => { isMounted = false; };
   }, []);
 
   const searchParams = useSearchParams();
@@ -316,15 +326,15 @@ function PropertiesPageInner() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.type.toLowerCase().includes(q) ||
-        p.locality.toLowerCase().includes(q) ||
-        p.city.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.purpose.toLowerCase().includes(q) ||
-        p.price.toLowerCase().includes(q) ||
-        p.area.toLowerCase().includes(q) ||
-        p.broker.name.toLowerCase().includes(q)
+        p.title?.toLowerCase().includes(q) ||
+        p.type?.toLowerCase().includes(q) ||
+        p.locality?.toLowerCase().includes(q) ||
+        p.city?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.purpose?.toLowerCase().includes(q) ||
+        p.price?.toLowerCase().includes(q) ||
+        p.area?.toLowerCase().includes(q) ||
+        p.broker?.name?.toLowerCase().includes(q)
       );
     }
     return result.filter((p) => {
@@ -405,7 +415,7 @@ function PropertiesPageInner() {
             <FilterSheet
               filters={filters}
               onFilterChange={handleFilterChange}
-              onClear={() => setFilters(defaultFilters)}
+              onClear={handleClearAll}
               activeCount={activeCount}
             />
           </div>
@@ -417,7 +427,7 @@ function PropertiesPageInner() {
                 <FilterSidebar
                   filters={filters}
                   onFilterChange={handleFilterChange}
-                  onClear={() => setFilters(defaultFilters)}
+                  onClear={handleClearAll}
                 />
               </div>
             </aside>

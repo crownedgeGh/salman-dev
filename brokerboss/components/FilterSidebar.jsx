@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { FaFilter, FaTimes } from 'react-icons/fa';
 
-const propertyTypes = ['House', 'Flat', 'Shop', 'Plot', 'Home', 'Office', 'Warehouse'];
+const propertyTypes = ['House', 'Flat', 'Shop', 'Plot', 'Office', 'Warehouse'];
 const localities = ['Shankar Nagar', 'Telibandha', 'Pandri', 'Mowa', 'VIP Road', 'Khamardih', 'Avanti Vihar', 'Pachpedi Naka'];
 
 export default function FilterSidebar({ filters, onFilterChange, onClear }) {

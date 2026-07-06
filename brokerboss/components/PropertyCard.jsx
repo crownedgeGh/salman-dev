@@ -130,6 +130,7 @@ export default function PropertyCard({ property, compact = false }) {
     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
     phone: '+919876543210'
   };
+  const brokerPhone = broker.phone || '+919876543210';
 
   // Image Source - fallback to property image or broker image
   const imageUrl = property.images?.[0] || broker.image || '/badge.png';
@@ -308,7 +309,7 @@ export default function PropertyCard({ property, compact = false }) {
               variant="outline"
               size="sm"
               onClick={(e) => handleAction(e, () => {
-                window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
+                window.open(`https://wa.me/${brokerPhone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
               })}
               className="border-primary text-primary hover:bg-primary/10 font-bold h-8 text-[11px] px-3 rounded-lg flex items-center gap-1 bg-transparent"
             >
@@ -316,7 +317,7 @@ export default function PropertyCard({ property, compact = false }) {
               WhatsApp
             </Button>
             <a
-              href={`tel:${broker.phone.replace(/\s/g, '')}`}
+              href={`tel:${brokerPhone.replace(/\s/g, '')}`}
               onClick={(e) => e.stopPropagation()}
               className="inline-block"
             >
@@ -349,7 +350,7 @@ export default function PropertyCard({ property, compact = false }) {
           <Button
             variant="outline"
             onClick={(e) => handleAction(e, () => {
-              window.open(`https://wa.me/${broker.phone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
+              window.open(`https://wa.me/${brokerPhone.replace(/[^\d]/g, '')}?text=Hello, I am interested in ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
             })}
             className="w-full border-primary text-primary hover:bg-primary/10 font-bold text-xs h-9 rounded-lg transition-colors flex items-center justify-center gap-1.5 bg-transparent"
           >
@@ -358,7 +359,7 @@ export default function PropertyCard({ property, compact = false }) {
           </Button>
 
           <a
-            href={`tel:${broker.phone.replace(/\s/g, '')}`}
+            href={`tel:${brokerPhone.replace(/\s/g, '')}`}
             onClick={(e) => e.stopPropagation()}
             className="w-full"
           >

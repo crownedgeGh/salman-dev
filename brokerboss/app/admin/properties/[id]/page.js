@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import api from '@/lib/axios';
 import {
   ArrowLeft,
   User,
@@ -37,36 +38,68 @@ export default function EditPropertyPage({ params }) {
   const { id } = use(params);
   const propertyIdParam = parseInt(id, 10);
 
-  // Mock property with all possible fields
-  const property = [].find((p) => p.id === propertyIdParam) || {};
-
   const [form, setForm] = useState({
-    title: property?.title || "",
-    type: property?.type || "",
-    purpose: property?.purpose || "",
-    city: property?.city || "Raipur",
-    locality: property?.locality || "",
-    landmark: property?.landmark || "",
-    areaSize: property?.areaSize || "",
-    areaUnit: property?.areaUnit || "sq ft",
-    floorNo: property?.floorNo || "",
-    totalFloors: property?.totalFloors || "",
-    bedrooms: property?.bedrooms || "",
-    bathrooms: property?.bathrooms || "",
-    furnishing: property?.furnishing || "",
-    parking: property?.parking || "",
-    facing: property?.facing || "",
-    price: property?.price || "",
-    negotiable: property?.negotiable || "No",
-    maintenanceCharge: property?.maintenanceCharge || "",
-    availableFrom: property?.availableFrom || "",
-    preferredFor: property?.preferredFor || "",
-    description: property?.description || "",
-    contactName: property?.contactName || "",
-    contactPhone: property?.contactPhone || "",
-    status: property?.status || "Active",
-    owner: property?.owner || "",
+    title: "",
+    type: "",
+    purpose: "",
+    city: "Raipur",
+    locality: "",
+    landmark: "",
+    areaSize: "",
+    areaUnit: "sq ft",
+    floorNo: "",
+    totalFloors: "",
+    bedrooms: "",
+    bathrooms: "",
+    furnishing: "",
+    parking: "",
+    facing: "",
+    price: "",
+    negotiable: "No",
+    maintenanceCharge: "",
+    availableFrom: "",
+    preferredFor: "",
+    description: "",
+    contactName: "",
+    contactPhone: "",
+    status: "Active",
+    owner: "",
   });
+
+  useEffect(() => {
+    api.get(`/properties`).then(res => {
+      const p = res.data.find(item => String(item.id) === String(id) || String(item._id) === String(id));
+      if (p) {
+        setForm({
+          title: p.title || "",
+          type: p.type || "",
+          purpose: p.purpose || "",
+          city: p.city || "Raipur",
+          locality: p.locality || "",
+          landmark: p.landmark || "",
+          areaSize: p.areaSize || "",
+          areaUnit: p.areaUnit || "sq ft",
+          floorNo: p.floorNo || "",
+          totalFloors: p.totalFloors || "",
+          bedrooms: p.bedrooms || "",
+          bathrooms: p.bathrooms || "",
+          furnishing: p.furnishing || "",
+          parking: p.parking || "",
+          facing: p.facing || "",
+          price: p.price || "",
+          negotiable: p.negotiable || "No",
+          maintenanceCharge: p.maintenanceCharge || "",
+          availableFrom: p.availableFrom || "",
+          preferredFor: p.preferredFor || "",
+          description: p.description || "",
+          contactName: p.contactName || p.broker?.name || "",
+          contactPhone: p.contactPhone || p.broker?.phone || "",
+          status: p.status || "Active",
+          owner: p.owner?.name || p.broker?.name || "",
+        });
+      }
+    }).catch(console.error);
+  }, [id]);
 
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
