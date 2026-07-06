@@ -47,13 +47,6 @@ function getPropertySpecs(property) {
   } else {
     // Sale
     formattedPrice = priceVal ? `₹${priceVal.toLocaleString('en-IN')}` : property.price;
-    
-    // Calculate Rate
-    const areaVal = property.areaSize ? parseInt(property.areaSize.toString().replace(/[^\d]/g, '')) : 0;
-    if (priceVal && areaVal) {
-      const rate = Math.round(priceVal / areaVal);
-      depositText = `₹${rate.toLocaleString('en-IN')} / ${property.areaUnit || 'sq ft'}`;
-    }
   }
 
   // Specifications based on Type
@@ -106,10 +99,32 @@ export default function PropertyCard({ property, compact = false }) {
   const [isLiked, setIsLiked] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [fetchedImage, setFetchedImage] = useState(null);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    
+    // Fetch broker image from API
+    const brokerId = property.broker?.id || property.userId;
+    if (brokerId) {
+      const fetchBrokerImage = async () => {
+        try {
+          const res = await fetch(`/api/users/${brokerId}`);
+          if (res.ok) {
+            const userData = await res.json();
+            if (userData.passportPhoto) {
+              setFetchedImage(userData.passportPhoto);
+            } else if (userData.image) {
+              setFetchedImage(userData.image);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch broker image", error);
+        }
+      };
+      fetchBrokerImage();
+    }
+  }, [property.broker?.id, property.userId]);
 
   const { photoCount, updatedText, formattedPrice, depositText, specs } = getPropertySpecs(property);
   const isRent = property.purpose === 'Rent';
@@ -133,8 +148,15 @@ export default function PropertyCard({ property, compact = false }) {
   const displayRole = broker.role || property.ownerType || (broker.name?.toLowerCase().includes('owner') ? 'Owner' : 'Broker');
 
   // Validate image URL to prevent dummy text from breaking the image
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
+  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')) ? img : null;
   const imageUrl = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
+
+  const validBrokerImage = getValidImg(fetchedImage) ||
+                           getValidImg(broker.image) || 
+                           getValidImg(broker.passportPhoto) || 
+                           getValidImg(property.user?.passportPhoto) || 
+                           getValidImg(property.user?.image) || 
+                           'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256';
 
   // Specifications logic: only collapse when there are 5 or 6 specs in total.
   // We combine the base specs and the AREA spec.
@@ -152,9 +174,9 @@ export default function PropertyCard({ property, compact = false }) {
       {/* ────────────────────────────────────────────────
           LEFT COLUMN: IMAGE & BADGES
           ──────────────────────────────────────────────── */}
-      <div className="relative shrink-0 w-full md:w-[260px] bg-transparent md:bg-muted overflow-hidden flex flex-col md:border-r border-border/50">
+      <div className="relative shrink-0 w-full md:w-[220px] lg:w-[260px] bg-transparent md:bg-muted overflow-hidden flex flex-col md:border-r border-border/50">
         {/* Aspect Ratio Box for Image (Hidden on mobile) */}
-        <div className="hidden md:block relative w-full md:aspect-[4/3] overflow-hidden">
+        <div className="hidden md:block relative w-full flex-1 overflow-hidden">
           <img
             src={imageUrl}
             alt={property.title}
@@ -183,14 +205,11 @@ export default function PropertyCard({ property, compact = false }) {
             {/* Broker Hover Card */}
             <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50">
               <div className="flex items-center gap-3">
-                <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
+                <img src={validBrokerImage} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
                 <div>
                   <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
-                <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
+                  <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
                 </div>
-              </div>
-              <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">
-                <CheckCircle2 className="h-3.5 w-3.5" /> Verified Partner
               </div>
               <div className="mt-2 text-xs text-muted-foreground font-medium">
                 <Phone className="h-3 w-3 inline mr-1" /> {broker.phone}
@@ -207,7 +226,7 @@ export default function PropertyCard({ property, compact = false }) {
         <div>
           {/* Header Row: Title & Action Icons */}
           <div className="flex items-start justify-between gap-2 md:gap-3 mb-1.5 md:mb-2">
-            <div className="flex flex-col items-start gap-0.5 md:gap-1 flex-1">
+            <div className="flex flex-col items-start gap-0.5 md:gap-1 flex-1 min-w-0">
               <span className="inline-block bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border/50">
                 ID: {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
               </span>
@@ -259,7 +278,7 @@ export default function PropertyCard({ property, compact = false }) {
                 setIsExpanded(!isExpanded);
               }
             }}
-            className={`bg-gray-50/70 dark:bg-muted/30 border border-border/50 rounded-xl p-2.5 md:p-3 mb-2 md:mb-3 grid grid-cols-2 sm:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-2 md:gap-y-2.5 relative group/specs ${
+            className={`bg-gray-50/70 dark:bg-muted/30 border border-border/50 rounded-xl p-2.5 md:p-3 mb-2 md:mb-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-3 md:gap-x-4 gap-y-2 md:gap-y-2.5 relative group/specs ${
               hasCollapse ? 'cursor-pointer hover:bg-gray-100/50 dark:hover:bg-muted/40 transition-colors' : ''
             }`}
           >
@@ -327,7 +346,7 @@ export default function PropertyCard({ property, compact = false }) {
       {/* ────────────────────────────────────────────────
           RIGHT COLUMN: PRICE & ACTION PANEL (DESKTOP)
           ──────────────────────────────────────────────── */}
-      <div className="hidden md:flex shrink-0 w-[180px] bg-[#f4faff] dark:bg-blue-950/10 border-l border-border/50 flex-col justify-between p-5 text-center">
+      <div className="hidden md:flex shrink-0 w-[150px] lg:w-[180px] bg-[#f4faff] dark:bg-blue-950/10 border-l border-border/50 flex-col justify-between p-4 lg:p-5 text-center">
         {/* Price display */}
         <div className="mt-2">
           <div className="flex items-center justify-center gap-1 text-2xl font-black text-gray-900 dark:text-white leading-none">

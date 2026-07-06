@@ -35,13 +35,15 @@ export default function PropertiesPage() {
   const router = useRouter();
   const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
   const fetchProperties = () => {
-    api.get('/properties').then(res => setProperties(res.data)).catch(console.error);
+    setIsLoading(true);
+    api.get('/properties').then(res => setProperties(res.data)).catch(console.error).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -227,6 +229,7 @@ export default function PropertiesPage() {
         columns={PROPERTIES_COLUMNS}
         data={filteredData}
         searchQuery={searchQuery}
+        isLoading={isLoading}
         onRowClick={(row) => router.push(`/admin/properties/view/${row._id || row.id}`)}
       />
 

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, SearchX } from "lucide-react";
+import { ChevronLeft, ChevronRight, SearchX, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function AdminTable({ columns = [], data = [], defaultPageSize = 15, searchQuery = "", onRowClick }) {
+export default function AdminTable({ columns = [], data = [], defaultPageSize = 15, searchQuery = "", isLoading = false, onRowClick }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
@@ -27,6 +27,16 @@ export default function AdminTable({ columns = [], data = [], defaultPageSize = 
   const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   const goToPage = (p) => setCurrentPage(Math.max(1, Math.min(p, totalPages)));
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-muted-foreground gap-3">
+        <Loader2 className="w-8 h-8 animate-spin text-primary opacity-80" />
+        <p className="text-sm font-medium">Loading data...</p>
+      </div>
+    );
+  }
 
   // Empty state
   if (filtered.length === 0) {

@@ -33,10 +33,12 @@ const FORMAT_COLORS = {
 export default function AdsPage() {
   const [ads, setAds] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
+    setIsLoading(true);
     api.get('/ads')
       .then(res => {
         const formatted = res.data.map(ad => ({
@@ -48,7 +50,8 @@ export default function AdsPage() {
         }));
         setAds(formatted);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, []);
 
   const showToast = (msg) => {
@@ -205,6 +208,7 @@ export default function AdsPage() {
           columns={ADS_COLUMNS}
           data={ads}
           searchQuery={searchQuery}
+          isLoading={isLoading}
           pageSize={10}
         />
       </div>

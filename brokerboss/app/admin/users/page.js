@@ -31,13 +31,15 @@ export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("All");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
   const fetchUsers = () => {
-    api.get('/users').then(res => setUsers(res.data)).catch(console.error);
+    setIsLoading(true);
+    api.get('/users').then(res => setUsers(res.data)).catch(console.error).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -213,6 +215,7 @@ export default function UsersPage() {
         columns={USERS_COLUMNS}
         data={filteredData}
         searchQuery={searchQuery}
+        isLoading={isLoading}
         onRowClick={(row) => router.push(`/admin/users/${row.id}`)}
       />
 
