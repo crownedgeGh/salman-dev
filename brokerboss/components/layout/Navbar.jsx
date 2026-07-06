@@ -29,6 +29,7 @@ import {
   FaPlusCircle,
   FaChevronRight,
   FaIdCard,
+  FaList,
 } from 'react-icons/fa';
 
 const navLinks = [
@@ -201,113 +202,133 @@ export default function Navbar() {
               </SheetTrigger>
 
               <SheetContent side="right" className="w-[300px] p-0 flex flex-col">
-                {/* Sheet Header */}
-                <SheetHeader className="px-5 pt-5 pb-4 border-b border-border/60">
-                  <SheetTitle className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                      <FaBuilding className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                    <span className="font-extrabold text-lg tracking-tight">
-                      Broker<span className="text-primary">Boss</span>
-                    </span>
-                  </SheetTitle>
-                </SheetHeader>
-
-                {/* Nav Links */}
-                <div className="flex-1 overflow-y-auto px-3 py-4 flex flex-col gap-1">
-                  {navLinks.map(({ href, label, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground ${
-                        isActive(href)
-                          ? 'bg-accent text-accent-foreground font-semibold'
-                          : 'text-muted-foreground'
-                      }`}
-                    >
-                      <span className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                        isActive(href) ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                      }`}>
-                        <Icon className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="flex-1">{label}</span>
-                      {isActive(href) && <FaChevronRight className="h-3 w-3 text-primary opacity-60" />}
-                    </Link>
-                  ))}
-                </div>
-
-                {/* Bottom Section */}
-                <div className="px-3 pb-6 pt-3 border-t border-border/60 flex flex-col gap-2.5">
-
-                  {/* POST PROPERTIES — Owner/Broker only (mobile) */}
-                  {canPostAd && (
-                    <Link
-                      href="/post-ad"
-                      onClick={() => setMobileOpen(false)}
-                      id="mobile-post-ad"
-                      className="relative flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm px-4 py-3 rounded-xl transition-all shadow-sm"
-                    >
-                      <FaPlusCircle className="h-4 w-4" />
-                      Post Properties
-                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow">
-                        FREE
-                      </span>
-                    </Link>
-                  )}
-
-                  {isLoggedIn ? (
-                    <>
-                      {/* User info pill */}
-                      <div className="flex items-center gap-3 bg-accent rounded-xl px-4 py-3">
-                        <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center shrink-0">
-                          <FaUser className="h-4 w-4 text-primary-foreground" />
+                {isLoggedIn ? (
+                  <>
+                    <SheetHeader className="px-5 pt-5 pb-4 border-b border-border/60">
+                      <SheetTitle className="flex items-center gap-3">
+                        <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm">
+                          {displayName.charAt(0).toUpperCase()}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground capitalize truncate">{displayName}</p>
-                          <p className="text-xs text-muted-foreground capitalize">{roleLabels[userRole]}</p>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="font-bold text-foreground text-base capitalize truncate leading-tight">
+                            {displayName}
+                          </p>
+                          <span className="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-primary/10 text-primary border border-primary/20 capitalize">
+                            {roleLabels[userRole] || 'User'}
+                          </span>
                         </div>
-                      </div>
-                      {/* My Account — opens user panel */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        id="mobile-my-account"
-                        onClick={() => { setMobileOpen(false); setTimeout(() => setPanelOpen(true), 150); }}
-                        className="w-full gap-2 rounded-xl py-3 h-auto"
-                      >
-                        <FaIdCard className="h-3.5 w-3.5" />
-                        My Account
-                      </Button>
+                      </SheetTitle>
+                    </SheetHeader>
+                    
+                    <div className="flex-1 overflow-y-auto flex flex-col">
+                      {canPostAd && (
+                        <div className="px-5 pt-[-4] pb-1">
+                          <Button asChild className="w-full rounded-xl py-6 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-sm text-base">
+                            <Link href="/post-ad" onClick={() => setMobileOpen(false)}>
+                              <FaPlusCircle className="h-4 w-4" />
+                              Post Properties
+                              <span className="bg-green-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ml-1">Free</span>
+                            </Link>
+                          </Button>
+                        </div>
+                      )}
 
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { setMobileOpen(false); setRegisterOpen(true); }}
-                        className="w-full gap-2 rounded-xl py-3 h-auto"
-                        id="mobile-register"
-                      >
-                        <FaUserPlus className="h-3.5 w-3.5" />
-                        Register
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="w-full gap-2 rounded-xl py-3 h-auto shadow-sm"
-                        id="mobile-login"
-                        asChild
-                      >
-                        <Link href="/login" onClick={() => setMobileOpen(false)}>
-                          <FaUser className="h-3.5 w-3.5" />
-                          Login
+                      <div className="px-5 py-4 flex flex-col gap-5">
+                        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                          My Account
+                        </p>
+                        
+                        <Link href="/user/listings" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
+                            <FaList className="h-4 w-4 text-blue-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-semibold text-foreground group-hover:text-blue-600 transition-colors">My Listings</p>
+                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">View & manage your properties</p>
+                          </div>
                         </Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
+
+                        <Link href="/user/profile" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-violet-50 dark:bg-violet-950/30 flex items-center justify-center shrink-0 group-hover:bg-violet-100 transition-colors">
+                            <FaUser className="h-4 w-4 text-violet-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-semibold text-foreground group-hover:text-violet-600 transition-colors">My Profile</p>
+                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">Edit your account details</p>
+                          </div>
+                        </Link>
+                      </div>
+
+                      <div className="px-5 pb-8 pt-5 border-t border-border/60 flex flex-col gap-5 bg-muted/10 mt-2">
+                        <Link href="/services" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaConciergeBell className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Services</span>
+                        </Link>
+                        <Link href="/contact" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaEnvelope className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Contact Us</span>
+                        </Link>
+
+                        <button
+                          onClick={() => { logout(); setMobileOpen(false); }}
+                          className="flex items-center gap-4 group mt-1"
+                        >
+                          <div className="h-10 w-10 rounded-full bg-muted/60 group-hover:bg-red-100 dark:group-hover:bg-red-900/30 flex items-center justify-center shrink-0 transition-colors">
+                            <FaSignOutAlt className="h-4 w-4 text-foreground/70 group-hover:text-red-500" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-red-600 transition-colors">Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <SheetHeader className="px-5 pt-5 pb-4 border-b border-border/60">
+                      <SheetTitle className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                          <FaBuilding className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                        <span className="font-extrabold text-lg tracking-tight">
+                          Broker<span className="text-primary">Boss</span>
+                        </span>
+                      </SheetTitle>
+                    </SheetHeader>
+                    
+                    <div className="flex-1 overflow-y-auto flex flex-col">
+                      <div className="px-5 py-6 flex flex-col gap-4">
+                        <Button variant="default" size="default" className="w-full gap-2 rounded-xl py-6 shadow-sm text-base" asChild>
+                          <Link href="/login" onClick={() => setMobileOpen(false)}>
+                            <FaUser className="h-4 w-4" />
+                            Login to Account
+                          </Link>
+                        </Button>
+                        <Button variant="outline" size="default" onClick={() => { setMobileOpen(false); setRegisterOpen(true); }} className="w-full gap-2 rounded-xl py-6 text-base">
+                          <FaUserPlus className="h-4 w-4" />
+                          Register New Account
+                        </Button>
+                      </div>
+
+                      <div className="px-5 pb-8 pt-5 border-t border-border/60 flex flex-col gap-5 bg-muted/10 mt-auto">
+                        <Link href="/services" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaConciergeBell className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Services</span>
+                        </Link>
+                        <Link href="/contact" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaEnvelope className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Contact Us</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )}
               </SheetContent>
             </Sheet>
           </div>

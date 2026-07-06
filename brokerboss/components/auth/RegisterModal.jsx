@@ -68,7 +68,7 @@ export default function RegisterModal({ open, onClose }) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-[580px] p-6">
+      <DialogContent className="sm:max-w-[580px] p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-2xl font-bold">Register As</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -76,7 +76,7 @@ export default function RegisterModal({ open, onClose }) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {roles.map((role) => {
             const Icon = role.icon;
             return (
@@ -84,25 +84,34 @@ export default function RegisterModal({ open, onClose }) {
                 key={role.id}
                 id={`register-role-${role.id}`}
                 onClick={() => handleSelect(role)}
-                className={`flex-1 min-w-[120px] flex flex-col items-center gap-3 rounded-xl border-2 transition-all duration-200 p-5 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                className={`w-full flex sm:flex-col items-center sm:items-center text-left sm:text-center gap-3 sm:gap-3 rounded-xl border-2 transition-all duration-200 p-4 sm:p-5 cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                   role.tester
                     ? 'border-dashed border-muted-foreground/40 bg-muted/30 hover:border-primary hover:bg-accent hover:text-accent-foreground'
                     : 'border-border bg-card hover:border-primary hover:bg-accent hover:text-accent-foreground'
                 }`}
               >
                 <span
-                  className={`h-11 w-11 rounded-full flex items-center justify-center transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground ${
+                  className={`shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center transition-colors duration-200 group-hover:bg-primary group-hover:text-primary-foreground ${
                     role.tester ? 'bg-muted text-muted-foreground' : 'bg-accent'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </span>
-                <span className="font-semibold text-base leading-tight">{role.label}</span>
-                <span className="text-xs text-muted-foreground text-center leading-snug">
-                  {role.description}
-                </span>
+                <div className="flex flex-col gap-0.5 sm:gap-1 flex-1">
+                  <span className="font-semibold text-base leading-tight flex items-center gap-2">
+                    {role.label}
+                    {role.tester && (
+                      <span className="sm:hidden inline-block text-[9px] font-bold tracking-wider uppercase text-muted-foreground border border-dashed border-muted-foreground/40 rounded-full px-1.5 py-0.5 ml-1">
+                        Dev Only
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-xs text-muted-foreground leading-snug">
+                    {role.description}
+                  </span>
+                </div>
                 {role.tester && (
-                  <span className="text-[10px] font-bold tracking-wider uppercase text-muted-foreground border border-dashed border-muted-foreground/40 rounded-full px-2 py-0.5">
+                  <span className="hidden sm:inline-block text-[10px] font-bold tracking-wider uppercase text-muted-foreground border border-dashed border-muted-foreground/40 rounded-full px-2 py-0.5 mt-1">
                     Dev Only
                   </span>
                 )}
