@@ -51,8 +51,9 @@ export default async function PropertyDetailsPage({ params }) {
   
   const brokerName = property.broker?.name || property.contactName || property.owner || 'Unknown Broker';
   const brokerPhone = property.broker?.phone || property.contactPhone || '';
-  const brokerImage = property.broker?.image || property.thumbnail || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop';
-  const propertyImage = property.thumbnail || property.broker?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop';
+  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
+  const brokerImage = getValidImg(property.broker?.image) || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop';
+  const propertyImage = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-28 lg:pb-24">

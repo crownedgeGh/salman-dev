@@ -70,7 +70,7 @@ function Field({ id, label, required, error, children }) {
 // ── Main form ──────────────────────────────────────────────────────────────
 export default function PostPropertyForm() {
   const router = useRouter();
-  const { userProfile, isLoggedIn } = useAuth();
+  const { userProfile, isLoggedIn, userRole } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors]       = useState({});
 
@@ -140,10 +140,12 @@ export default function PostPropertyForm() {
       // Attach the logged-in user's ID as broker.id so /api/properties/mine can filter
       const payload = {
         ...form,
+        ownerType: userRole || 'Broker',
         broker: {
           id:    userProfile?._id?.toString() || userProfile?.id?.toString() || '',
           name:  userProfile?.name  || form.contactName  || '',
           phone: userProfile?.phone || form.contactPhone || '',
+          role:  userRole || 'broker',
         },
       };
       await api.post('/properties', payload);

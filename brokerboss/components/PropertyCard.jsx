@@ -124,16 +124,17 @@ export default function PropertyCard({ property, compact = false }) {
     if (callback) callback();
   };
 
-  // Broker fallback in case it's missing (e.g., from test data)
   const broker = property.broker || {
     name: 'BrokerBoss Agent',
     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
     phone: '+919876543210'
   };
   const brokerPhone = broker.phone || '+919876543210';
+  const displayRole = broker.role || property.ownerType || (broker.name?.toLowerCase().includes('owner') ? 'Owner' : 'Broker');
 
-  // Image Source - fallback to property image or broker image
-  const imageUrl = property.images?.[0] || broker.image || '/badge.png';
+  // Validate image URL to prevent dummy text from breaking the image
+  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
+  const imageUrl = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
 
   // Specifications logic: only collapse when there are 5 or 6 specs in total.
   // We combine the base specs and the AREA spec.
@@ -176,7 +177,7 @@ export default function PropertyCard({ property, compact = false }) {
               {broker.name}
             </span>
             <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium capitalize">
-              {broker.role || property.ownerType || 'Broker'}
+              {displayRole}
             </span>
             
             {/* Broker Hover Card */}
@@ -185,7 +186,7 @@ export default function PropertyCard({ property, compact = false }) {
                 <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
                 <div>
                   <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
-                  <p className="text-[10px] text-muted-foreground capitalize">{broker.role || property.ownerType || 'Broker'}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
                 </div>
               </div>
               <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">

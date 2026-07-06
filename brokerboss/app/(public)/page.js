@@ -129,12 +129,13 @@ function HeroCTA() {
 function FeaturedCard({ property }) {
   const badgeColor = typeBadgeColor[property.type] || 'bg-gray-100 text-gray-700';
 
-  // Fallback for missing broker data from test script
   const broker = property.broker || {
     name: 'BrokerBoss Agent',
     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
     phone: '+919876543210'
   };
+  const displayRole = broker.role || property.ownerType || (broker.name?.toLowerCase().includes('owner') ? 'Owner' : 'Broker');
+  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
 
   return (
     <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
@@ -144,7 +145,7 @@ function FeaturedCard({ property }) {
       */}
       <div className="relative w-full overflow-hidden bg-white" style={{ paddingTop: '75%' }}>
         <img
-          src={property.images?.[0] || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000'}
+          src={getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000'}
           alt={property.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -193,7 +194,7 @@ function FeaturedCard({ property }) {
               <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
               <div>
                 <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
-                <p className="text-[10px] text-muted-foreground capitalize">{broker.role || property.ownerType || 'Broker'}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
               </div>
             </div>
             <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">
