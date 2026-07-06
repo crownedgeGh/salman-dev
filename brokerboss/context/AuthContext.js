@@ -40,12 +40,22 @@ export function AuthProvider({ children }) {
   const register = async (role, profile) => {
     try {
       const api = (await import('@/lib/axios')).default;
-      // We assume profile contains name, email, password, etc.
-      const res = await api.post('/auth/register', { ...profile, role });
-      // After register, you might want to login automatically or just set state
+      let res;
+      if (profile instanceof FormData) {
+        profile.append('role', role);
+        res = await api.post('/auth/register', profile, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        res = await api.post('/auth/register', { ...profile, role });
+      }
+      
       setIsLoggedIn(true);
       setUserRole(role);
-      setUserProfile({ ...profile, _id: res.data.userId, id: res.data.userId });
+      
+      const profileData = profile instanceof FormData ? Object.fromEntries(profile.entries()) : profile;
+      setUserProfile({ ...profileData, _id: res.data.userId, id: res.data.userId });
+      
       return { success: true, data: res.data };
     } catch (error) {
       console.error("Registration failed:", error);

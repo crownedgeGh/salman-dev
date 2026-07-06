@@ -26,7 +26,7 @@ export default function LoginForm() {
   const router = useRouter();
   const { login } = useAuth();
   
-  const [form, setForm] = useState({ phone: '', password: '' });
+  const [form, setForm] = useState({ phone: '' });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +36,6 @@ export default function LoginForm() {
   const validate = () => {
     const e = {};
     if (!form.phone.trim()) e.phone = 'Phone number is required';
-    if (!form.password) e.password = 'Password is required';
     return e;
   };
 
@@ -54,7 +53,7 @@ export default function LoginForm() {
     setIsLoading(true);
     const email = `${form.phone}@example.com`;
     
-    const res = await login(email, form.password);
+    const res = await login(email, ''); // send empty password as we removed it
     setIsLoading(false);
     
     if (res && res.success) {
@@ -77,18 +76,6 @@ export default function LoginForm() {
             onChange={handleChange}
             className={inputClass}
             autoComplete="tel"
-          />
-        </FormField>
-
-        <FormField id="login-password" label="Password" icon={FaLock} error={errors.password}>
-          <input
-            id="login-password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            value={form.password}
-            onChange={handleChange}
-            className={inputClass}
           />
         </FormField>
       </div>

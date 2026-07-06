@@ -23,8 +23,9 @@ const initialState = {
   reraNumber: '',
   yearsOfExperience: '',
   bio: '',
-  password: '',
-  confirmPassword: '',
+  aadharFront: null,
+  aadharBack: null,
+  passportPhoto: null,
 };
 
 function FormField({ id, label, icon: Icon, error, children }) {
@@ -61,15 +62,16 @@ export default function BrokerForm() {
     if (!form.phone.trim()) e.phone = 'Phone number is required';
     if (!form.city.trim()) e.city = 'City is required';
     if (!form.areasOfOperation.trim()) e.areasOfOperation = 'Areas of operation are required';
-    if (!form.password) e.password = 'Password is required';
-    else if (form.password.length < 6) e.password = 'Password must be at least 6 characters';
-    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match';
     return e;
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, files } = e.target;
+    if (type === 'file') {
+      setForm((prev) => ({ ...prev, [name]: files[0] || null }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -79,9 +81,16 @@ export default function BrokerForm() {
     if (Object.keys(e2).length) { setErrors(e2); return; }
     
     const email = `${form.phone}@example.com`;
-    const password = form.password;
+    
+    const formData = new FormData();
+    Object.keys(form).forEach(key => {
+      if (form[key] !== null && form[key] !== '') {
+        formData.append(key, form[key]);
+      }
+    });
+    formData.append('email', email);
 
-    const res = await register('broker', { ...form, email, password });
+    const res = await register('broker', formData);
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);
@@ -198,27 +207,36 @@ export default function BrokerForm() {
           />
         </FormField>
 
-        <FormField id="broker-password" label="Password *" icon={FaCheckCircle} error={errors.password}>
+        <FormField id="broker-aadhar-front" label="Aadhar Card Front (JPG) (optional)" icon={FaIdCard} error={errors.aadharFront}>
           <input
-            id="broker-password"
-            name="password"
-            type="password"
-            placeholder="Min 6 characters"
-            value={form.password}
+            id="broker-aadhar-front"
+            name="aadharFront"
+            type="file"
+            accept=".jpg,.jpeg"
             onChange={handleChange}
-            className={inputClass}
+            className={`${inputClass} p-1.5`}
           />
         </FormField>
 
-        <FormField id="broker-confirm-password" label="Confirm Password *" icon={FaCheckCircle} error={errors.confirmPassword}>
+        <FormField id="broker-aadhar-back" label="Aadhar Card Back (JPG) (optional)" icon={FaIdCard} error={errors.aadharBack}>
           <input
-            id="broker-confirm-password"
-            name="confirmPassword"
-            type="password"
-            placeholder="Re-enter password"
-            value={form.confirmPassword}
+            id="broker-aadhar-back"
+            name="aadharBack"
+            type="file"
+            accept=".jpg,.jpeg"
             onChange={handleChange}
-            className={inputClass}
+            className={`${inputClass} p-1.5`}
+          />
+        </FormField>
+
+        <FormField id="broker-passport-photo" label="Passport Size Photo (JPG/PDF) (optional)" icon={FaUser} error={errors.passportPhoto}>
+          <input
+            id="broker-passport-photo"
+            name="passportPhoto"
+            type="file"
+            accept=".jpg,.jpeg,.pdf"
+            onChange={handleChange}
+            className={`${inputClass} p-1.5`}
           />
         </FormField>
       </div>

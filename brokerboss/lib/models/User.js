@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
   role: { type: String, default: 'user' },
   phone: { type: String },
   city: { type: String },
@@ -20,6 +19,9 @@ const userSchema = new mongoose.Schema({
   budgetRange: { type: String },
   propertyTypes: { type: [String] },
   status: { type: String, default: 'Active' },
+  aadharFront: { type: String },
+  aadharBack: { type: String },
+  passportPhoto: { type: String },
 }, { timestamps: true, strict: false });
 
 // Clear the model cache to ensure schema updates are applied during Next.js HMR
