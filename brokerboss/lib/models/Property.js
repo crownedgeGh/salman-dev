@@ -19,9 +19,5 @@ const propertySchema = new mongoose.Schema({
   }
 }, { timestamps: true, strict: false });
 
-// Clear the model cache to ensure schema updates are applied during Next.js HMR
-if (mongoose.models.Property) {
-  delete mongoose.models.Property;
-}
-
-export default mongoose.model('Property', propertySchema);
+const Property = mongoose.models.Property || mongoose.model('Property', propertySchema);
+export default Property;

@@ -22,9 +22,5 @@ const userSchema = new mongoose.Schema({
   passportPhoto: { type: String },
 }, { timestamps: true, strict: false });
 
-// Clear the model cache to ensure schema updates are applied during Next.js HMR
-if (mongoose.models.User) {
-  delete mongoose.models.User;
-}
-
-export default mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+export default User;
