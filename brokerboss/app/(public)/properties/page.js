@@ -363,31 +363,6 @@ function PropertiesPageInner() {
   return (
     <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-7xl">
 
-      {/* ── Always-visible Search Bar ─────────────────── */}
-      <div className="mb-6">
-        <div className="relative w-full">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-          <input
-            id="properties-search"
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by property name, type, location, broker…"
-            className="w-full pl-11 pr-11 py-3.5 rounded-2xl border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all shadow-sm"
-            aria-label="Search properties"
-            autoComplete="off"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
-              aria-label="Clear search"
-            >
-              <FaTimes className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* ── DISCOVERY STATE — shown when nothing selected ─── */}
       {!isSearchActive && (
