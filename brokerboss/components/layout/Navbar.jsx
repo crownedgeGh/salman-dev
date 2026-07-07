@@ -261,6 +261,12 @@ export default function Navbar() {
                       </div>
 
                       <div className="px-5 pb-8 pt-5 border-t border-border/60 flex flex-col gap-5 bg-muted/10 mt-2">
+                        <Link href="/brokers" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaIdCard className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Brokers</span>
+                        </Link>
                         <Link href="/services" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
                           <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
                             <FaConciergeBell className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
@@ -314,6 +320,12 @@ export default function Navbar() {
                       </div>
 
                       <div className="px-5 pb-8 pt-5 border-t border-border/60 flex flex-col gap-5 bg-muted/10 mt-auto">
+                        <Link href="/brokers" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
+                            <FaIdCard className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />
+                          </div>
+                          <span className="text-[15px] font-semibold text-foreground group-hover:text-primary transition-colors">Brokers</span>
+                        </Link>
                         <Link href="/services" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
                           <div className="h-10 w-10 rounded-full bg-muted/60 flex items-center justify-center shrink-0 group-hover:bg-muted transition-colors">
                             <FaConciergeBell className="h-4 w-4 text-foreground/70 group-hover:text-foreground" />

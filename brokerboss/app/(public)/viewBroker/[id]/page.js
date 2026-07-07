@@ -177,9 +177,9 @@ export default async function ViewBrokerPage({ params }) {
           </h3>
           
           {properties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-4">
               {properties.map(property => (
-                <div key={property._id.toString()} className="transform scale-[0.95] origin-top md:origin-center transition-all">
+                <div key={property._id.toString()} className="w-full transition-all">
                   <PropertyCard property={{...property, _id: property._id.toString()}} compact={true} />
                 </div>
               ))}

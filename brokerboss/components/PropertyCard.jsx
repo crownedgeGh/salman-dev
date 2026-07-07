@@ -236,9 +236,16 @@ export default function PropertyCard({ property, compact = false }) {
           {/* Header Row: Title & Action Icons */}
           <div className="flex items-start justify-between gap-2 md:gap-3 mb-1.5 md:mb-2">
             <div className="flex flex-col items-start gap-0.5 md:gap-1 flex-1 min-w-0">
-              <span className="inline-block bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border/50">
-                ID: {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="inline-block bg-muted text-muted-foreground text-[10px] font-bold px-2 py-0.5 rounded-md border border-border/50">
+                  ID: {property.propertyId || `BB${100 + ((parseInt(propId.replace(/\D/g, '')) || 7) % 900)}`}
+                </span>
+                {property.type && (
+                  <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-md border border-primary/20">
+                    {property.type}
+                  </span>
+                )}
+              </div>
               <h3 className="font-extrabold text-foreground text-sm md:text-base leading-snug line-clamp-2 hover:text-primary transition-colors">
                 {property.title}
               </h3>

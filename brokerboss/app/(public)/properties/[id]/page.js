@@ -7,7 +7,7 @@ import BackButton from '@/components/BackButton';
 import { 
   MapPin, Ruler, Phone, Building, Store, 
   CheckCircle, Calendar, Share2, Heart,
-  BedDouble, Bath, CarFront, Compass, Sofa, Users, Banknote, Info
+  BedDouble, Bath, CarFront, Compass, Sofa, Users, Banknote, Info, Home
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
@@ -127,6 +127,7 @@ export default async function PropertyDetailsPage({ params }) {
               </h3>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-5 md:gap-y-8 gap-x-3 md:gap-x-4">
+                <SpecItem icon={<Home className="w-5 h-5" />} label="Type" value={type} />
                 <SpecItem icon={<Ruler className="w-5 h-5" />} label="Area" value={area} />
                 <SpecItem icon={<BedDouble className="w-5 h-5" />} label="Bedrooms" value={bedrooms} />
                 <SpecItem icon={<Bath className="w-5 h-5" />} label="Bathrooms" value={bathrooms} />
