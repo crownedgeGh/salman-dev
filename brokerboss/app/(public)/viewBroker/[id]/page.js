@@ -61,15 +61,12 @@ export default async function ViewBrokerPage({ params }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 md:py-10">
         
         {/* Profile Header Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden mb-6 md:mb-8">
-          <div className="absolute top-0 left-0 w-full h-32 bg-primary/10"></div>
-          
-          <div className="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-6 pt-12 md:pt-16">
-            <div className="h-32 w-32 md:h-40 md:w-40 rounded-full overflow-hidden border-4 border-white dark:border-gray-900 shadow-xl bg-gray-100 shrink-0">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-800 mb-6 md:mb-8 flex flex-col md:flex-row items-center md:items-start gap-6">
+            <div className="h-24 w-24 md:h-32 md:w-32 rounded-full overflow-hidden border-4 border-primary/10 dark:border-primary/20 shadow-md bg-gray-100 shrink-0">
               <img src={profileImage} alt={name} className="h-full w-full object-cover" />
             </div>
             
-            <div className="flex-1 text-center md:text-left">
+            <div className="flex-1 text-center md:text-left pt-2 md:pt-4">
               <Badge className="mb-2 bg-primary/10 text-primary hover:bg-primary/20 border-none capitalize">{role}</Badge>
               <h1 className="text-2xl md:text-4xl font-extrabold text-foreground mb-2">{name}</h1>
               <p className="flex items-center justify-center md:justify-start text-muted-foreground text-sm font-medium">
@@ -99,7 +96,6 @@ export default async function ViewBrokerPage({ params }) {
               )}
             </div>
           </div>
-        </div>
 
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-8 md:mb-12">

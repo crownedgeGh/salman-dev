@@ -11,7 +11,7 @@ export const metadata = {
 
 export default async function BrokersPage() {
   let brokers = [];
-  
+
   try {
     await connectToDatabase();
     // Fetch users who are brokers, sorting by latest joined or maybe by name
@@ -28,7 +28,7 @@ export default async function BrokersPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        
+
         <div className="mb-8 md:mb-10 text-center md:text-left">
           <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Our Verified Brokers</h1>
           <p className="text-muted-foreground max-w-2xl text-sm md:text-base">
@@ -54,29 +54,24 @@ export default async function BrokersPage() {
 
               return (
                 <Link href={brokerUrl} key={broker._id.toString()} className="group">
-                  <div className="bg-white dark:bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border/60 group-hover:border-primary/30 h-full flex flex-col">
+                  <div className="bg-white dark:bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-border/60 group-hover:border-primary/30 h-full flex flex-col p-6">
                     
-                    {/* Header Image Area */}
-                    <div className="h-24 bg-gradient-to-r from-primary/10 to-primary/5 relative">
-                      <div className="absolute -bottom-10 left-6 h-20 w-20 rounded-full overflow-hidden border-4 border-white dark:border-card shadow-md bg-gray-100">
+                    {/* Header Image and Title Area */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-sm bg-gray-100 shrink-0">
                         <img src={profileImage} alt={name} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-primary/90 hover:bg-primary border-none shadow-sm capitalize">
-                          {role}
-                        </Badge>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">{name}</h3>
+                        <div className="flex items-center text-muted-foreground text-xs">
+                          <MapPin className="h-3 w-3 mr-1 text-primary/70 shrink-0" />
+                          <span className="truncate">{city}</span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Content Area */}
-                    <div className="pt-12 pb-6 px-6 flex-1 flex flex-col">
-                      <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">{name}</h3>
-                      
-                      <div className="flex items-center text-muted-foreground text-xs mb-4">
-                        <MapPin className="h-3 w-3 mr-1 text-primary/70 shrink-0" />
-                        <span className="truncate">{city}</span>
-                      </div>
-
+                    <div className="flex-1 flex flex-col">
                       <div className="mt-auto space-y-2">
                         {firmName && (
                           <div className="flex items-center gap-2 text-xs text-foreground/80 bg-gray-50 dark:bg-muted/30 p-2 rounded-lg">
