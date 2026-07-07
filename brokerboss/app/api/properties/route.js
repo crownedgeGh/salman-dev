@@ -16,6 +16,12 @@ export async function GET(request) {
     if (type) query.type = { $regex: new RegExp(type, 'i') };
     if (purpose) query.purpose = { $regex: new RegExp(purpose, 'i') };
     if (locality) query.locality = { $regex: new RegExp(locality, 'i') };
+    
+    // Only fetch active properties for public users
+    const admin = searchParams.get('admin');
+    if (admin !== 'true') {
+      query.status = { $nin: ['Disable', 'Sold Out'] };
+    }
 
     const properties = await Property.find(query).sort({ createdAt: -1 });
     return NextResponse.json(properties);

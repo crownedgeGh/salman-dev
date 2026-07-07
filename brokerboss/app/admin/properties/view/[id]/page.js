@@ -28,7 +28,9 @@ import { Badge } from "@/components/ui/badge";
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
   Sold: "border-gray-300 text-gray-600 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-400",
+  "Sold Out": "border-gray-300 text-gray-600 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-400",
   Pending: "border-yellow-300 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-500",
+  Disable: "border-red-300 text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-500",
 };
 
 export default function ViewPropertyPage({ params }) {
@@ -36,6 +38,20 @@ export default function ViewPropertyPage({ params }) {
   
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const handleUpdateStatus = async (newStatus) => {
+    try {
+      setActionLoading(true);
+      await api.put(`/properties/${id}`, { status: newStatus });
+      setProperty({ ...property, status: newStatus });
+    } catch (err) {
+      console.error("Failed to update status", err);
+      alert("Failed to update property status");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   useEffect(() => {
     api.get(`/properties/${id}`)
@@ -74,13 +90,30 @@ export default function ViewPropertyPage({ params }) {
           </p>
         </div>
 
-        {/* Edit Button */}
-        <Button asChild className="flex items-center gap-2 self-start sm:self-auto">
-          <Link href={`/admin/properties/${id}`}>
-            <Pencil className="w-4 h-4" />
-            <span>Edit Property</span>
-          </Link>
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          {property?.status !== "Disable" && (
+            <Button onClick={() => handleUpdateStatus("Disable")} disabled={actionLoading} variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20">
+              Disable
+            </Button>
+          )}
+          {property?.status !== "Sold Out" && (
+            <Button onClick={() => handleUpdateStatus("Sold Out")} disabled={actionLoading} variant="outline" className="text-gray-600 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">
+              Sold Out
+            </Button>
+          )}
+          {(property?.status === "Disable" || property?.status === "Sold Out") && (
+            <Button onClick={() => handleUpdateStatus("Active")} disabled={actionLoading} variant="outline" className="text-green-600 border-green-200 hover:bg-green-50 dark:hover:bg-green-900/20">
+              Mark Active
+            </Button>
+          )}
+          <Button asChild className="flex items-center gap-2">
+            <Link href={`/admin/properties/${id}`}>
+              <Pencil className="w-4 h-4" />
+              <span>Edit Property</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Details Container */}

@@ -43,7 +43,7 @@ export default function PropertiesPage() {
 
   const fetchProperties = () => {
     setIsLoading(true);
-    api.get('/properties').then(res => setProperties(res.data)).catch(console.error).finally(() => setIsLoading(false));
+    api.get('/properties?admin=true').then(res => setProperties(res.data)).catch(console.error).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {

@@ -222,7 +222,7 @@ export default async function HomePage() {
   let featuredProperties = [];
   try {
     await connectToDatabase();
-    const properties = await Property.find({}).sort({ createdAt: -1 }).limit(4).lean();
+    const properties = await Property.find({ status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(4).lean();
     // Convert ObjectIds to strings
     featuredProperties = JSON.parse(JSON.stringify(properties));
   } catch (err) {

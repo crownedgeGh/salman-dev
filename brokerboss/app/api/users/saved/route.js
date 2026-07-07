@@ -30,7 +30,7 @@ export async function GET(request) {
     const savedIds = (user.savedProperties || []).map(id => id.toString());
     
     // Fetch the properties
-    const properties = await Property.find({ _id: { $in: savedIds } }).sort({ createdAt: -1 }).lean();
+    const properties = await Property.find({ _id: { $in: savedIds }, status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).lean();
     
     // Convert ObjectIds to strings to avoid hydration/rendering issues and ensure _id is a string
     const sanitizedProperties = properties.map(p => ({
