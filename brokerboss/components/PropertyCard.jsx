@@ -517,7 +517,7 @@ export default function PropertyCard({ property, compact = false }) {
           <p className="text-center text-muted-foreground text-sm mb-6">
             Are you sure you want to remove this property from your saved list?
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex gap-3 w-full">
             <Button 
               variant="outline" 
               className="flex-1 rounded-xl h-12"
