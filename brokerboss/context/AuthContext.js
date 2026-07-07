@@ -8,14 +8,17 @@ const AuthContext = createContext({
   userProfile: null,    // role-specific profile object | null
   register: () => {},
   logout: () => {},
-  toggleLogin: () => {}, // @deprecated — use logout() instead
+  toggleLogin: () => {}, // @deprecated
+  authModalOpen: false,
+  setAuthModalOpen: () => {},
 });
 
 export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true); // true until first profile check resolves
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   // Check session on mount
   useEffect(() => {
@@ -94,7 +97,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, authLoading, userRole, userProfile, register, login, logout, toggleLogin, updateProfile }}>
+    <AuthContext.Provider value={{ isLoggedIn, authLoading, userRole, userProfile, register, login, logout, toggleLogin, updateProfile, authModalOpen, setAuthModalOpen }}>
       {children}
     </AuthContext.Provider>
   );

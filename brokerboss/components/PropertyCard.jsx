@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Bookmark,
   Share2,
@@ -14,6 +21,8 @@ import {
   MapPin,
   User,
   CheckCircle2,
+  Link,
+  Copy,
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
@@ -96,10 +105,21 @@ function getPropertySpecs(property) {
 
 export default function PropertyCard({ property, compact = false }) {
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
+  const { isLoggedIn, userProfile, updateProfile, setAuthModalOpen } = useAuth();
+  
+  const propId = property._id ? property._id.toString() : (property.id ? property.id.toString() : null);
+  
+  const initialIsLiked = (userProfile?.savedProperties || []).some(id => id && id.toString() === propId) || false;
+  
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isClient, setIsClient] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [fetchedImage, setFetchedImage] = useState(null);
+
+  useEffect(() => {
+    const isSaved = (userProfile?.savedProperties || []).some(id => id && id.toString() === propId);
+    setIsLiked(isSaved);
+  }, [userProfile?.savedProperties, propId]);
 
   useEffect(() => {
     setIsClient(true);
@@ -129,7 +149,7 @@ export default function PropertyCard({ property, compact = false }) {
   const { photoCount, updatedText, formattedPrice, depositText, specs } = getPropertySpecs(property);
   const isRent = property.purpose === 'Rent';
 
-  const propId = property._id || property.id;
+
   const handleCardClick = () => {
     if (propId) router.push(`/properties/${propId}`);
   };
@@ -137,6 +157,40 @@ export default function PropertyCard({ property, compact = false }) {
   const handleAction = (e, callback) => {
     e.stopPropagation();
     if (callback) callback();
+  };
+
+  const toggleBookmark = async (e) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      setAuthModalOpen(true);
+      return;
+    }
+    
+    const wasLiked = isLiked;
+    setIsLiked(!wasLiked);
+    
+    try {
+      const res = await fetch('/api/users/saved', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ propertyId: propId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        updateProfile({ savedProperties: data.savedProperties });
+      } else {
+        setIsLiked(wasLiked);
+      }
+    } catch (err) {
+      setIsLiked(wasLiked);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (propId) {
+      navigator.clipboard.writeText(window.location.origin + `/properties/${propId}`);
+      alert("Link copied to clipboard!");
+    }
   };
 
   const broker = property.broker || {
@@ -256,27 +310,49 @@ export default function PropertyCard({ property, compact = false }) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={(e) => handleAction(e, () => setIsLiked(!isLiked))}
+                onClick={toggleBookmark}
                 className={`h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground ${
                   isLiked ? 'text-primary fill-primary' : 'hover:text-primary'
                 }`}
                 aria-label="Save property"
               >
-                <Bookmark className="h-4 w-4" />
+                <Bookmark className="h-4 w-4" fill={isLiked ? "currentColor" : "none"} />
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => handleAction(e, () => {
-                  if (navigator.share && propId) {
-                    navigator.share({ title: property.title, url: window.location.origin + `/properties/${propId}` });
-                  }
-                })}
-                className="h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground hover:text-blue-500"
-                aria-label="Share property"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 w-8 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950/20 text-muted-foreground hover:text-blue-500"
+                    aria-label="Share property"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 z-50">
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`https://wa.me/?text=Check out this property: ${encodeURIComponent(property.title)} at ${window.location.origin + `/properties/${propId}`}`, '_blank');
+                    }}
+                  >
+                    <FaWhatsapp className="h-4 w-4 text-green-500" />
+                    <span>WhatsApp</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer flex items-center gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopyLink();
+                    }}
+                  >
+                    <Copy className="h-4 w-4 text-blue-500" />
+                    <span>Copy Link</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 

@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
   status: { type: String, default: 'Active' },
   aadhar: { type: String },
   passportPhoto: { type: String },
+  savedProperties: [{ type: String }],
 }, { timestamps: true, strict: false });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);

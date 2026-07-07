@@ -30,6 +30,7 @@ import {
   FaChevronRight,
   FaIdCard,
   FaList,
+  FaBookmark,
 } from 'react-icons/fa';
 
 const navLinks = [
@@ -72,9 +73,8 @@ function ThemeToggle() {
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isLoggedIn, userRole, userProfile, logout } = useAuth();
+  const { isLoggedIn, userRole, userProfile, logout, authModalOpen, setAuthModalOpen } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
 
   const isActive = (href) =>
@@ -88,7 +88,7 @@ export default function Navbar() {
 
   return (
     <>
-      <RegisterModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
+      <RegisterModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       <UserPanelSheet open={panelOpen} onClose={() => setPanelOpen(false)} />
 
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur-md">
@@ -170,7 +170,7 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   size="default"
-                  onClick={() => setRegisterOpen(true)}
+                  onClick={() => setAuthModalOpen(true)}
                   className="gap-2 text-sm font-semibold px-4"
                   id="navbar-register"
                 >
@@ -238,6 +238,16 @@ export default function Navbar() {
                         <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                           My Account
                         </p>
+                        
+                        <Link href="/saved" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
+                          <div className="h-10 w-10 rounded-full bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
+                            <FaBookmark className="h-4 w-4 text-orange-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-semibold text-foreground group-hover:text-orange-600 transition-colors">Saved Properties</p>
+                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">View your bookmarked properties</p>
+                          </div>
+                        </Link>
                         
                         <Link href="/user/listings" onClick={() => setMobileOpen(false)} className="flex items-center gap-4 group">
                           <div className="h-10 w-10 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
@@ -313,7 +323,7 @@ export default function Navbar() {
                             Login to Account
                           </Link>
                         </Button>
-                        <Button variant="outline" size="default" onClick={() => { setMobileOpen(false); setRegisterOpen(true); }} className="w-full gap-2 rounded-xl py-6 text-base">
+                        <Button variant="outline" size="default" onClick={() => { setMobileOpen(false); setAuthModalOpen(true); }} className="w-full gap-2 rounded-xl py-6 text-base">
                           <FaUserPlus className="h-4 w-4" />
                           Register New Account
                         </Button>

@@ -14,6 +14,7 @@ import {
   FaChevronRight,
   FaSignOutAlt,
   FaPlusCircle,
+  FaBookmark,
 } from 'react-icons/fa';
 
 const roleLabels = { buyer: 'Buyer', owner: 'Owner', broker: 'Broker' };
@@ -36,6 +37,15 @@ const menuItems = [
     href: '/user/profile',
     color: 'text-violet-500',
     bg: 'bg-violet-50 dark:bg-violet-950/30',
+  },
+  {
+    id: 'saved-properties',
+    label: 'Saved Properties',
+    description: 'View your bookmarked properties',
+    icon: FaBookmark,
+    href: '/saved',
+    color: 'text-orange-500',
+    bg: 'bg-orange-50 dark:bg-orange-950/30',
   },
 ];
 
