@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -105,6 +105,7 @@ function getPropertySpecs(property) {
 
 export default function PropertyCard({ property, compact = false }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoggedIn, userProfile, updateProfile, setAuthModalOpen } = useAuth();
   
   const propId = property._id ? property._id.toString() : (property.id ? property.id.toString() : null);
@@ -115,6 +116,7 @@ export default function PropertyCard({ property, compact = false }) {
   const [isClient, setIsClient] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [fetchedImage, setFetchedImage] = useState(null);
+  const [showUnsaveConfirm, setShowUnsaveConfirm] = useState(false);
 
   useEffect(() => {
     const isSaved = (userProfile?.savedProperties || []).some(id => id && id.toString() === propId);
@@ -165,6 +167,17 @@ export default function PropertyCard({ property, compact = false }) {
       setAuthModalOpen(true);
       return;
     }
+
+    if (pathname === '/saved' && isLiked) {
+      setShowUnsaveConfirm(true);
+      return;
+    }
+    
+    await executeToggleBookmark();
+  };
+
+  const executeToggleBookmark = async (e) => {
+    if (e) e.stopPropagation();
     
     const wasLiked = isLiked;
     setIsLiked(!wasLiked);
@@ -178,12 +191,18 @@ export default function PropertyCard({ property, compact = false }) {
       if (res.ok) {
         const data = await res.json();
         updateProfile({ savedProperties: data.savedProperties });
+        
+        // If we are on the /saved page and just unsaved it, we might want to reload the page or trigger a refresh.
+        // But Next.js soft-navigation or letting the parent handle it is better.
+        // For now, it will disappear on next load, but will just visually become unliked immediately.
       } else {
         setIsLiked(wasLiked);
       }
     } catch (err) {
       setIsLiked(wasLiked);
     }
+    
+    setShowUnsaveConfirm(false);
   };
 
   const handleCopyLink = () => {
@@ -219,6 +238,7 @@ export default function PropertyCard({ property, compact = false }) {
   const visibleFeatures = (hasCollapse && !isExpanded) ? allFeatures.slice(0, 3) : allFeatures;
 
   return (
+    <>
     <Card
       onClick={handleCardClick}
       className={`group relative flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all duration-300 border border-border/80 bg-white dark:bg-card cursor-pointer rounded-2xl p-0 ${
@@ -476,5 +496,49 @@ export default function PropertyCard({ property, compact = false }) {
         </div>
       </div>
     </Card>
+
+    {/* Unsave Confirmation Modal */}
+    {showUnsaveConfirm && (
+      <div 
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowUnsaveConfirm(false);
+        }}
+      >
+        <div 
+          className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mx-auto w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mb-5">
+            <Bookmark className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-bold text-center text-foreground mb-2">Remove Property?</h3>
+          <p className="text-center text-muted-foreground text-sm mb-6">
+            Are you sure you want to remove this property from your saved list?
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button 
+              variant="outline" 
+              className="flex-1 rounded-xl h-12"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowUnsaveConfirm(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              className="flex-1 rounded-xl h-12"
+              onClick={executeToggleBookmark}
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

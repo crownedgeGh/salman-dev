@@ -7,7 +7,7 @@ import { Bookmark, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function SavedPropertiesPage() {
-  const { isLoggedIn, authLoading, setAuthModalOpen } = useAuth();
+  const { isLoggedIn, authLoading, setAuthModalOpen, userProfile } = useAuth();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,6 +59,11 @@ export default function SavedPropertiesPage() {
     );
   }
 
+  const displayedProperties = properties.filter(p => {
+    const pId = p._id ? p._id.toString() : (p.id ? p.id.toString() : null);
+    return userProfile?.savedProperties?.includes(pId);
+  });
+
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
       <div className="flex items-center gap-3 mb-8">
@@ -67,11 +72,11 @@ export default function SavedPropertiesPage() {
         </div>
         <div>
           <h1 className="text-3xl font-extrabold text-foreground">Saved Properties</h1>
-          <p className="text-muted-foreground font-medium">You have {properties.length} bookmarked properties</p>
+          <p className="text-muted-foreground font-medium">You have {displayedProperties.length} bookmarked properties</p>
         </div>
       </div>
 
-      {properties.length === 0 ? (
+      {displayedProperties.length === 0 ? (
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-12 text-center border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center">
           <Bookmark className="h-16 w-16 text-gray-300 dark:text-gray-700 mb-6" />
           <h3 className="text-xl font-bold text-foreground mb-2">No saved properties yet</h3>
@@ -81,7 +86,7 @@ export default function SavedPropertiesPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {properties.map((property) => (
+          {displayedProperties.map((property) => (
             <PropertyCard key={property._id} property={property} />
           ))}
         </div>
