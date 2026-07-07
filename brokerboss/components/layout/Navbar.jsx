@@ -245,7 +245,6 @@ export default function Navbar() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[15px] font-semibold text-foreground group-hover:text-orange-600 transition-colors">Saved Properties</p>
-                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">View your bookmarked properties</p>
                           </div>
                         </Link>
                         
@@ -255,7 +254,6 @@ export default function Navbar() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[15px] font-semibold text-foreground group-hover:text-blue-600 transition-colors">My Listings</p>
-                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">View & manage your properties</p>
                           </div>
                         </Link>
 
@@ -265,7 +263,6 @@ export default function Navbar() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-[15px] font-semibold text-foreground group-hover:text-violet-600 transition-colors">My Profile</p>
-                            <p className="text-[13px] text-muted-foreground mt-0.5 truncate">Edit your account details</p>
                           </div>
                         </Link>
                       </div>

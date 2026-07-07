@@ -25,9 +25,6 @@ export default function PropertyGrid({ properties, compact = false }) {
 
   return (
     <div>
-      <p className="text-sm text-muted-foreground mb-3 font-medium">
-        Showing <span className="text-foreground">{properties.length}</span> propert{properties.length === 1 ? 'y' : 'ies'}
-      </p>
       <div className={`flex flex-col ${compact ? 'gap-1.5 md:gap-2' : 'gap-2 md:gap-4'}`}>
         {properties.map((property, idx) => (
           <PropertyCard key={property._id || property.id || idx} property={property} compact={compact} />

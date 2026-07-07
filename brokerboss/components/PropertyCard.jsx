@@ -490,7 +490,7 @@ export default function PropertyCard({ property, compact = false }) {
           >
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs h-9 shadow-sm rounded-lg transition-colors flex items-center justify-center gap-1.5">
               <Phone className="h-3.5 w-3.5" />
-              Contact Broker
+              Contact {displayRole}
             </Button>
           </a>
         </div>

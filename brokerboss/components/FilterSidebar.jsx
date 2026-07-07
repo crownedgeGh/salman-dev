@@ -16,25 +16,7 @@ export default function FilterSidebar({ filters, onFilterChange, onClear }) {
   };
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FaFilter className="h-4 w-4 text-muted-foreground" />
-          <h2 className="font-semibold text-sm">Filters</h2>
-        </div>
-        {hasActiveFilters && (
-          <button
-            onClick={onClear}
-            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-            aria-label="Clear all filters"
-          >
-            <FaTimes className="h-3 w-3" />
-            Clear All
-          </button>
-        )}
-      </div>
-
-      <Separator />
+    <div className="space-y-4 pb-6">
 
       {/* Property Type */}
       <div>

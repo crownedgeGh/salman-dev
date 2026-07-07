@@ -8,7 +8,7 @@ import FilterSidebar from '@/components/FilterSidebar';
 import FilterSheet from '@/components/FilterSheet';
 import {
   FaSearch, FaTimes, FaHome, FaBuilding, FaChartArea, FaStore,
-  FaMapMarkerAlt, FaArrowRight, FaWarehouse, FaTag, FaBolt,
+  FaMapMarkerAlt, FaArrowRight, FaWarehouse, FaTag, FaBolt, FaSlidersH
 } from 'react-icons/fa';
 
 // ─── constants ───────────────────────────────────────────────
@@ -190,8 +190,11 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
   if (pills.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mb-4 p-3 bg-primary/5 border border-primary/20 rounded-xl">
-      <span className="text-xs font-semibold text-primary">Filters:</span>
+    <div className="flex flex-wrap items-center gap-2 mb-4 p-2 sm:p-2.5 bg-primary/5 border border-primary/20 rounded-xl cursor-pointer hover:bg-primary/10 transition-colors">
+      <div className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground px-2.5 py-1.5 rounded-lg text-xs font-bold shadow-sm">
+        <FaSlidersH className="h-3 w-3" />
+        Filters
+      </div>
       {pills.map(({ key, label }) => (
         <span
           key={key}
@@ -199,7 +202,10 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
         >
           {label}
           <button
-            onClick={() => key === '__search' ? onClearSearch() : onClearFilter(key)}
+            onClick={(e) => {
+              e.stopPropagation();
+              key === '__search' ? onClearSearch() : onClearFilter(key);
+            }}
             className="text-muted-foreground hover:text-destructive transition-colors ml-0.5"
           >
             <FaTimes className="h-2.5 w-2.5" />
@@ -207,7 +213,10 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
         </span>
       ))}
       <button
-        onClick={onClearAll}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClearAll();
+        }}
         className="ml-auto text-xs text-muted-foreground hover:text-destructive underline underline-offset-2 transition-colors"
       >
         Clear all
@@ -392,22 +401,32 @@ function PropertiesPageInner() {
       {/* ── RESULTS STATE — shown after selection ─────────── */}
       {isSearchActive && (
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-          {/* Active filter pills */}
-          <ActiveFilterPills
-            filters={filters}
-            searchQuery={searchQuery}
-            onClearFilter={handleClearFilter}
-            onClearSearch={() => setSearchQuery('')}
-            onClearAll={handleClearAll}
-          />
-
-          {/* Mobile filter trigger */}
-          <div className="mb-4 md:hidden">
+          {/* Active filter pills (Mobile Trigger & Desktop Display) */}
+          <div className="md:hidden">
             <FilterSheet
               filters={filters}
               onFilterChange={handleFilterChange}
               onClear={handleClearAll}
-              activeCount={activeCount}
+            >
+              <div>
+                <ActiveFilterPills
+                  filters={filters}
+                  searchQuery={searchQuery}
+                  onClearFilter={handleClearFilter}
+                  onClearSearch={() => setSearchQuery('')}
+                  onClearAll={handleClearAll}
+                />
+              </div>
+            </FilterSheet>
+          </div>
+          
+          <div className="hidden md:block">
+            <ActiveFilterPills
+              filters={filters}
+              searchQuery={searchQuery}
+              onClearFilter={handleClearFilter}
+              onClearSearch={() => setSearchQuery('')}
+              onClearAll={handleClearAll}
             />
           </div>
 
