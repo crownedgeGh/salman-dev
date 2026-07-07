@@ -35,6 +35,7 @@ import {
 const navLinks = [
   { href: '/', label: 'Home', icon: FaHome },
   { href: '/properties', label: 'Properties', icon: FaBuilding },
+  { href: '/brokers', label: 'Brokers', icon: FaIdCard },
   { href: '/services', label: 'Services', icon: FaConciergeBell },
   { href: '/contact', label: 'Contact Us', icon: FaEnvelope },
 ];

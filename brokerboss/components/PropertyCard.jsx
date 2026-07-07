@@ -193,9 +193,18 @@ export default function PropertyCard({ property, compact = false }) {
 
         {/* Below Image Section (Desktop & Mobile unified) */}
         <div className="px-4 py-2.5 md:p-3 bg-gray-50/50 dark:bg-muted/10 flex flex-col gap-1 md:gap-1.5 md:border-t border-b md:border-b-0 border-border/40 text-xs overflow-visible">
-          <div className="flex items-center gap-1.5 text-muted-foreground relative group/broker">
+          <div 
+            className="flex items-center gap-1.5 text-muted-foreground relative group/broker cursor-pointer"
+            onClick={(e) => {
+              const bId = property.broker?.id || property.userId;
+              if (bId) {
+                e.stopPropagation();
+                router.push(`/viewBroker/${bId}`);
+              }
+            }}
+          >
             <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-            <span className="font-semibold text-foreground truncate cursor-pointer hover:underline">
+            <span className="font-semibold text-foreground truncate group-hover/broker:underline">
               {broker.name}
             </span>
             <span className="text-[10px] bg-gray-200/60 dark:bg-muted text-muted-foreground px-1.5 py-0.2 rounded font-medium capitalize">
@@ -203,15 +212,15 @@ export default function PropertyCard({ property, compact = false }) {
             </span>
             
             {/* Broker Hover Card */}
-            <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50">
+            <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
               <div className="flex items-center gap-3">
                 <img src={validBrokerImage} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
                 <div>
-                  <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
+                  <p className="font-bold text-sm text-foreground leading-tight group-hover/broker:underline">{broker.name}</p>
                   <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
                 </div>
               </div>
-              <div className="mt-2 text-xs text-muted-foreground font-medium">
+              <div className="mt-2 text-xs text-muted-foreground font-medium px-1">
                 <Phone className="h-3 w-3 inline mr-1" /> {broker.phone}
               </div>
             </div>
