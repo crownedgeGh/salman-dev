@@ -23,7 +23,11 @@ export default async function BrokersPage() {
     console.error("Failed to fetch brokers:", error);
   }
 
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')) ? img : null;
+  const getValidImg = (img) => {
+    if (typeof img !== 'string' || !img.trim()) return null;
+    if (img.includes('unsplash.com')) return null;
+    return img.startsWith('http') || img.startsWith('/') || img.startsWith('data:') ? img : null;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 lg:py-12">
@@ -49,7 +53,7 @@ export default async function BrokersPage() {
               const city = broker.city || 'Not specified';
               const firmName = broker.firmName || '';
               const yearsOfExperience = broker.yearsOfExperience ? `${broker.yearsOfExperience} Yrs` : '';
-              const profileImage = getValidImg(broker.passportPhoto) || getValidImg(broker.image) || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop';
+              const profileImage = getValidImg(broker.passportPhoto) || getValidImg(broker.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569`;
               const brokerUrl = `/viewBroker/${broker._id.toString()}`;
 
               return (

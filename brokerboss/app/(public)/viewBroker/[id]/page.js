@@ -45,8 +45,12 @@ export default async function ViewBrokerPage({ params }) {
   const yearsOfExperience = user.yearsOfExperience ? `${user.yearsOfExperience} Years` : '';
   const bio = user.bio || user.description || 'No bio provided for this profile.';
   
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')) ? img : null;
-  const profileImage = getValidImg(user.passportPhoto) || getValidImg(user.image) || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop';
+  const getValidImg = (img) => {
+    if (typeof img !== 'string' || !img.trim()) return null;
+    if (img.includes('unsplash.com')) return null;
+    return img.startsWith('http') || img.startsWith('/') || img.startsWith('data:') ? img : null;
+  };
+  const profileImage = getValidImg(user.passportPhoto) || getValidImg(user.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569`;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-28 lg:pb-12">

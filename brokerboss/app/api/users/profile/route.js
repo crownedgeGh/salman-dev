@@ -62,6 +62,20 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    // Update embedded broker information in properties
+    if (data.name || data.passportPhoto || data.image || data.phone) {
+      const updateFields = {};
+      if (data.name) updateFields['broker.name'] = data.name;
+      if (data.passportPhoto || data.image) updateFields['broker.image'] = data.passportPhoto || data.image;
+      if (data.phone) updateFields['broker.phone'] = data.phone;
+      
+      const Property = (await import('@/lib/models/Property')).default;
+      await Property.updateMany(
+        { 'broker.id': decoded.userId },
+        { $set: updateFields }
+      );
+    }
+
     return NextResponse.json(user);
   } catch (error) {
     console.error("Error updating profile:", error);

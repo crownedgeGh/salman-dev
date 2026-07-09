@@ -12,6 +12,7 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
   FaEdit,
+  FaCamera,
 } from 'react-icons/fa';
 
 // ─── Role field definitions ───────────────────────────────────────────────────
@@ -172,6 +173,33 @@ export default function MyProfilePage() {
     }
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('error', 'Image size should be less than 2MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64 = event.target.result;
+      setForm(prev => ({ ...prev, passportPhoto: base64 }));
+      try {
+        setSaving(true);
+        const res = await api.put('/users/profile', { passportPhoto: base64 });
+        updateProfile(res.data);
+        showToast('success', 'Profile picture updated successfully!');
+      } catch (err) {
+        showToast('error', 'Failed to upload profile picture.');
+      } finally {
+        setSaving(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   if (!isLoggedIn) return null;
 
   return (
@@ -227,8 +255,29 @@ export default function MyProfilePage() {
 
         {/* ── Read-only Info ──────────────────────────── */}
         <div className="bg-card border border-border/60 rounded-2xl p-5 flex flex-col gap-4">
-          <h2 className="text-sm font-bold text-foreground">Account Info</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-foreground">Account Info</h2>
+          </div>
+          
+          <div className="flex items-center gap-5 mb-2">
+            <div className="relative group shrink-0">
+              <img 
+                src={userProfile?.passportPhoto || userProfile?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`} 
+                alt="Profile" 
+                className="w-20 h-20 rounded-full object-cover border-2 border-border shadow-sm bg-muted"
+              />
+              <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:scale-110 transition-transform shadow-md hover:bg-primary/90 flex items-center justify-center">
+                <FaCamera className="w-3.5 h-3.5" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={saving} />
+              </label>
+            </div>
+            <div>
+              <p className="font-bold text-lg text-foreground">{userProfile?.name || 'User'}</p>
+              <p className="text-sm text-muted-foreground capitalize">{roleLabels[userRole] || userRole || 'User'}</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-border/40 pt-4">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Mobile Number</label>
               <p className="text-sm text-foreground bg-muted/40 border border-border rounded-xl px-4 py-3 select-all break-all">

@@ -20,7 +20,8 @@ import {
   Briefcase,
   Hash,
   Clock,
-  Car
+  Car,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,20 @@ export default function ViewPropertyPage({ params }) {
     } catch (err) {
       console.error("Failed to update status", err);
       alert("Failed to update property status");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleToggleFeatured = async () => {
+    try {
+      setActionLoading(true);
+      const newFeaturedStatus = !property.isFeatured;
+      await api.put(`/properties/${id}`, { isFeatured: newFeaturedStatus });
+      setProperty({ ...property, isFeatured: newFeaturedStatus });
+    } catch (err) {
+      console.error("Failed to update featured status", err);
+      alert("Failed to update featured status");
     } finally {
       setActionLoading(false);
     }
@@ -107,6 +122,10 @@ export default function ViewPropertyPage({ params }) {
               Mark Active
             </Button>
           )}
+          <Button onClick={handleToggleFeatured} disabled={actionLoading} variant={property?.isFeatured ? "default" : "outline"} className={`gap-2 ${property?.isFeatured ? "bg-amber-500 hover:bg-amber-600 text-white border-transparent" : "text-amber-600 border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-900/20"}`}>
+            <Star className={`w-4 h-4 ${property?.isFeatured ? "fill-current" : ""}`} />
+            {property?.isFeatured ? "Featured" : "Mark Featured"}
+          </Button>
           <Button asChild className="flex items-center gap-2">
             <Link href={`/admin/properties/${id}`}>
               <Pencil className="w-4 h-4" />

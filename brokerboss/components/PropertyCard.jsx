@@ -221,7 +221,11 @@ export default function PropertyCard({ property, compact = false }) {
   const displayRole = broker.role || property.ownerType || (broker.name?.toLowerCase().includes('owner') ? 'Owner' : 'Broker');
 
   // Validate image URL to prevent dummy text from breaking the image
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')) ? img : null;
+  const getValidImg = (img) => {
+    if (typeof img !== 'string' || !img.trim()) return null;
+    if (img.includes('unsplash.com')) return null;
+    return img.startsWith('http') || img.startsWith('/') || img.startsWith('data:') ? img : null;
+  };
   const imageUrl = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
 
   const validBrokerImage = getValidImg(fetchedImage) ||
@@ -229,7 +233,7 @@ export default function PropertyCard({ property, compact = false }) {
                            getValidImg(broker.passportPhoto) || 
                            getValidImg(property.user?.passportPhoto) || 
                            getValidImg(property.user?.image) || 
-                           'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256';
+                           `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`;
 
   // Specifications logic: only collapse when there are 5 or 6 specs in total.
   // We combine the base specs and the AREA spec.

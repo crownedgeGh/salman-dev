@@ -51,8 +51,12 @@ export default async function PropertyDetailsPage({ params }) {
   
   const brokerName = property.broker?.name || property.contactName || property.owner || 'Unknown Broker';
   const brokerPhone = property.broker?.phone || property.contactPhone || '';
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
-  const brokerImage = getValidImg(property.broker?.image) || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop';
+  const getValidImg = (img) => {
+    if (typeof img !== 'string' || !img.trim()) return null;
+    if (img.includes('unsplash.com')) return null;
+    return img.startsWith('http') || img.startsWith('/') || img.startsWith('data:') ? img : null;
+  };
+  const brokerImage = getValidImg(property.broker?.passportPhoto) || getValidImg(property.broker?.image) || getValidImg(property.user?.passportPhoto) || getValidImg(property.user?.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(brokerName)}&background=e2e8f0&color=475569`;
   const propertyImage = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
 
   return (

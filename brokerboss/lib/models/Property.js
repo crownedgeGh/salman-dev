@@ -16,7 +16,8 @@ const propertySchema = new mongoose.Schema({
     phone: String,
     yearsExperience: Number,
     image: String
-  }
+  },
+  isFeatured: { type: Boolean, default: false }
 }, { timestamps: true, strict: false });
 
 const Property = mongoose.models.Property || mongoose.model('Property', propertySchema);

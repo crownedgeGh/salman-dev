@@ -131,11 +131,16 @@ function FeaturedCard({ property }) {
 
   const broker = property.broker || {
     name: 'BrokerBoss Agent',
-    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256&h=256',
+    image: '',
     phone: '+919876543210'
   };
   const displayRole = broker.role || property.ownerType || (broker.name?.toLowerCase().includes('owner') ? 'Owner' : 'Broker');
-  const getValidImg = (img) => typeof img === 'string' && (img.startsWith('http') || img.startsWith('/')) ? img : null;
+  const getValidImg = (img) => {
+    if (typeof img !== 'string' || !img.trim()) return null;
+    if (img.includes('unsplash.com')) return null;
+    if (img.startsWith('http') || img.startsWith('/') || img.startsWith('data:')) return img;
+    return `/${img}`;
+  };
 
   return (
     <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
@@ -145,7 +150,7 @@ function FeaturedCard({ property }) {
       */}
       <div className="relative w-full overflow-hidden bg-white" style={{ paddingTop: '75%' }}>
         <img
-          src={getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000'}
+          src={getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || '/homebb.jpg'}
           alt={property.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -177,31 +182,18 @@ function FeaturedCard({ property }) {
         </div>
 
         {/* Broker row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative group/broker overflow-visible">
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative">
           <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
-            <img src={broker.image} alt={broker.name} className="w-full h-full object-cover" />
+            <img 
+              src={getValidImg(broker.passportPhoto) || getValidImg(broker.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`} 
+              alt={broker.name} 
+              className="w-full h-full object-cover" 
+            />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1 hover:underline cursor-pointer">{broker.name}</p>
             <div className="flex items-center gap-0.5 text-emerald-600 text-[8px] sm:text-[9px] font-bold">
               <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
-            </div>
-          </div>
-          
-          {/* Broker Hover Card */}
-          <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50">
-            <div className="flex items-center gap-3">
-              <img src={broker.image} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
-              <div>
-                <p className="font-bold text-sm text-foreground leading-tight">{broker.name}</p>
-                <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
-              </div>
-            </div>
-            <div className="mt-2 text-xs flex items-center gap-1 text-emerald-600 font-semibold">
-              <FaCheckCircle className="h-3.5 w-3.5" /> Verified Partner
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground font-medium flex items-center gap-1">
-              <FaPhone className="h-3 w-3" /> {broker.phone}
             </div>
           </div>
 
@@ -222,7 +214,7 @@ export default async function HomePage() {
   let featuredProperties = [];
   try {
     await connectToDatabase();
-    const properties = await Property.find({ status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(4).lean();
+    const properties = await Property.find({ isFeatured: true, status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(4).lean();
     // Convert ObjectIds to strings
     featuredProperties = JSON.parse(JSON.stringify(properties));
   } catch (err) {
