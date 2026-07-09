@@ -2,6 +2,7 @@ import Link from 'next/link';
 import LocalImage from '@/components/LocalImage';
 import connectToDatabase from '@/lib/mongodb';
 import Property from '@/lib/models/Property';
+import FeaturedCarousel from '@/components/FeaturedCarousel';
 import { FaHome, FaBuilding, FaStore, FaChartArea, FaWarehouse, FaMapMarkerAlt, FaPhone, FaWhatsapp, FaCheckCircle, FaArrowRight, FaStar, FaUsers, FaHandshake, FaShieldAlt, FaKey, FaMoneyBillWave, FaChartBar, FaCity, FaBolt, FaTag } from 'react-icons/fa';
 
 const typeIconMap = {
@@ -214,7 +215,7 @@ export default async function HomePage() {
   let featuredProperties = [];
   try {
     await connectToDatabase();
-    const properties = await Property.find({ isFeatured: true, status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(4).lean();
+    const properties = await Property.find({ isFeatured: true, status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(10).lean();
     // Convert ObjectIds to strings
     featuredProperties = JSON.parse(JSON.stringify(properties));
   } catch (err) {
@@ -297,19 +298,21 @@ export default async function HomePage() {
           </div>
 
           {/*
-            Responsive grid:
-            - Mobile (default): 2 columns
-            - Tablet (md): 3 columns
-            - Desktop (lg): 4 columns
-            We show all 4 cards but only 2 are visible on mobile (rest wrap naturally)
+            Carousel with responsive sizing:
+            - Mobile (default): 85vw width (scrollable continuation)
+            - Tablet (md): 3 columns (33.333% width minus gap)
+            - Desktop (lg): 4 columns (25% width minus gap)
           */}
-          <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-x-auto md:overflow-visible pb-6 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <FeaturedCarousel>
             {featuredProperties.map((property) => (
-              <div key={property._id} className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto shrink-0 snap-center md:snap-none">
+              <div 
+                key={property._id} 
+                className="w-[85vw] md:w-[calc(33.333%-11px)] lg:w-[calc(25%-12px)] shrink-0 snap-center md:snap-start"
+              >
                 <FeaturedCard property={property} />
               </div>
             ))}
-          </div>
+          </FeaturedCarousel>
         </div>
       </section>
 

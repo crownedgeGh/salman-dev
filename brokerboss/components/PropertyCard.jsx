@@ -115,7 +115,6 @@ export default function PropertyCard({ property, compact = false }) {
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isClient, setIsClient] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [fetchedImage, setFetchedImage] = useState(null);
   const [showUnsaveConfirm, setShowUnsaveConfirm] = useState(false);
 
   useEffect(() => {
@@ -125,28 +124,7 @@ export default function PropertyCard({ property, compact = false }) {
 
   useEffect(() => {
     setIsClient(true);
-    
-    // Fetch broker image from API
-    const brokerId = property.broker?.id || property.userId;
-    if (brokerId) {
-      const fetchBrokerImage = async () => {
-        try {
-          const res = await fetch(`/api/users/${brokerId}`);
-          if (res.ok) {
-            const userData = await res.json();
-            if (userData.passportPhoto) {
-              setFetchedImage(userData.passportPhoto);
-            } else if (userData.image) {
-              setFetchedImage(userData.image);
-            }
-          }
-        } catch (error) {
-          console.error("Failed to fetch broker image", error);
-        }
-      };
-      fetchBrokerImage();
-    }
-  }, [property.broker?.id, property.userId]);
+  }, []);
 
   const { photoCount, updatedText, formattedPrice, depositText, specs } = getPropertySpecs(property);
   const isRent = property.purpose === 'Rent';
@@ -228,8 +206,7 @@ export default function PropertyCard({ property, compact = false }) {
   };
   const imageUrl = getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80&w=1000';
 
-  const validBrokerImage = getValidImg(fetchedImage) ||
-                           getValidImg(broker.image) || 
+  const validBrokerImage = getValidImg(broker.image) || 
                            getValidImg(broker.passportPhoto) || 
                            getValidImg(property.user?.passportPhoto) || 
                            getValidImg(property.user?.image) || 
@@ -281,7 +258,9 @@ export default function PropertyCard({ property, compact = false }) {
               }
             }}
           >
-            <User className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+            <div className="w-5 h-5 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
+              <img src={validBrokerImage} alt={broker.name} className="w-full h-full object-cover" />
+            </div>
             <span className="font-semibold text-foreground truncate group-hover/broker:underline">
               {broker.name}
             </span>

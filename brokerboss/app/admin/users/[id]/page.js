@@ -94,7 +94,15 @@ export default function UserDetailsPage({ params }) {
         {/* Profile Info block */}
         <div className="md:col-span-1 p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col items-center text-center gap-4">
           <Avatar className="w-20 h-20 text-xl font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-            <AvatarFallback>{user?.avatar || user?.name?.[0] || 'U'}</AvatarFallback>
+            {user?.passportPhoto ? (
+              <img 
+                src={user.passportPhoto.startsWith('http') || user.passportPhoto.startsWith('data:') ? user.passportPhoto : `/${user.passportPhoto}`} 
+                alt={user?.name || user?.username} 
+                className="w-full h-full object-cover rounded-full" 
+              />
+            ) : (
+              <AvatarFallback>{user?.avatar || user?.name?.[0] || 'U'}</AvatarFallback>
+            )}
           </Avatar>
           
           <div>
