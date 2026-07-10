@@ -225,18 +225,55 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
   );
 }
 
+// ─── SessionStorage cache helpers ────────────────────────────
+const PROPS_CACHE_KEY = 'bb_properties_cache';
+const PROPS_CACHE_TTL = 2 * 60 * 1000; // 2 minutes
+
+function readPropsCache() {
+  try {
+    const raw = sessionStorage.getItem(PROPS_CACHE_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > PROPS_CACHE_TTL) {
+      sessionStorage.removeItem(PROPS_CACHE_KEY);
+      return null;
+    }
+    return data;
+  } catch { return null; }
+}
+
+function writePropsCache(data) {
+  try {
+    sessionStorage.setItem(PROPS_CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
+  } catch { /* ignore storage quota errors */ }
+}
+
 // ─── Main Page ────────────────────────────────────────────────
 import { Suspense } from 'react';
 
 function PropertiesPageInner() {
+  // Always start with server-safe defaults to avoid hydration mismatch.
+  // Cache is read in useEffect (client-only, post-hydration).
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/properties', { params: { _t: Date.now() } }).then(res => {
-      console.log('Fetched properties length:', res.data.length);
-      console.log('Fetched properties:', res.data);
+    const cached = readPropsCache();
+    if (cached) {
+      // Instant load from cache — no spinner
+      setProperties(cached);
+      setLoading(false);
+      // Refresh in background silently
+      api.get('/properties').then(res => {
+        setProperties(res.data);
+        writePropsCache(res.data);
+      }).catch(() => { /* silent fail, showing cached data */ });
+      return;
+    }
+    // No cache — fetch fresh
+    api.get('/properties').then(res => {
       setProperties(res.data);
+      writePropsCache(res.data);
       setLoading(false);
     }).catch(err => {
       console.error('Error fetching properties:', err);

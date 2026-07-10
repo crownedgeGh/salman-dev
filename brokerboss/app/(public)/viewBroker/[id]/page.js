@@ -23,9 +23,13 @@ export default async function ViewBrokerPage({ params }) {
   let properties = [];
   try {
     await connectToDatabase();
-    user = await User.findById(id).lean();
+    // Exclude heavy fields: password, aadhar (base64 doc scan)
+    user = await User.findById(id).select('-password -aadhar -__v -savedProperties').lean();
     if (user) {
-      properties = await Property.find({ 'broker.id': id }).sort({ createdAt: -1 }).lean();
+      properties = await Property.find({ 'broker.id': id })
+        .select('-__v')
+        .sort({ createdAt: -1 })
+        .lean();
     }
   } catch (err) {
     console.error("Failed to fetch user details:", err.message);

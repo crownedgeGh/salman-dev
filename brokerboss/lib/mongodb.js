@@ -27,6 +27,15 @@ async function connectToDatabase() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      // Connection pool — reuse connections on Vercel warm functions
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      // Faster failure detection on cold starts
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
+      // Heartbeat to keep connection alive
+      heartbeatFrequencyMS: 10000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

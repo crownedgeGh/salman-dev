@@ -6,8 +6,11 @@ import Property from '@/lib/models/Property';
 export async function GET() {
   try {
     await connectToDatabase();
-    // Fetch all users, excluding passwords
-    const users = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
+    // Fetch all users, excluding passwords and heavy fields
+    // lean() returns plain JS objects (faster than Mongoose documents)
+    const users = await User.find({}, { password: 0, aadhar: 0, __v: 0 })
+      .sort({ createdAt: -1 })
+      .lean();
     
     // Calculate property listed count for all users
     const propertyCounts = await Property.aggregate([
@@ -41,7 +44,10 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json(formattedUsers, { status: 200 });
+    const response = NextResponse.json(formattedUsers, { status: 200 });
+    // Short cache for admin — 30 seconds stale-while-revalidate
+    response.headers.set('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
+    return response;
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

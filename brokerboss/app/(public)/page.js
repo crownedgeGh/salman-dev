@@ -215,7 +215,12 @@ export default async function HomePage() {
   let featuredProperties = [];
   try {
     await connectToDatabase();
-    const properties = await Property.find({ isFeatured: true, status: { $nin: ['Disable', 'Sold Out'] } }).sort({ createdAt: -1 }).limit(10).lean();
+    const properties = await Property
+      .find({ isFeatured: true, status: { $nin: ['Disable', 'Sold Out'] } })
+      .select('-__v')
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
     // Convert ObjectIds to strings
     featuredProperties = JSON.parse(JSON.stringify(properties));
   } catch (err) {

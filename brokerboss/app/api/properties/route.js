@@ -10,21 +10,40 @@ export async function GET(request) {
     const type = searchParams.get('type');
     const purpose = searchParams.get('purpose');
     const locality = searchParams.get('locality');
+    const admin = searchParams.get('admin');
+    const limit = parseInt(searchParams.get('limit') || '200', 10);
 
     // Build query
     const query = {};
-    if (type) query.type = { $regex: new RegExp(type, 'i') };
-    if (purpose) query.purpose = { $regex: new RegExp(purpose, 'i') };
+    if (type) query.type = { $regex: new RegExp(`^${type}$`, 'i') };
+    if (purpose) query.purpose = { $regex: new RegExp(`^${purpose}$`, 'i') };
     if (locality) query.locality = { $regex: new RegExp(locality, 'i') };
     
     // Only fetch active properties for public users
-    const admin = searchParams.get('admin');
     if (admin !== 'true') {
       query.status = { $nin: ['Disable', 'Sold Out'] };
     }
 
-    const properties = await Property.find(query).sort({ createdAt: -1 });
-    return NextResponse.json(properties);
+    // Use lean() for plain JS objects — much faster than Mongoose documents
+    const properties = await Property
+      .find(query)
+      .select('-__v')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    const response = NextResponse.json(properties);
+
+    // Cache public property list for 60 seconds (stale-while-revalidate 120s)
+    // Admin requests are not cached
+    if (admin !== 'true') {
+      response.headers.set(
+        'Cache-Control',
+        's-maxage=60, stale-while-revalidate=120'
+      );
+    }
+
+    return response;
   } catch (error) {
     console.error("Error fetching properties:", error);
     return NextResponse.json({ error: 'Failed to fetch properties' }, { status: 500 });

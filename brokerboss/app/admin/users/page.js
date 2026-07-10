@@ -27,8 +27,29 @@ import {
 } from "@/components/ui/dialog";
 
 
+// ─── Cache helpers ─────────────────────────────────────────
+const USERS_CACHE_KEY = 'bb_admin_users_cache';
+const USERS_CACHE_TTL = 60 * 1000; // 1 minute
+
+function readUsersCache() {
+  try {
+    const raw = sessionStorage.getItem(USERS_CACHE_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > USERS_CACHE_TTL) { sessionStorage.removeItem(USERS_CACHE_KEY); return null; }
+    return data;
+  } catch { return null; }
+}
+function writeUsersCache(data) {
+  try { sessionStorage.setItem(USERS_CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch { }
+}
+function clearUsersCache() {
+  try { sessionStorage.removeItem(USERS_CACHE_KEY); } catch { }
+}
+
 export default function UsersPage() {
   const router = useRouter();
+  // Always start with server-safe defaults to avoid hydration mismatch
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -37,9 +58,17 @@ export default function UsersPage() {
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const fetchUsers = () => {
+  const fetchUsers = (force = false) => {
+    const cached = !force && readUsersCache();
+    if (cached) {
+      setUsers(cached);
+      setIsLoading(false);
+      // Refresh in background silently
+      api.get('/users').then(res => { setUsers(res.data); writeUsersCache(res.data); }).catch(() => {});
+      return;
+    }
     setIsLoading(true);
-    api.get('/users').then(res => setUsers(res.data)).catch(console.error).finally(() => setIsLoading(false));
+    api.get('/users').then(res => { setUsers(res.data); writeUsersCache(res.data); }).catch(console.error).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -64,6 +93,7 @@ export default function UsersPage() {
   const handleDelete = () => {
     api.delete(`/users/${deleteTarget.id || deleteTarget._id}`).then(() => {
       setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+      clearUsersCache();
       showToast(`User "${deleteTarget.username}" deleted successfully.`);
       setDeleteTarget(null);
     }).catch(console.error);
@@ -72,6 +102,7 @@ export default function UsersPage() {
   const handleDeleteAll = () => {
     api.delete('/users').then(() => {
       setUsers([]);
+      clearUsersCache();
       showToast('All users deleted successfully.');
       setDeleteAllConfirm(false);
     }).catch(console.error);
@@ -185,7 +216,7 @@ export default function UsersPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Button onClick={fetchUsers} variant="outline" className="flex items-center gap-2">
+          <Button onClick={() => fetchUsers(true)} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </Button>

@@ -30,25 +30,56 @@ const FORMAT_COLORS = {
   'Sidebar Ad': "border-indigo-300 text-indigo-700 bg-indigo-50 dark:bg-indigo-900/20 dark:text-indigo-400"
 };
 
+// ─── Cache helpers ────────────────────────────────────────
+const ADS_CACHE_KEY = 'bb_admin_ads_cache';
+const ADS_CACHE_TTL = 60 * 1000; // 1 minute
+function readAdsCache() {
+  try {
+    const raw = sessionStorage.getItem(ADS_CACHE_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > ADS_CACHE_TTL) { sessionStorage.removeItem(ADS_CACHE_KEY); return null; }
+    return data;
+  } catch { return null; }
+}
+function writeAdsCache(data) {
+  try { sessionStorage.setItem(ADS_CACHE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch { }
+}
+function clearAdsCache() {
+  try { sessionStorage.removeItem(ADS_CACHE_KEY); } catch { }
+}
+
 export default function AdsPage() {
+  // Always start with server-safe defaults to avoid hydration mismatch
   const [ads, setAds] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
+  const formatAds = (data) => data.map(ad => ({
+    ...ad,
+    id: ad._id,
+    format: ad.type,
+    owner: ad.owner || "Admin",
+    expiryDate: "N/A"
+  }));
+
   useEffect(() => {
+    const cached = readAdsCache();
+    if (cached) {
+      setAds(cached);
+      setIsLoading(false);
+      // Background refresh
+      api.get('/ads').then(res => { const f = formatAds(res.data); setAds(f); writeAdsCache(f); }).catch(() => {});
+      return;
+    }
     setIsLoading(true);
     api.get('/ads')
       .then(res => {
-        const formatted = res.data.map(ad => ({
-          ...ad,
-          id: ad._id,
-          format: ad.type,
-          owner: ad.owner || "Admin",
-          expiryDate: "N/A"
-        }));
+        const formatted = formatAds(res.data);
         setAds(formatted);
+        writeAdsCache(formatted);
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
@@ -71,6 +102,7 @@ export default function AdsPage() {
 
   const handleDelete = () => {
     setAds((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+    clearAdsCache();
     showToast(`Ad "${deleteTarget.title}" deleted.`);
     setDeleteTarget(null);
   };

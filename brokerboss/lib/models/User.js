@@ -23,5 +23,10 @@ const userSchema = new mongoose.Schema({
   savedProperties: [{ type: String }],
 }, { timestamps: true, strict: false });
 
+// Indexes for common query patterns
+userSchema.index({ role: 1, createdAt: -1 }); // broker list query
+// Note: phone already indexed via unique:true in schema definition
+userSchema.index({ status: 1 }); // active users filter
+
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 export default User;

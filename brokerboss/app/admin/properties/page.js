@@ -31,8 +31,28 @@ const STATUS_COLORS = {
   Pending: "border-yellow-300 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-500",
 };
 
+// ─── Cache helpers ─────────────────────────────────────────
+const ADMIN_PROPS_KEY = 'bb_admin_props_cache';
+const ADMIN_PROPS_TTL = 60 * 1000; // 1 minute
+function readAdminPropsCache() {
+  try {
+    const raw = sessionStorage.getItem(ADMIN_PROPS_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > ADMIN_PROPS_TTL) { sessionStorage.removeItem(ADMIN_PROPS_KEY); return null; }
+    return data;
+  } catch { return null; }
+}
+function writeAdminPropsCache(data) {
+  try { sessionStorage.setItem(ADMIN_PROPS_KEY, JSON.stringify({ data, ts: Date.now() })); } catch { }
+}
+function clearAdminPropsCache() {
+  try { sessionStorage.removeItem(ADMIN_PROPS_KEY); } catch { }
+}
+
 export default function PropertiesPage() {
   const router = useRouter();
+  // Always start with server-safe defaults to avoid hydration mismatch
   const [properties, setProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -41,9 +61,17 @@ export default function PropertiesPage() {
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
   const [toast, setToast] = useState(null);
 
-  const fetchProperties = () => {
+  const fetchProperties = (force = false) => {
+    const cached = !force && readAdminPropsCache();
+    if (cached) {
+      setProperties(cached);
+      setIsLoading(false);
+      // Background refresh
+      api.get('/properties?admin=true').then(res => { setProperties(res.data); writeAdminPropsCache(res.data); }).catch(() => {});
+      return;
+    }
     setIsLoading(true);
-    api.get('/properties?admin=true').then(res => setProperties(res.data)).catch(console.error).finally(() => setIsLoading(false));
+    api.get('/properties?admin=true').then(res => { setProperties(res.data); writeAdminPropsCache(res.data); }).catch(console.error).finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -58,6 +86,7 @@ export default function PropertiesPage() {
   const handleDelete = () => {
     api.delete(`/properties/${deleteTarget.id || deleteTarget._id}`).then(() => {
       setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      clearAdminPropsCache();
       showToast(`Property "${deleteTarget.title}" deleted.`);
       setDeleteTarget(null);
     }).catch(console.error);
@@ -66,6 +95,7 @@ export default function PropertiesPage() {
   const handleDeleteAll = () => {
     api.delete('/properties').then(() => {
       setProperties([]);
+      clearAdminPropsCache();
       showToast('All properties deleted successfully.');
       setDeleteAllConfirm(false);
     }).catch(console.error);
@@ -182,7 +212,7 @@ export default function PropertiesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <Button onClick={fetchProperties} variant="outline" className="flex items-center gap-2">
+          <Button onClick={() => fetchProperties(true)} variant="outline" className="flex items-center gap-2">
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </Button>

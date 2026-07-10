@@ -14,9 +14,10 @@ export default async function BrokersPage() {
 
   try {
     await connectToDatabase();
-    // Fetch users who are brokers, sorting by latest joined or maybe by name
+    // Fetch brokers with lean() — plain JS objects are faster than Mongoose docs
+    // Exclude password and heavy aadhar field
     brokers = await User.find({ role: { $in: ['broker', 'Broker'] } })
-      .select('-password')
+      .select('-password -aadhar -__v -savedProperties')
       .sort({ createdAt: -1 })
       .lean();
   } catch (error) {
