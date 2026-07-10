@@ -64,7 +64,7 @@ export default function UsersPage() {
       setUsers(cached);
       setIsLoading(false);
       // Refresh in background silently
-      api.get('/users').then(res => { setUsers(res.data); writeUsersCache(res.data); }).catch(() => {});
+      api.get('/users').then(res => { setUsers(res.data); writeUsersCache(res.data); }).catch(() => { });
       return;
     }
     setIsLoading(true);
@@ -124,7 +124,7 @@ export default function UsersPage() {
           <div className="flex items-center gap-2.5">
             <Avatar className="w-8 h-8 shrink-0">
               {photoUrl ? (
-                <img 
+                <img
                   src={photoUrl.startsWith('http') || photoUrl.startsWith('data:') ? photoUrl : `/${photoUrl}`}
                   alt={val}
                   className="w-full h-full object-cover object-top rounded-full"
@@ -152,14 +152,23 @@ export default function UsersPage() {
     {
       key: "role",
       label: "User Type",
-      render: (val) => (
-        <Badge
-          variant="outline"
-          className="capitalize bg-primary/10 text-primary border-primary/20"
-        >
-          {val}
-        </Badge>
-      ),
+      render: (val) => {
+        const role = val?.toLowerCase();
+        let badgeStyle = "bg-primary/10 text-primary border-primary/20";
+
+        if (role === "buyer") {
+          badgeStyle = "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800";
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className={`capitalize ${badgeStyle}`}
+          >
+            {val}
+          </Badge>
+        );
+      },
     },
     {
       key: "actions",
@@ -259,6 +268,7 @@ export default function UsersPage() {
         searchQuery={searchQuery}
         isLoading={isLoading}
         onRowClick={(row) => router.push(`/admin/users/${row.id}`)}
+        rowClassName={(row) => row.role === 'buyer' ? 'bg-green-50/50 dark:bg-green-950/20' : ''}
       />
 
       {/* Delete Confirmation Dialog */}

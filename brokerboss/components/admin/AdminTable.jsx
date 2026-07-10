@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, SearchX, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function AdminTable({ columns = [], data = [], defaultPageSize = 15, searchQuery = "", isLoading = false, onRowClick }) {
+export default function AdminTable({ columns = [], data = [], defaultPageSize = 15, searchQuery = "", isLoading = false, onRowClick, rowClassName }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(defaultPageSize);
 
@@ -71,7 +71,7 @@ export default function AdminTable({ columns = [], data = [], defaultPageSize = 
               <tr
                 key={row.id ?? i}
                 onClick={() => onRowClick && onRowClick(row)}
-                className={`border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                className={`border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors ${onRowClick ? 'cursor-pointer' : ''} ${rowClassName ? rowClassName(row) : ''}`}
               >
                 {columns.map((col, ci) => (
                   <td key={`td-${col.key}-${ci}`} className="px-4 py-3 text-foreground align-middle">
@@ -90,7 +90,7 @@ export default function AdminTable({ columns = [], data = [], defaultPageSize = 
           <Card 
             key={row.id ?? i} 
             onClick={() => onRowClick && onRowClick(row)}
-            className={`overflow-hidden shadow-sm ${onRowClick ? 'cursor-pointer hover:bg-muted/30 transition-colors' : ''}`}
+            className={`overflow-hidden shadow-sm ${onRowClick ? 'cursor-pointer hover:bg-muted/30 transition-colors' : ''} ${rowClassName ? rowClassName(row) : ''}`}
           >
             <CardContent className="p-4 space-y-2.5">
               {columns.map((col, ci) => (

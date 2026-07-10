@@ -67,7 +67,7 @@ export default function PropertiesPage() {
       setProperties(cached);
       setIsLoading(false);
       // Background refresh
-      api.get('/properties?admin=true').then(res => { setProperties(res.data); writeAdminPropsCache(res.data); }).catch(() => {});
+      api.get('/properties?admin=true').then(res => { setProperties(res.data); writeAdminPropsCache(res.data); }).catch(() => { });
       return;
     }
     setIsLoading(true);
@@ -101,11 +101,12 @@ export default function PropertiesPage() {
     }).catch(console.error);
   };
 
-  // Apply status filter before passing to AdminTable
-  const filteredData =
-    statusFilter === "All"
-      ? properties
-      : properties.filter((p) => (p.status || "Active") === statusFilter);
+  // Apply filter before passing to AdminTable
+  const filteredData = properties.filter((p) => {
+    if (statusFilter === "All") return true;
+    if (statusFilter === "Featured") return p.isFeatured;
+    return (p.status || "Active") === statusFilter;
+  });
 
   const PROPERTIES_COLUMNS = [
     {
@@ -126,8 +127,8 @@ export default function PropertiesPage() {
       },
     },
     { key: "type", label: "Type" },
-    { 
-      key: "location", 
+    {
+      key: "location",
       label: "Location",
       render: (_, row) => <span>{row.locality || row.area || row.city || '—'}</span>
     },
@@ -150,13 +151,13 @@ export default function PropertiesPage() {
         );
       },
     },
-    { 
-      key: "owner", 
+    {
+      key: "owner",
       label: "Owner",
       render: (_, row) => <span>{row.broker?.name || row.owner?.name || '—'}</span>
     },
-    { 
-      key: "dateListed", 
+    {
+      key: "dateListed",
       label: "Listed On",
       render: (_, row) => {
         const dateStr = row.postedAt || row.createdAt;
@@ -246,7 +247,8 @@ export default function PropertiesPage() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All Status</SelectItem>
+            <SelectItem value="All">All Properties</SelectItem>
+            <SelectItem value="Featured">Featured</SelectItem>
             <SelectItem value="Active">Active</SelectItem>
             <SelectItem value="Sold">Sold</SelectItem>
             <SelectItem value="Pending">Pending</SelectItem>
