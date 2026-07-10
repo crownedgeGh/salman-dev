@@ -144,7 +144,8 @@ function FeaturedCard({ property }) {
   };
 
   return (
-    <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
+    <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col relative">
+      <Link href={`/properties/${property._id || property.id}`} className="absolute inset-0 z-10" aria-label={`View ${property.title}`} />
       {/*
         Card Image — 4:3 landscape ratio.
         We use padding-top (75%) and object-contain with bg-white so the tall logo doesn't get cut off.
@@ -183,22 +184,24 @@ function FeaturedCard({ property }) {
         </div>
 
         {/* Broker row */}
-        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative">
-          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
-            <img 
-              src={getValidImg(broker.passportPhoto) || getValidImg(broker.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`} 
-              alt={broker.name} 
-              className="w-full h-full object-cover" 
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1 hover:underline cursor-pointer">{broker.name}</p>
-            <div className="flex items-center gap-0.5 text-emerald-600 text-[8px] sm:text-[9px] font-bold">
-              <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
+        <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative z-20">
+          <Link href={broker.id || broker._id ? `/viewBroker/${broker.id || broker._id}` : '#'} className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0 group/broker hover:opacity-80 transition-opacity">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
+              <img 
+                src={getValidImg(broker.passportPhoto) || getValidImg(broker.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`} 
+                alt={broker.name} 
+                className="w-full h-full object-cover" 
+              />
             </div>
-          </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] sm:text-[11px] font-semibold text-foreground line-clamp-1 group-hover/broker:underline cursor-pointer">{broker.name}</p>
+              <div className="flex items-center gap-0.5 text-emerald-600 text-[8px] sm:text-[9px] font-bold">
+                <FaCheckCircle className="h-2 w-2 sm:h-2.5 sm:w-2.5" /> Verified
+              </div>
+            </div>
+          </Link>
 
-          <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="shrink-0 z-10">
+          <a href={`tel:${broker.phone.replace(/\s/g, '')}`} className="shrink-0 z-20">
             <button className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-primary hover:from-blue-700 hover:to-blue-700 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full flex items-center gap-1.5 transition-all shadow-[0_2px_10px_rgba(37,99,235,0.25)] hover:shadow-[0_4px_12px_rgba(37,99,235,0.4)] active:scale-95 group">
               <div className="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out rounded-full" />
               <FaPhone className="h-2.5 w-2.5 sm:h-2.5 sm:w-2.5 relative z-10" />
