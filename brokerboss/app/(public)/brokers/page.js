@@ -1,7 +1,8 @@
 import connectToDatabase from '@/lib/mongodb';
 import User from '@/lib/models/User';
+import Property from '@/lib/models/Property';
 import Link from 'next/link';
-import { Phone, MapPin, Building, Briefcase } from 'lucide-react';
+import { Phone, MapPin, Building, Briefcase, Home } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export const metadata = {
@@ -16,10 +17,27 @@ export default async function BrokersPage() {
     await connectToDatabase();
     // Fetch brokers with lean() — plain JS objects are faster than Mongoose docs
     // Exclude password and heavy aadhar field
-    brokers = await User.find({ role: { $in: ['broker', 'Broker'] } })
+    let fetchedBrokers = await User.find({ role: { $in: ['broker', 'Broker'] } })
       .select('-password -aadhar -__v -savedProperties')
       .sort({ createdAt: -1 })
       .lean();
+
+    // Fetch active property counts for each broker
+    const brokerIds = fetchedBrokers.map(b => b._id.toString());
+    const propertyCounts = await Property.aggregate([
+      { $match: { 'broker.id': { $in: brokerIds }, status: { $ne: 'Disable' } } },
+      { $group: { _id: '$broker.id', count: { $sum: 1 } } }
+    ]);
+    
+    const countMap = {};
+    propertyCounts.forEach(pc => {
+      countMap[pc._id] = pc.count;
+    });
+    
+    brokers = fetchedBrokers.map(broker => ({
+      ...broker,
+      propertyCount: countMap[broker._id.toString()] || 0
+    }));
   } catch (error) {
     console.error("Failed to fetch brokers:", error);
   }
@@ -90,6 +108,10 @@ export default async function BrokersPage() {
                             <span>{yearsOfExperience} Exp.</span>
                           </div>
                         )}
+                        <div className="flex items-center gap-2 text-xs text-foreground/80 bg-gray-50 dark:bg-muted/30 p-2 rounded-lg">
+                          <Home className="h-3.5 w-3.5 text-primary/70 shrink-0" />
+                          <span>{broker.propertyCount} {broker.propertyCount === 1 ? 'Property' : 'Properties'} Listed</span>
+                        </div>
                       </div>
                     </div>
                   </div>
