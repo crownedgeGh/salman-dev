@@ -264,7 +264,7 @@ export default function MyProfilePage() {
               <img 
                 src={userProfile?.passportPhoto || userProfile?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`} 
                 alt="Profile" 
-                className="w-20 h-20 rounded-full object-cover border-2 border-border shadow-sm bg-muted"
+                className="w-20 h-20 rounded-full object-cover object-top border-2 border-border shadow-sm bg-muted"
               />
               <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:scale-110 transition-transform shadow-md hover:bg-primary/90 flex items-center justify-center">
                 <FaCamera className="w-3.5 h-3.5" />

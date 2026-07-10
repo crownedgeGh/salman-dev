@@ -87,16 +87,27 @@ export default function UsersPage() {
     {
       key: "username",
       label: "User",
-      render: (val, row) => (
-        <div className="flex items-center gap-2.5">
-          <Avatar className="w-8 h-8 shrink-0">
-            <AvatarFallback className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 font-semibold">
-              {row.avatar}
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-foreground">{val}</span>
-        </div>
-      ),
+      render: (val, row) => {
+        const photoUrl = row.passportPhoto || row.image;
+        return (
+          <div className="flex items-center gap-2.5">
+            <Avatar className="w-8 h-8 shrink-0">
+              {photoUrl ? (
+                <img 
+                  src={photoUrl.startsWith('http') || photoUrl.startsWith('data:') ? photoUrl : `/${photoUrl}`}
+                  alt={val}
+                  className="w-full h-full object-cover object-top rounded-full"
+                />
+              ) : (
+                <AvatarFallback className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 font-semibold">
+                  {row.avatar || val?.[0] || 'U'}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <span className="font-medium text-foreground">{val}</span>
+          </div>
+        );
+      },
     },
     { key: "phone", label: "Mobile No." },
     { key: "location", label: "Location" },

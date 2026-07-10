@@ -19,16 +19,27 @@ export async function GET() {
     }, {});
 
     // Map them to match the admin dashboard expectations
-    const formattedUsers = users.map(u => ({
-      id: u._id.toString(),
-      username: u.name || 'Unknown',
-      phone: u.phone || 'N/A',
-      location: u.city || 'Not specified',
-      role: u.role || 'user',
-      status: u.status || 'Active',
-      propertiesListed: countMap[u._id.toString()] || 0,
-      avatar: (u.name || 'U').charAt(0).toUpperCase()
-    }));
+    const formattedUsers = users.map(u => {
+      const name = u.name || 'Unknown';
+      const parts = name.split(' ').filter(Boolean);
+      let initials = parts[0]?.[0]?.toUpperCase() || 'U';
+      if (parts.length > 1) {
+        initials += parts[1][0].toUpperCase();
+      }
+
+      return {
+        id: u._id.toString(),
+        username: name,
+        phone: u.phone || 'N/A',
+        location: u.city || 'Not specified',
+        role: u.role || 'user',
+        status: u.status || 'Active',
+        propertiesListed: countMap[u._id.toString()] || 0,
+        avatar: initials,
+        passportPhoto: u.passportPhoto,
+        image: u.image
+      };
+    });
 
     return NextResponse.json(formattedUsers, { status: 200 });
   } catch (error) {
