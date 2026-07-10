@@ -40,3 +40,27 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function DELETE(request, { params }) {
+  try {
+    await connectToDatabase();
+    const { id } = await params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+    }
+
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Optional: Delete or disable all properties associated with the user
+    // await Property.updateMany({ "broker.id": id }, { status: "Disable" });
+
+    return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
