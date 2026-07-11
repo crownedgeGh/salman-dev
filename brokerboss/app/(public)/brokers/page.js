@@ -5,31 +5,36 @@ import Link from 'next/link';
 import { Phone, MapPin, Building, Briefcase, Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Suspense } from 'react';
+import BrokerSearch from './BrokerSearch';
 
 export const metadata = {
   title: 'Brokers | BrokerBoss',
   description: 'Find top real estate brokers in your area.',
 };
 
-import { Suspense } from 'react';
-
 export default async function BrokersPage(props) {
   const searchParams = await props.searchParams;
   const page = parseInt(searchParams?.page || '1', 10);
+  const search = searchParams?.search || '';
+  const exp = searchParams?.exp || '';
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         <div className="mb-8 md:mb-10 text-center md:text-left">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Our Verified Brokers</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm md:text-base">
-            Connect with experienced real estate professionals who can help you find your dream property or sell your existing one at the best price.
-          </p>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3 ">Our Verified Brokers</h1>
+        
         </div>
 
-        <Suspense key={page} fallback={<BrokersSkeleton />}>
-          <BrokersList page={page} />
+        {/* Search & Filter Bar */}
+        <Suspense>
+          <BrokerSearch initialSearch={search} initialExp={exp} />
+        </Suspense>
+
+        <Suspense key={`${page}-${search}-${exp}`} fallback={<BrokersSkeleton />}>
+          <BrokersList page={page} search={search} exp={exp} />
         </Suspense>
 
       </div>
@@ -66,7 +71,7 @@ function BrokersSkeleton() {
   );
 }
 
-async function BrokersList({ page }) {
+async function BrokersList({ page, search, exp }) {
   let brokers = [];
   let totalPages = 1;
   const currentPage = page;
@@ -76,9 +81,28 @@ async function BrokersList({ page }) {
     const skip = (currentPage - 1) * limit;
 
     await connectToDatabase();
-    
+
+    // Build query
     const query = { role: { $in: ['broker', 'Broker'] } };
-    
+
+    // Name search (case-insensitive)
+    if (search) {
+      query.name = { $regex: search, $options: 'i' };
+    }
+
+    // Experience filter
+    if (exp) {
+      if (exp === '0-2') {
+        query.yearsOfExperience = { $gte: 0, $lte: 2 };
+      } else if (exp === '3-5') {
+        query.yearsOfExperience = { $gte: 3, $lte: 5 };
+      } else if (exp === '6-10') {
+        query.yearsOfExperience = { $gte: 6, $lte: 10 };
+      } else if (exp === '10+') {
+        query.yearsOfExperience = { $gte: 10 };
+      }
+    }
+
     // Optimized: run count and find in parallel
     const [totalBrokers, fetchedBrokers] = await Promise.all([
       User.countDocuments(query),
@@ -118,11 +142,24 @@ async function BrokersList({ page }) {
     return img.startsWith('http') || img.startsWith('/') || img.startsWith('data:') ? img : null;
   };
 
+  // Build pagination URL helper (preserve search/exp params)
+  const pageUrl = (p) => {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (exp) params.set('exp', exp);
+    params.set('page', String(p));
+    return `/brokers?${params.toString()}`;
+  };
+
   if (brokers.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-10 text-center shadow-sm border border-border/50">
         <h3 className="text-xl font-bold text-foreground mb-2">No Brokers Found</h3>
-        <p className="text-muted-foreground">We currently don't have any registered brokers.</p>
+        <p className="text-muted-foreground">
+          {search || exp
+            ? 'No brokers match your search or filter. Try adjusting your criteria.'
+            : "We currently don't have any registered brokers."}
+        </p>
       </div>
     );
   }
@@ -197,7 +234,7 @@ async function BrokersList({ page }) {
             disabled={currentPage <= 1}
             className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
           >
-            <Link href={`/brokers?page=${currentPage - 1}`} scroll={true}>
+            <Link href={pageUrl(currentPage - 1)} scroll={true}>
               <ChevronLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -219,7 +256,7 @@ async function BrokersList({ page }) {
                     className={`w-9 h-9 ${currentPage === pageNum ? "pointer-events-none" : ""}`}
                     asChild
                   >
-                    <Link href={`/brokers?page=${pageNum}`} scroll={true}>
+                    <Link href={pageUrl(pageNum)} scroll={true}>
                       {pageNum}
                     </Link>
                   </Button>
@@ -241,7 +278,7 @@ async function BrokersList({ page }) {
             disabled={currentPage >= totalPages}
             className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
           >
-            <Link href={`/brokers?page=${currentPage + 1}`} scroll={true}>
+            <Link href={pageUrl(currentPage + 1)} scroll={true}>
               <ChevronRight className="h-4 w-4" />
             </Link>
           </Button>
