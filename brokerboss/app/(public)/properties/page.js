@@ -18,6 +18,7 @@ const defaultFilters = {
   locality: '',
   priceMin: '',
   priceMax: '',
+  bhk: '',
 };
 
 const LOCALITIES = [
@@ -183,6 +184,7 @@ function ActiveFilterPills({ filters, searchQuery, onClearFilter, onClearSearch,
   if (filters.purpose) pills.push({ key: 'purpose', label: filters.purpose === 'Sale' ? '🏠 For Sale' : '🔑 For Rent' });
   if (filters.type) pills.push({ key: 'type', label: `Type: ${filters.type}` });
   if (filters.locality) pills.push({ key: 'locality', label: `📍 ${filters.locality}` });
+  if (filters.bhk) pills.push({ key: 'bhk', label: `${filters.bhk}` });
   if (filters.priceMin) pills.push({ key: 'priceMin', label: `Min ₹${filters.priceMin}L` });
   if (filters.priceMax) pills.push({ key: 'priceMax', label: `Max ₹${filters.priceMax}L` });
   if (searchQuery) pills.push({ key: '__search', label: `"${searchQuery}"` });
@@ -301,6 +303,7 @@ function PropertiesPageInner() {
       type,
       purpose,
       locality: searchParams.get('locality') || '',
+      bhk: searchParams.get('bhk') || '',
       priceMin: searchParams.get('priceMin') || '',
       priceMax: searchParams.get('priceMax') || '',
     };
@@ -322,6 +325,7 @@ function PropertiesPageInner() {
     if (newFilters.type) params.append('type', newFilters.type.toLowerCase());
 
     if (newFilters.locality) params.set('locality', newFilters.locality);
+    if (newFilters.bhk) params.set('bhk', newFilters.bhk);
     if (newFilters.priceMin) params.set('priceMin', newFilters.priceMin);
     if (newFilters.priceMax) params.set('priceMax', newFilters.priceMax);
     if (newQuery) params.set('q', newQuery);
@@ -384,6 +388,21 @@ function PropertiesPageInner() {
         if (filters.priceMin && priceLakh < Number(filters.priceMin)) return false;
         if (filters.priceMax && priceLakh > Number(filters.priceMax)) return false;
       }
+      
+      if (filters.bhk && (filters.type === 'House' || filters.type === 'Flat')) {
+        let pBhk = p.bhk;
+        if (!pBhk && p.title) {
+          const match = p.title.match(/(\d)\s*BHK/i);
+          if (match) pBhk = match[1];
+        }
+        // Fallback to '2' to match PropertyCard's display logic
+        if (!pBhk) pBhk = '2';
+        
+        const selectedBhkMatch = filters.bhk.match(/(\d)/);
+        if (selectedBhkMatch && pBhk.toString() !== selectedBhkMatch[1]) {
+          return false;
+        }
+      }
       return true;
     });
   }, [filters, searchQuery, properties]);
@@ -431,7 +450,7 @@ function PropertiesPageInner() {
               </div>
             </FilterSheet>
           </div>
-          
+
           <div className="hidden md:block">
             <ActiveFilterPills
               filters={filters}

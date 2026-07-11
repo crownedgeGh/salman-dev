@@ -12,7 +12,12 @@ export default function FilterSidebar({ filters, onFilterChange, onClear }) {
     filters.type || filters.purpose || filters.locality || filters.priceMin || filters.priceMax;
 
   const handleTypeToggle = (type) => {
-    onFilterChange({ type: filters.type === type ? '' : type });
+    const isClearing = filters.type === type;
+    const isHouseOrFlat = type === 'House' || type === 'Flat';
+    onFilterChange({ 
+      type: isClearing ? '' : type,
+      ...(!isHouseOrFlat && { bhk: '' }) // Clear bhk if switching to non-residential
+    });
   };
 
   return (
@@ -38,6 +43,30 @@ export default function FilterSidebar({ filters, onFilterChange, onClear }) {
             </button>
           ))}
         </div>
+
+        {/* Conditionally render BHK filter for House or Flat */}
+        {filters.type && (filters.type.includes('House') || filters.type.includes('Flat')) && (
+          <div className="mt-4 p-3 bg-primary/5 rounded-xl border border-primary/10">
+            <h4 className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">
+              Select BHK
+            </h4>
+            <div className="flex flex-wrap gap-1.5">
+              {['2 BHK', '3 BHK', '4 BHK'].map((bhk) => (
+                <button
+                  key={bhk}
+                  onClick={() => onFilterChange({ bhk: filters.bhk === bhk ? '' : bhk })}
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-colors ${
+                    filters.bhk === bhk
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-background border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                  }`}
+                >
+                  {bhk}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <Separator />
