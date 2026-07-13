@@ -62,7 +62,7 @@ function calcCompletion(profile, role) {
     if (val !== null && val !== undefined && String(val).trim() !== '') filled++;
   });
   const hasValidImage = (img) => {
-    if (!img || typeof img !== 'string' || img.trim() === '') return false;
+    if (!img || typeof img !== 'string' || img.trim() === '' || img === '[object File]') return false;
     
     const dummyDomains = [
       'unsplash.com', 'ui-avatars.com', 'default', 
@@ -286,7 +286,7 @@ export default function MyProfilePage() {
             <div className="relative group shrink-0">
               <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-border shadow-sm bg-muted">
                 <img 
-                  src={userProfile?.passportPhoto || userProfile?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`} 
+                  src={((userProfile?.passportPhoto && userProfile.passportPhoto !== '[object File]') ? userProfile.passportPhoto : ((userProfile?.image && userProfile.image !== '[object File]') ? userProfile.image : `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`))} 
                   alt="Profile" 
                   className={`w-full h-full object-cover object-top transition-opacity ${imageUploading ? 'opacity-50' : 'opacity-100'}`}
                 />

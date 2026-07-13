@@ -8,7 +8,7 @@ export async function GET() {
     await connectToDatabase();
     // Fetch all users, excluding passwords and heavy fields
     // lean() returns plain JS objects (faster than Mongoose documents)
-    const users = await User.find({}, { password: 0, aadhar: 0, __v: 0 })
+    const users = await User.find({}, { password: 0, aadhar: 0, __v: 0, passportPhoto: 0, image: 0 })
       .sort({ createdAt: -1 })
       .lean();
     

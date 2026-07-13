@@ -86,7 +86,8 @@ export default function Navbar() {
     ? userProfile.name.split(' ')[0]
     : roleLabels[userRole] ?? 'User';
 
-  const userImage = userProfile?.passportPhoto || userProfile?.image;
+  const rawUserImage = userProfile?.passportPhoto || userProfile?.image;
+  const userImage = (rawUserImage && typeof rawUserImage === 'string' && rawUserImage !== '[object File]') ? rawUserImage : null;
 
   return (
     <>
