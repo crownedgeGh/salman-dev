@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
 
 // Indexes for common query patterns
 userSchema.index({ role: 1, createdAt: -1 }); // broker list query
+userSchema.index({ createdAt: -1 }); // sort by newest to avoid in-memory sort limit
 // Note: phone already indexed via unique:true in schema definition
 userSchema.index({ status: 1 }); // active users filter
 
