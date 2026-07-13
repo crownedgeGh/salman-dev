@@ -6,11 +6,11 @@ const AuthContext = createContext({
   isLoggedIn: false,
   userRole: null,       // 'buyer' | 'owner' | 'broker' | null
   userProfile: null,    // role-specific profile object | null
-  register: () => {},
-  logout: () => {},
-  toggleLogin: () => {}, // @deprecated
+  register: () => { },
+  logout: () => { },
+  toggleLogin: () => { }, // @deprecated
   authModalOpen: false,
-  setAuthModalOpen: () => {},
+  setAuthModalOpen: () => { },
 });
 
 // ── Cache helpers (only called client-side, inside useEffect or event handlers)
@@ -110,36 +110,38 @@ export function AuthProvider({ children }) {
       let res;
       if (profile instanceof FormData) {
         profile.append('role', role);
-        res = await api.post('/auth/register', profile, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        // Do NOT manually set Content-Type here.
+        // When FormData is passed, the browser automatically sets:
+        //   Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryXXX
+        // Manually setting it removes the boundary → server cannot parse files.
+        res = await api.post('/auth/register', profile);
       } else {
         res = await api.post('/auth/register', { ...profile, role });
       }
-      
+
       setIsLoggedIn(true);
       setUserRole(role);
-      
+
+      // Always fetch fresh profile from DB — this includes passportPhoto saved by server
       try {
         const profileRes = await api.get('/users/profile');
         setUserProfile(profileRes.data);
         writeCache(profileRes.data);
       } catch (fetchErr) {
-        // Fallback in case of error
-        const profileData = profile instanceof FormData ? Object.fromEntries(profile.entries()) : profile;
-        
-        // Strictly remove any objects (like File or Blob) so React doesn't coerce them to "[object File]"
-        for (const key in profileData) {
-          if (typeof profileData[key] === 'object' && profileData[key] !== null) {
-            delete profileData[key];
-          }
-        }
-        
-        const newProfile = { ...profileData, _id: res.data.userId, id: res.data.userId };
+        // Fallback: build minimal profile from what we have (no file/image objects)
+        const profileData = profile instanceof FormData
+          ? Object.fromEntries(
+            [...profile.entries()]
+              // Skip File objects — they can't be serialized and cause "[object File]" bug
+              .filter(([, v]) => typeof v === 'string')
+          )
+          : { ...profile };
+
+        const newProfile = { ...profileData, _id: res.data.userId, id: res.data.userId, role };
         setUserProfile(newProfile);
         writeCache(newProfile);
       }
-      
+
       return { success: true, data: res.data };
     } catch (error) {
       console.error("Registration failed:", error);

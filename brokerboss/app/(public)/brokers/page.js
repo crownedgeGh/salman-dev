@@ -183,7 +183,12 @@ async function BrokersList({ page, search, exp }) {
                 {/* Header Image and Title Area */}
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-sm bg-gray-100 shrink-0">
-                    <img src={profileImage} alt={name} className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                    <img 
+                      src={profileImage} 
+                      alt={name} 
+                      onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569`; }}
+                      className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors line-clamp-1">{name}</h3>

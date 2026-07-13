@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -12,6 +12,7 @@ import {
   FaClock,
   FaAlignLeft,
   FaCheckCircle,
+  FaSpinner,
 } from 'react-icons/fa';
 
 const initialState = {
@@ -23,8 +24,6 @@ const initialState = {
   reraNumber: '',
   yearsOfExperience: '',
   bio: '',
-  aadhar: null,
-  passportPhoto: null,
 };
 
 function FormField({ id, label, icon: Icon, error, children }) {
@@ -50,6 +49,12 @@ export default function BrokerForm() {
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Store actual File objects — reliable, no async race conditions
+  const fileRefs = useRef({ aadhar: null, passportPhoto: null });
+  // Preview URLs for display only (created via URL.createObjectURL)
+  const [previews, setPreviews] = useState({ aadhar: null, passportPhoto: null });
 
   const inputClass =
     'w-full rounded-lg border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors';
@@ -67,16 +72,15 @@ export default function BrokerForm() {
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
-      const file = files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          setForm((prev) => ({ ...prev, [name]: event.target.result }));
-        };
-        reader.readAsDataURL(file);
-      } else {
-        setForm((prev) => ({ ...prev, [name]: null }));
-      }
+      const file = files[0] || null;
+      // Store actual File object in ref — synchronous, no async issues
+      fileRefs.current[name] = file;
+      // Create an object URL just for preview
+      setPreviews((prev) => {
+        // Revoke old URL to prevent memory leaks
+        if (prev[name]) URL.revokeObjectURL(prev[name]);
+        return { ...prev, [name]: file ? URL.createObjectURL(file) : null };
+      });
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -87,21 +91,26 @@ export default function BrokerForm() {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    
-    // Clean up empty fields
-    const cleanForm = {};
-    Object.keys(form).forEach(key => {
-      if (form[key] !== null && form[key] !== '') {
-        cleanForm[key] = form[key];
-      }
-    });
 
-    const res = await register('broker', cleanForm);
+    setIsSubmitting(true);
+
+    // Build FormData — multipart/form-data so server handles files properly
+    const fd = new FormData();
+    // Text fields
+    Object.entries(form).forEach(([key, val]) => {
+      if (val !== null && val !== '') fd.append(key, val);
+    });
+    // File fields — append actual File objects (synchronous, always correct)
+    if (fileRefs.current.aadhar) fd.append('aadhar', fileRefs.current.aadhar);
+    if (fileRefs.current.passportPhoto) fd.append('passportPhoto', fileRefs.current.passportPhoto);
+
+    const res = await register('broker', fd);
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);
     } else {
       setErrors({ phone: res?.error || 'Registration failed' });
+      setIsSubmitting(false);
     }
   };
 
@@ -213,6 +222,7 @@ export default function BrokerForm() {
           />
         </FormField>
 
+        {/* Aadhar Card */}
         <FormField id="broker-aadhar" label="Aadhar Card (JPG/PDF)" icon={FaIdCard} error={errors.aadhar}>
           <input
             id="broker-aadhar"
@@ -222,8 +232,12 @@ export default function BrokerForm() {
             onChange={handleChange}
             className={`${inputClass} p-1.5`}
           />
+          {previews.aadhar && (
+            <p className="text-xs text-muted-foreground mt-1">✓ Aadhar selected</p>
+          )}
         </FormField>
 
+        {/* Profile Photo */}
         <FormField id="broker-passport-photo" label="Your Profile Photo (JPG/PNG)" icon={FaUser} error={errors.passportPhoto}>
           <input
             id="broker-passport-photo"
@@ -233,6 +247,17 @@ export default function BrokerForm() {
             onChange={handleChange}
             className={`${inputClass} p-1.5`}
           />
+          {/* Instant preview using object URL — no async FileReader needed */}
+          {previews.passportPhoto && (
+            <div className="mt-2 flex items-center gap-3">
+              <img
+                src={previews.passportPhoto}
+                alt="Profile preview"
+                className="h-14 w-14 rounded-full object-cover object-top border-2 border-primary/30 shadow"
+              />
+              <span className="text-xs text-muted-foreground">Photo ready ✓</span>
+            </div>
+          )}
         </FormField>
       </div>
 
@@ -254,9 +279,14 @@ export default function BrokerForm() {
       <button
         type="submit"
         id="broker-form-submit"
-        className="mt-2 w-full rounded-lg bg-primary text-primary-foreground py-3 font-semibold text-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        disabled={isSubmitting}
+        className="mt-2 w-full rounded-lg bg-primary text-primary-foreground py-3 font-semibold text-sm hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        Create Broker Account
+        {isSubmitting ? (
+          <><FaSpinner className="animate-spin h-4 w-4" /> Creating Account…</>
+        ) : (
+          'Create Broker Account'
+        )}
       </button>
     </form>
   );

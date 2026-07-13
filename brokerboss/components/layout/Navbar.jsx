@@ -87,7 +87,10 @@ export default function Navbar() {
     : roleLabels[userRole] ?? 'User';
 
   const rawUserImage = userProfile?.passportPhoto || userProfile?.image;
-  const userImage = (rawUserImage && typeof rawUserImage === 'string' && rawUserImage !== '[object File]') ? rawUserImage : null;
+  // Always produce a valid image URL — fall back to ui-avatars so navbar avatar is never blank
+  const userImage = (rawUserImage && typeof rawUserImage === 'string' && rawUserImage !== '[object File]' && rawUserImage.trim() !== '')
+    ? rawUserImage
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=ffffff&size=64`;
 
   return (
     <>
@@ -156,12 +159,13 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 bg-accent hover:bg-accent/80 rounded-full pl-3 pr-1 py-1 transition-all cursor-pointer"
                   aria-label="Open My Account panel"
                 >
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0 overflow-hidden">
-                    {userImage ? (
-                      <img src={userImage} alt={displayName} className="h-full w-full object-cover object-top" />
-                    ) : (
-                      <FaUser className="h-2.5 w-2.5 text-primary-foreground" />
-                    )}
+                  <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center shrink-0 overflow-hidden">
+                    <img 
+                      src={userImage} 
+                      alt={displayName} 
+                      onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=ffffff&size=64`; }}
+                      className="h-full w-full object-cover object-top" 
+                    />
                   </div>
                   <span className="text-xs font-semibold text-accent-foreground capitalize">
                     {displayName}
@@ -214,12 +218,13 @@ export default function Navbar() {
                   <>
                     <SheetHeader className="px-5 pt-5 pb-4 border-b border-border/60">
                       <SheetTitle className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm overflow-hidden">
-                          {userImage ? (
-                            <img src={userImage} alt={displayName} className="h-full w-full object-cover object-top" />
-                          ) : (
-                            displayName.charAt(0).toUpperCase()
-                          )}
+                        <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm overflow-hidden">
+                          <img 
+                            src={userImage} 
+                            alt={displayName} 
+                            onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=ffffff&size=128`; }}
+                            className="h-full w-full object-cover object-top" 
+                          />
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="font-bold text-foreground text-base capitalize truncate leading-tight">

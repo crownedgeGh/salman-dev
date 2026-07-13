@@ -146,6 +146,8 @@ export default function PostPropertyForm() {
           name:  userProfile?.name  || form.contactName  || '',
           phone: userProfile?.phone || form.contactPhone || '',
           role:  userRole || 'broker',
+          // Include broker's profile photo so property cards can display it
+          image: userProfile?.passportPhoto || userProfile?.image || '',
         },
       };
       await api.post('/properties', payload);

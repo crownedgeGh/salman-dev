@@ -71,7 +71,12 @@ export default async function ViewBrokerPage({ params }) {
         {/* Profile Header Card */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-800 mb-6 md:mb-8 flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="h-24 w-24 md:h-32 md:w-32 rounded-full overflow-hidden border-4 border-primary/10 dark:border-primary/20 shadow-md bg-gray-100 shrink-0">
-              <img src={profileImage} alt={name} className="h-full w-full object-cover object-top" />
+              <img 
+                src={profileImage} 
+                alt={name} 
+                onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569`; }}
+                className="h-full w-full object-cover object-top" 
+              />
             </div>
             
             <div className="flex-1 text-center md:text-left pt-2 md:pt-4">

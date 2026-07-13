@@ -10,6 +10,13 @@ const nextConfig = {
   },
   allowedDevOrigins: ['192.168.0.3', '192.168.0.242', '192.168.0.*'],
 
+  // Allow larger file uploads (profile photos, aadhar cards)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
+
   // Enable compression for all responses
   compress: true,
 

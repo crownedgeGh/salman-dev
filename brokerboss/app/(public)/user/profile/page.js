@@ -288,6 +288,7 @@ export default function MyProfilePage() {
                 <img 
                   src={((userProfile?.passportPhoto && userProfile.passportPhoto !== '[object File]') ? userProfile.passportPhoto : ((userProfile?.image && userProfile.image !== '[object File]') ? userProfile.image : `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`))} 
                   alt="Profile" 
+                  onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`; }}
                   className={`w-full h-full object-cover object-top transition-opacity ${imageUploading ? 'opacity-50' : 'opacity-100'}`}
                 />
                 {imageUploading && (

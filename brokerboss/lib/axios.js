@@ -16,4 +16,16 @@ const api = axios.create({
   },
 });
 
+// When sending FormData, remove the Content-Type header so the browser
+// automatically sets: Content-Type: multipart/form-data; boundary=----WebKit...
+// Without this, the global 'application/json' header overrides FormData requests
+// and the server cannot parse the multipart body — files are silently lost.
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+  return config;
+});
+
 export default api;
+
