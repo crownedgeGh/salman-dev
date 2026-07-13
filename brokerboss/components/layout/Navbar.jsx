@@ -86,6 +86,8 @@ export default function Navbar() {
     ? userProfile.name.split(' ')[0]
     : roleLabels[userRole] ?? 'User';
 
+  const userImage = userProfile?.passportPhoto || userProfile?.image;
+
   return (
     <>
       <RegisterModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
@@ -153,8 +155,12 @@ export default function Navbar() {
                   className="flex items-center gap-1.5 bg-accent hover:bg-accent/80 rounded-full pl-3 pr-1 py-1 transition-all cursor-pointer"
                   aria-label="Open My Account panel"
                 >
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0">
-                    <FaUser className="h-2.5 w-2.5 text-primary-foreground" />
+                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0 overflow-hidden">
+                    {userImage ? (
+                      <img src={userImage} alt={displayName} className="h-full w-full object-cover object-top" />
+                    ) : (
+                      <FaUser className="h-2.5 w-2.5 text-primary-foreground" />
+                    )}
                   </div>
                   <span className="text-xs font-semibold text-accent-foreground capitalize">
                     {displayName}
@@ -207,8 +213,12 @@ export default function Navbar() {
                   <>
                     <SheetHeader className="px-5 pt-5 pb-4 border-b border-border/60">
                       <SheetTitle className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm">
-                          {displayName.charAt(0).toUpperCase()}
+                        <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm overflow-hidden">
+                          {userImage ? (
+                            <img src={userImage} alt={displayName} className="h-full w-full object-cover object-top" />
+                          ) : (
+                            displayName.charAt(0).toUpperCase()
+                          )}
                         </div>
                         <div className="flex-1 min-w-0 text-left">
                           <p className="font-bold text-foreground text-base capitalize truncate leading-tight">

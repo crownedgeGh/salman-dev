@@ -67,7 +67,16 @@ export default function BrokerForm() {
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
-      setForm((prev) => ({ ...prev, [name]: files[0] || null }));
+      const file = files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setForm((prev) => ({ ...prev, [name]: event.target.result }));
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setForm((prev) => ({ ...prev, [name]: null }));
+      }
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
@@ -78,14 +87,16 @@ export default function BrokerForm() {
     e.preventDefault();
     const e2 = validate();
     if (Object.keys(e2).length) { setErrors(e2); return; }
-    const formData = new FormData();
+    
+    // Clean up empty fields
+    const cleanForm = {};
     Object.keys(form).forEach(key => {
       if (form[key] !== null && form[key] !== '') {
-        formData.append(key, form[key]);
+        cleanForm[key] = form[key];
       }
     });
 
-    const res = await register('broker', formData);
+    const res = await register('broker', cleanForm);
     if (res && res.success) {
       setSubmitted(true);
       setTimeout(() => router.push('/'), 1200);

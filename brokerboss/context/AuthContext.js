@@ -120,10 +120,25 @@ export function AuthProvider({ children }) {
       setIsLoggedIn(true);
       setUserRole(role);
       
-      const profileData = profile instanceof FormData ? Object.fromEntries(profile.entries()) : profile;
-      const newProfile = { ...profileData, _id: res.data.userId, id: res.data.userId };
-      setUserProfile(newProfile);
-      writeCache(newProfile);
+      try {
+        const profileRes = await api.get('/users/profile');
+        setUserProfile(profileRes.data);
+        writeCache(profileRes.data);
+      } catch (fetchErr) {
+        // Fallback in case of error
+        const profileData = profile instanceof FormData ? Object.fromEntries(profile.entries()) : profile;
+        
+        // Strictly remove any objects (like File or Blob) so React doesn't coerce them to "[object File]"
+        for (const key in profileData) {
+          if (typeof profileData[key] === 'object' && profileData[key] !== null) {
+            delete profileData[key];
+          }
+        }
+        
+        const newProfile = { ...profileData, _id: res.data.userId, id: res.data.userId };
+        setUserProfile(newProfile);
+        writeCache(newProfile);
+      }
       
       return { success: true, data: res.data };
     } catch (error) {

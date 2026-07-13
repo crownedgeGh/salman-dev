@@ -54,12 +54,34 @@ function getFieldsForRole(role) {
 function calcCompletion(profile, role) {
   if (!profile) return 0;
   const fields = getFieldsForRole(role);
-  const total = fields.length;
+  const total = fields.length + 1; // +1 for the profile picture
   let filled = 0;
+  
   fields.forEach(({ key }) => {
     const val = profile[key];
     if (val !== null && val !== undefined && String(val).trim() !== '') filled++;
   });
+  const hasValidImage = (img) => {
+    if (!img || typeof img !== 'string' || img.trim() === '') return false;
+    
+    const dummyDomains = [
+      'unsplash.com', 'ui-avatars.com', 'default', 
+      'cloudflare-ipfs.com', 'avatars.githubusercontent.com', 
+      'fakerapi.it', 'loremflickr.com', 'picsum.photos',
+      'dummyimage.com', 'placehold.co', 'placekitten.com'
+    ];
+    
+    if (dummyDomains.some(domain => img.toLowerCase().includes(domain))) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  if (hasValidImage(profile.passportPhoto) || hasValidImage(profile.image)) {
+    filled++;
+  }
+  
   return Math.round((filled / total) * 100);
 }
 
@@ -135,6 +157,7 @@ export default function MyProfilePage() {
 
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   const [toast, setToast] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -177,8 +200,8 @@ export default function MyProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      showToast('error', 'Image size should be less than 2MB');
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('error', 'Image size should be less than 5MB');
       return;
     }
 
@@ -187,14 +210,14 @@ export default function MyProfilePage() {
       const base64 = event.target.result;
       setForm(prev => ({ ...prev, passportPhoto: base64 }));
       try {
-        setSaving(true);
+        setImageUploading(true);
         const res = await api.put('/users/profile', { passportPhoto: base64 });
         updateProfile(res.data);
         showToast('success', 'Profile picture updated successfully!');
       } catch (err) {
         showToast('error', 'Failed to upload profile picture.');
       } finally {
-        setSaving(false);
+        setImageUploading(false);
       }
     };
     reader.readAsDataURL(file);
@@ -261,14 +284,21 @@ export default function MyProfilePage() {
           
           <div className="flex items-center gap-5 mb-2">
             <div className="relative group shrink-0">
-              <img 
-                src={userProfile?.passportPhoto || userProfile?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`} 
-                alt="Profile" 
-                className="w-20 h-20 rounded-full object-cover object-top border-2 border-border shadow-sm bg-muted"
-              />
-              <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer hover:scale-110 transition-transform shadow-md hover:bg-primary/90 flex items-center justify-center">
+              <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-border shadow-sm bg-muted">
+                <img 
+                  src={userProfile?.passportPhoto || userProfile?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfile?.name || 'User')}&background=e2e8f0&color=475569`} 
+                  alt="Profile" 
+                  className={`w-full h-full object-cover object-top transition-opacity ${imageUploading ? 'opacity-50' : 'opacity-100'}`}
+                />
+                {imageUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-[2px]">
+                    <FaSpinner className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
+              <label className={`absolute bottom-0 right-0 bg-primary text-primary-foreground p-1.5 rounded-full cursor-pointer transition-transform shadow-md flex items-center justify-center ${imageUploading ? 'opacity-50 pointer-events-none' : 'hover:scale-110 hover:bg-primary/90'}`}>
                 <FaCamera className="w-3.5 h-3.5" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={saving} />
+                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={saving || imageUploading} />
               </label>
             </div>
             <div>
