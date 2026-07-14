@@ -74,7 +74,7 @@ export default async function ViewBrokerPage({ params }) {
               <img 
                 src={profileImage} 
                 alt={name} 
-                className="h-full w-full object-cover object-top" 
+                className="h-full w-full object-cover" 
               />
             </div>
             

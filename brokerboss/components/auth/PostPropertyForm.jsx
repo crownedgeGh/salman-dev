@@ -97,8 +97,6 @@ export default function PostPropertyForm() {
     availableFrom:   '',
     preferredFor:    '',
     description:     '',
-    contactName:     userProfile?.name  ?? '',
-    contactPhone:    userProfile?.phone ?? '',
   });
 
   // Generate property ID once on mount
@@ -125,8 +123,6 @@ export default function PostPropertyForm() {
     if (!form.locality.trim()) e.locality = 'Area / locality is required';
     if (!form.areaSize.trim() || isNaN(Number(form.areaSize))) e.areaSize = 'Enter a valid area size';
     if (!form.price.trim() || isNaN(Number(form.price)))       e.price    = 'Enter a valid price';
-    if (!form.contactName.trim())  e.contactName  = 'Contact name is required';
-    if (!form.contactPhone.trim()) e.contactPhone = 'Contact number is required';
     return e;
   };
 
@@ -143,8 +139,8 @@ export default function PostPropertyForm() {
         ownerType: userRole || 'Broker',
         broker: {
           id:    userProfile?._id?.toString() || userProfile?.id?.toString() || '',
-          name:  userProfile?.name  || form.contactName  || '',
-          phone: userProfile?.phone || form.contactPhone || '',
+          name:  userProfile?.name  || '',
+          phone: userProfile?.phone || '',
           role:  userRole || 'broker',
           // Include broker's profile photo so property cards can display it
           image: userProfile?.passportPhoto || userProfile?.image || '',
@@ -396,20 +392,7 @@ export default function PostPropertyForm() {
         <span className="text-xs text-muted-foreground mt-1 block text-right">{form.description.length}/500</span>
       </div>
 
-      {/* ── 6. Contact Info ──────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
-        <SectionHead icon={FaPhone} title="Contact Details" subtitle="Buyers will reach out on these details" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field id="prop-contact-name" label="Contact Name" required error={errors.contactName}>
-            <input id="prop-contact-name" type="text" value={form.contactName}
-              onChange={set('contactName')} className={input} autoComplete="name" />
-          </Field>
-          <Field id="prop-contact-phone" label="Contact Phone" required error={errors.contactPhone}>
-            <input id="prop-contact-phone" type="tel" value={form.contactPhone}
-              onChange={set('contactPhone')} className={input} autoComplete="tel" />
-          </Field>
-        </div>
-      </div>
+
 
       {/* ── Submit ───────────────────────────────────────────────── */}
       <button

@@ -6,9 +6,9 @@ import Property from '@/lib/models/Property';
 export async function GET() {
   try {
     await connectToDatabase();
-    // Fetch all users, excluding passwords and heavy fields like images
+    // Fetch all users, excluding passwords and heavy fields (except photos since they are compressed now)
     // lean() returns plain JS objects (faster than Mongoose documents)
-    const users = await User.find({}, { password: 0, aadhar: 0, __v: 0, image: 0, passportPhoto: 0 })
+    const users = await User.find({}, { password: 0, aadhar: 0, __v: 0 })
       .sort({ createdAt: -1 })
       .allowDiskUse(true)
       .lean();

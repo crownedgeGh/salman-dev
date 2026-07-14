@@ -59,9 +59,6 @@ export default function EditPropertyPage({ params }) {
     maintenanceCharge: "",
     availableFrom: "",
     preferredFor: "",
-    description: "",
-    contactName: "",
-    contactPhone: "",
     status: "Active",
     owner: "",
   });
@@ -91,9 +88,6 @@ export default function EditPropertyPage({ params }) {
           maintenanceCharge: p.maintenanceCharge || "",
           availableFrom: p.availableFrom || "",
           preferredFor: p.preferredFor || "",
-          description: p.description || "",
-          contactName: p.contactName || p.broker?.name || "",
-          contactPhone: p.contactPhone || p.broker?.phone || "",
           status: p.status || "Active",
           owner: p.owner?.name || p.broker?.name || "",
         });
@@ -123,7 +117,7 @@ export default function EditPropertyPage({ params }) {
     if (!form.city.trim()) e2.city = "City is required";
     if (!form.locality.trim()) e2.locality = "Locality is required";
     if (!form.price.trim()) e2.price = "Price is required";
-    if (!form.owner.trim() && !form.contactName.trim()) e2.owner = "Owner/Contact Name is required";
+    if (!form.owner.trim()) e2.owner = "Owner Name is required";
 
     if (Object.keys(e2).length) {
       setErrors(e2);
@@ -420,7 +414,7 @@ export default function EditPropertyPage({ params }) {
               </div>
             </div>
 
-            <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-6">Description & Contact</h3>
+            <h3 className="text-lg font-semibold border-b pb-2 mb-4 mt-6">Description</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Description */}
               <div className="space-y-1.5 md:col-span-2">
@@ -428,22 +422,6 @@ export default function EditPropertyPage({ params }) {
                   <FileText className="h-4 w-4 text-primary" /> Description
                 </label>
                 <textarea id="prop-description" name="description" rows={4} value={form.description} onChange={handleChange} className={inputClass + " resize-none"} />
-              </div>
-
-              {/* Contact Name */}
-              <div className="space-y-1.5">
-                <label htmlFor="prop-contactName" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" /> Contact / Owner Name
-                </label>
-                <Input id="prop-contactName" name="contactName" type="text" value={form.contactName || form.owner} onChange={handleChange} />
-              </div>
-
-              {/* Contact Phone */}
-              <div className="space-y-1.5">
-                <label htmlFor="prop-contactPhone" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-primary" /> Contact Phone
-                </label>
-                <Input id="prop-contactPhone" name="contactPhone" type="text" value={form.contactPhone} onChange={handleChange} />
               </div>
             </div>
 

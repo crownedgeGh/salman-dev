@@ -186,10 +186,10 @@ function FeaturedCard({ property }) {
         {/* Broker row */}
         <div className="flex items-center gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3 border-t border-border/40 relative z-20">
           <Link href={broker.id || broker._id ? `/viewBroker/${broker.id || broker._id}` : '#'} className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0 group/broker hover:opacity-80 transition-opacity">
-            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40 flex items-center justify-center">
               <img 
-                src={getValidImg(broker.passportPhoto) || getValidImg(broker.image) || `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`} 
-                alt={broker.name} 
+                src={getValidImg(broker.image) || getValidImg(broker.passportPhoto) || `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name || 'User')}&background=e2e8f0&color=475569`} 
+                alt={broker.name || 'User'} 
                 className="w-full h-full object-cover" 
               />
             </div>

@@ -49,8 +49,8 @@ export default async function PropertyDetailsPage({ params }) {
   const landmark = property.landmark || '';
   const description = property.description || 'No description provided for this property.';
   
-  const brokerName = property.broker?.name || property.contactName || property.owner || 'Unknown Broker';
-  const brokerPhone = property.broker?.phone || property.contactPhone || '';
+  const brokerName = property.broker?.name || property.user?.name || property.owner || 'Unknown Broker';
+  const brokerPhone = property.broker?.phone || property.user?.phone || '';
   const getValidImg = (img) => {
     if (typeof img !== 'string' || !img.trim()) return null;
     if (img.includes('unsplash.com')) return null;

@@ -259,7 +259,7 @@ export default function PropertyCard({ property, compact = false }) {
             }}
           >
             <div className="w-5 h-5 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
-              <img src={validBrokerImage} alt={broker.name} className="w-full h-full object-cover object-top" />
+              <img src={validBrokerImage} alt={broker.name} className="w-full h-full object-cover" />
             </div>
             <span className="font-semibold text-foreground truncate group-hover/broker:underline">
               {broker.name}
@@ -271,7 +271,7 @@ export default function PropertyCard({ property, compact = false }) {
             {/* Broker Hover Card */}
             <div className="absolute bottom-full left-0 mb-2 hidden group-hover/broker:flex flex-col bg-white dark:bg-card border border-border/80 shadow-xl rounded-xl p-3 w-48 z-50 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
               <div className="flex items-center gap-3">
-                <img src={validBrokerImage} alt={broker.name} className="w-10 h-10 rounded-full object-cover object-top border border-border/50" />
+                <img src={validBrokerImage} alt={broker.name} className="w-10 h-10 rounded-full object-cover border border-border/50" />
                 <div>
                   <p className="font-bold text-sm text-foreground leading-tight group-hover/broker:underline">{broker.name}</p>
                   <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>

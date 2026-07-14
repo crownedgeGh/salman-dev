@@ -36,7 +36,7 @@ const STATUS_COLORS = {
 
 export default function ViewPropertyPage({ params }) {
   const { id } = use(params);
-  
+
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -137,7 +137,7 @@ export default function ViewPropertyPage({ params }) {
 
       {/* Details Container */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         {/* Thumbnail Column */}
         <div className="md:col-span-1 space-y-6">
           <div className="p-6 rounded-xl border border-border bg-card shadow-sm flex flex-col items-center justify-center gap-4">
@@ -150,19 +150,28 @@ export default function ViewPropertyPage({ params }) {
               {property?.status || "Active"}
             </Badge>
           </div>
-          
+
           <div className="p-6 rounded-xl border border-border bg-card shadow-sm space-y-4">
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 border-b pb-2">
               <User className="w-4 h-4 text-primary" /> Contact Information
             </h3>
-            <div className="space-y-3">
-              <div>
-                <span className="text-xs text-muted-foreground block">Contact Name</span>
-                <span className="text-sm font-medium">{property?.contactName || property?.owner || 'N/A'}</span>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-muted shrink-0 border border-border/40">
+                <img
+                  src={property?.broker?.image || property?.user?.passportPhoto || `https://ui-avatars.com/api/?name=${encodeURIComponent(property?.broker?.name || property?.user?.name || 'User')}&background=e2e8f0&color=475569`}
+                  alt="Contact"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div>
-                <span className="text-xs text-muted-foreground block">Contact Phone</span>
-                <span className="text-sm font-medium">{property?.contactPhone || 'N/A'}</span>
+              <div className="space-y-1">
+                <div>
+                  <span className="text-xs text-muted-foreground block">Broker Name</span>
+                  <span className="text-sm font-medium">{property?.broker?.name || property?.user?.name || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground block">Broker Phone</span>
+                  <span className="text-sm font-medium">{property?.broker?.phone || property?.user?.phone || 'N/A'}</span>
+                </div>
               </div>
             </div>
           </div>

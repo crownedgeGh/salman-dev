@@ -186,7 +186,7 @@ async function BrokersList({ page, search, exp }) {
                     <img 
                       src={profileImage} 
                       alt={name} 
-                      className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" 
                     />
                   </div>
                   <div className="flex-1 min-w-0">

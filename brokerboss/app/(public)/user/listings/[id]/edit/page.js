@@ -101,8 +101,6 @@ export default function EditPropertyPage() {
           facing: p.facing || '',
           floorNo: p.floorNo || '',
           totalFloors: p.totalFloors || '',
-          contactName: p.contactName || '',
-          contactPhone: p.contactPhone || '',
         });
       })
       .catch(() => {
@@ -293,19 +291,7 @@ export default function EditPropertyPage() {
           </Field>
         </Section>
 
-        {/* Contact */}
-        <Section title="Contact Details">
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Contact Name">
-              <input id="edit-contactName" type="text" value={form.contactName} onChange={set('contactName')}
-                placeholder="Name…" className={inputClass} />
-            </Field>
-            <Field label="Contact Phone">
-              <input id="edit-contactPhone" type="tel" value={form.contactPhone} onChange={set('contactPhone')}
-                placeholder="10-digit number" className={inputClass} />
-            </Field>
-          </div>
-        </Section>
+
       </div>
 
       {/* ── Sticky Save Bar ─────────────────────────────── */}
