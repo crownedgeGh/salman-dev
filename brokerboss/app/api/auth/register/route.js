@@ -32,7 +32,7 @@ export async function POST(request) {
         const file = formData.get(key);
         if (file && file.size > 0 && typeof file !== 'string') {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const mimeType = file.type || (file.name.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+          const mimeType = file.type || (file.name?.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
           filePaths[key] = `data:${mimeType};base64,${buffer.toString('base64')}`;
         }
       }
