@@ -12,13 +12,13 @@ const EXPERIENCE_FILTERS = [
   { label: '10+ Years', value: '10+' },
 ];
 
-export default function BrokerSearch() {
+export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [inputValue, setInputValue] = useState(searchParams.get('search') || '');
-  const currentExp = searchParams.get('exp') || '';
+  const [inputValue, setInputValue] = useState(searchParams.get('search') ?? initialSearch);
+  const currentExp = searchParams.get('exp') ?? initialExp;
   const hasFilters = inputValue || currentExp;
 
   const createQS = useCallback((updates) => {

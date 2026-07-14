@@ -186,7 +186,6 @@ async function BrokersList({ page, search, exp }) {
                     <img 
                       src={profileImage} 
                       alt={name} 
-                      onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=e2e8f0&color=475569`; }}
                       className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
                     />
                   </div>

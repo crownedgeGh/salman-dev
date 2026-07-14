@@ -73,14 +73,64 @@ export default function BrokerForm() {
     const { name, value, type, files } = e.target;
     if (type === 'file') {
       const file = files[0] || null;
-      // Store actual File object in ref — synchronous, no async issues
-      fileRefs.current[name] = file;
-      // Create an object URL just for preview
-      setPreviews((prev) => {
-        // Revoke old URL to prevent memory leaks
-        if (prev[name]) URL.revokeObjectURL(prev[name]);
-        return { ...prev, [name]: file ? URL.createObjectURL(file) : null };
-      });
+      if (!file) {
+        fileRefs.current[name] = null;
+        setPreviews((prev) => {
+          if (prev[name]) URL.revokeObjectURL(prev[name]);
+          return { ...prev, [name]: null };
+        });
+        return;
+      }
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+                fileRefs.current[name] = resizedFile;
+                setPreviews((prev) => {
+                  if (prev[name]) URL.revokeObjectURL(prev[name]);
+                  return { ...prev, [name]: URL.createObjectURL(resizedFile) };
+                });
+              }
+            }, 'image/jpeg', 0.8);
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // For non-images (like PDF)
+        fileRefs.current[name] = file;
+        setPreviews((prev) => {
+          if (prev[name]) URL.revokeObjectURL(prev[name]);
+          return { ...prev, [name]: URL.createObjectURL(file) };
+        });
+      }
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
