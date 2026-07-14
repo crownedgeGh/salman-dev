@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 import {
@@ -54,8 +55,9 @@ function ListingCard({ property, onDelete, onView, onEdit }) {
 
   return (
     <div className="bg-card border border-border/70 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-200 group flex flex-col">
-      {/* Image */}
-      <div className="relative h-44 sm:h-52 bg-muted overflow-hidden">
+      <Link href={`/properties/${property._id || property.id}`} className="flex flex-col flex-1">
+        {/* Image */}
+        <div className="relative h-44 sm:h-52 bg-muted overflow-hidden">
         {property.images?.[0] || property.image ? (
           <img
             src={property.images?.[0] || property.image}
@@ -115,9 +117,12 @@ function ListingCard({ property, onDelete, onView, onEdit }) {
         <p className="text-base font-extrabold text-primary mt-auto">
           {property.price || '—'}
         </p>
+        </div>
+      </Link>
 
-        {/* Action buttons */}
-        <div className="flex gap-2 mt-2">
+      {/* Action buttons */}
+      <div className="px-4 pb-4">
+        <div className="flex gap-2">
           <button
             onClick={() => onView(property)}
             title="View public listing"
