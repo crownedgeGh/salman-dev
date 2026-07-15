@@ -110,7 +110,7 @@ export default function EditPropertyPage({ params }) {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleUpdateSubmit = (e) => {
+  const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const e2 = {};
     if (!form.title.trim()) e2.title = "Property Title is required";
@@ -124,19 +124,31 @@ export default function EditPropertyPage({ params }) {
       return;
     }
 
-    setSubmitted(true);
-    showToast("Property updated successfully!");
-    setTimeout(() => {
-      router.push("/admin/properties");
-    }, 1500);
+    try {
+      await api.put(`/properties/${id}`, form);
+      setSubmitted(true);
+      showToast("Property updated successfully!");
+      setTimeout(() => {
+        router.push("/admin/properties");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      showToast(err.response?.data?.message || "Failed to update property.");
+    }
   };
 
-  const handleDisableProperty = () => {
-    setForm((prev) => ({ ...prev, status: "Pending" }));
-    showToast("Property listing has been disabled.");
-    setTimeout(() => {
-      router.push("/admin/properties");
-    }, 1500);
+  const handleDisableProperty = async () => {
+    try {
+      await api.put(`/properties/${id}`, { ...form, status: "Pending" });
+      setForm((prev) => ({ ...prev, status: "Pending" }));
+      showToast("Property listing has been disabled.");
+      setTimeout(() => {
+        router.push("/admin/properties");
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to disable property.");
+    }
   };
 
   const inputClass =

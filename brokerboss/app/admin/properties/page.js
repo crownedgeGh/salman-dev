@@ -85,7 +85,7 @@ export default function PropertiesPage() {
 
   const handleDelete = () => {
     api.delete(`/properties/${deleteTarget.id || deleteTarget._id}`).then(() => {
-      setProperties((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      setProperties((prev) => prev.filter((p) => (p.id || p._id) !== (deleteTarget.id || deleteTarget._id)));
       clearAdminPropsCache();
       showToast(`Property "${deleteTarget.title}" deleted.`);
       setDeleteTarget(null);
