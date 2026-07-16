@@ -113,11 +113,10 @@ export default function EditPropertyPage({ params }) {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const e2 = {};
-    if (!form.title.trim()) e2.title = "Property Title is required";
-    if (!form.city.trim()) e2.city = "City is required";
-    if (!form.locality.trim()) e2.locality = "Locality is required";
-    if (!form.price.trim()) e2.price = "Price is required";
-    if (!form.owner.trim()) e2.owner = "Owner Name is required";
+    if (!form.title?.toString().trim()) e2.title = "Property Title is required";
+    if (!form.city?.toString().trim()) e2.city = "City is required";
+    if (!form.locality?.toString().trim()) e2.locality = "Locality is required";
+    if (!form.price?.toString().trim()) e2.price = "Price is required";
 
     if (Object.keys(e2).length) {
       setErrors(e2);

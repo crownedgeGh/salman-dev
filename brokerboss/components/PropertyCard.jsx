@@ -60,39 +60,14 @@ function getPropertySpecs(property) {
 
   // Specifications based on Type
   const specs = [];
-  if (['House', 'Flat', 'Home'].includes(property.type)) {
-    const furnishingOptions = ['Semi-Furnished', 'Fully Furnished', 'Unfurnished'];
-    const furnishing = furnishingOptions[idNum % furnishingOptions.length];
+  const furnishing = property.furnishing || 'Unfurnished';
+  const area = property.areaSize ? `${property.areaSize} ${property.areaUnit || 'sq ft'}` : (property.area || 'N/A');
+  const bathrooms = property.bathrooms || parseInt(bhk) || 2;
 
-    const tenantOptions = ['Family/Bachelors', 'Family Only', 'Bachelors Only'];
-    const tenant = tenantOptions[(idNum + 1) % tenantOptions.length];
-
-    specs.push({ label: 'BHK', value: `${bhk} BHK` });
-    specs.push({ label: 'FURNISHING', value: furnishing });
-    specs.push({ label: 'BATHROOM', value: `${parseInt(bhk) || 2}` });
-    specs.push({ label: 'TENANT PREFERRED', value: tenant });
-  } else if (['Plot'].includes(property.type)) {
-    const facingOptions = ['East', 'North', 'West', 'South'];
-    const facing = facingOptions[idNum % facingOptions.length];
-
-    const boundaryOptions = ['Yes', 'No'];
-    const boundary = boundaryOptions[(idNum + 2) % boundaryOptions.length];
-
-    specs.push({ label: 'FACES', value: facing });
-    specs.push({ label: 'BOUNDARY WALL', value: boundary });
-    specs.push({ label: 'LAND AUTHORITY', value: 'RERA Approved' });
-  } else {
-    // Commercial / Shop / Office / Warehouse
-    const availabilityOptions = ['Immediately', '15 Days', '30 Days'];
-    const availability = availabilityOptions[idNum % availabilityOptions.length];
-
-    const parkingOptions = ['Available', 'Covered', 'Not Available'];
-    const parking = parkingOptions[(idNum + 1) % parkingOptions.length];
-
-    specs.push({ label: 'AVAILABILITY', value: availability });
-    specs.push({ label: 'PARKING', value: parking });
-    specs.push({ label: 'LIFT', value: idNum % 2 === 0 ? 'Yes' : 'No' });
-  }
+  specs.push({ label: 'BHK', value: `${bhk} BHK` });
+  specs.push({ label: 'FURNISHING', value: furnishing });
+  specs.push({ label: 'AREA', value: area });
+  specs.push({ label: 'BATHROOM', value: `${bathrooms}` });
 
   return {
     photoCount,
@@ -212,11 +187,10 @@ export default function PropertyCard({ property, compact = false }) {
                            getValidImg(property.user?.image) || 
                            `https://ui-avatars.com/api/?name=${encodeURIComponent(broker.name)}&background=e2e8f0&color=475569`;
 
-  // Specifications logic: only collapse when there are 5 or 6 specs in total.
-  // We combine the base specs and the AREA spec.
-  const allFeatures = [...specs, { label: 'AREA', value: property.area }];
-  const hasCollapse = allFeatures.length >= 5;
-  const visibleFeatures = (hasCollapse && !isExpanded) ? allFeatures.slice(0, 3) : allFeatures;
+  // Specifications logic
+  const allFeatures = [...specs];
+  const hasCollapse = allFeatures.length > 4; // We have exactly 4, so this will be false
+  const visibleFeatures = (hasCollapse && !isExpanded) ? allFeatures.slice(0, 4) : allFeatures;
 
   return (
     <>
