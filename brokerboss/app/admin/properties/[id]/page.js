@@ -326,9 +326,6 @@ export default function EditPropertyPage({ params }) {
                   <Input id="prop-areaSize" name="areaSize" type="text" value={form.areaSize} onChange={handleChange} className="flex-1" />
                   <select name="areaUnit" value={form.areaUnit} onChange={handleChange} className={`${inputClass} w-28`}>
                     <option value="sq ft">sq ft</option>
-                    <option value="sq yards">sq yards</option>
-                    <option value="Marla">Marla</option>
-                    <option value="Bigha">Bigha</option>
                     <option value="Acre">Acre</option>
                   </select>
                 </div>

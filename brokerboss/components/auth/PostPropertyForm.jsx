@@ -26,7 +26,7 @@ const PURPOSES       = ['Sale', 'Rent'];
 const FURNISHINGS    = ['Unfurnished', 'Semi-Furnished', 'Furnished'];
 const FACINGS        = ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
 const PREFERRED_FOR  = ['Any', 'Family', 'Bachelor', 'Company / Firm'];
-const AREA_UNITS     = ['sq ft', 'sq yards', 'Marla', 'Bigha', 'Acre'];
+const AREA_UNITS     = ['sq ft', 'Acre'];
 const LOCALITIES     = [
   'Shankar Nagar', 'Telibandha', 'Khamardih', 'Avanti Vihar',
   'Pandri', 'VIP Road', 'Mowa', 'Pachpedi Naka', 'Civil Lines',

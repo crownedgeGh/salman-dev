@@ -12,7 +12,7 @@ const PROPERTY_TYPES = ['Flat', 'House', 'Plot', 'Office', 'Shop', 'Warehouse', 
 const PURPOSES = ['Sale', 'Rent'];
 const FURNISHING_OPTIONS = ['Unfurnished', 'Semi-Furnished', 'Fully Furnished'];
 const FACINGS = ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'];
-const AREA_UNITS = ['sq ft', 'sq yards', 'Marla', 'Bigha', 'Acre'];
+const AREA_UNITS = ['sq ft', 'Acre'];
 
 // ─── Reusable field wrapper ───────────────────────────────────────────────────
 function Field({ label, required, error, children }) {
