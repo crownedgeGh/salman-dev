@@ -25,9 +25,14 @@ export async function POST(request) {
       { expiresIn: '1d' }
     );
 
+    const userObj = user.toObject();
+    // Exclude sensitive fields if any exist in the future
+    delete userObj.password;
+    userObj.id = userObj._id;
+
     const response = NextResponse.json({
       message: 'Login successful',
-      user: { id: user._id, name: user.name, phone: user.phone, role: user.role }
+      user: userObj
     });
 
     response.cookies.set('token', token, {
