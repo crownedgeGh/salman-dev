@@ -40,8 +40,8 @@ function getPropertySpecs(property) {
   const updatedText = updateDays === 0 ? 'Updated today' : `Updated ${updateDays} days ago`;
 
   // Extracted BHK if present in title
-  const bhkMatch = property.title.match(/(\d)\s*BHK/i);
-  const bhk = bhkMatch ? bhkMatch[1] : '2';
+  const bhkMatch = property.title?.match(/(\d)\s*BHK/i);
+  const bhkVal = property.bhk || (bhkMatch ? bhkMatch[1] : 'N/A');
 
   // Price formatting and deposit
   let formattedPrice = property.price;
@@ -62,9 +62,9 @@ function getPropertySpecs(property) {
   const specs = [];
   const furnishing = property.furnishing || 'Unfurnished';
   const area = property.areaSize ? `${property.areaSize} ${property.areaUnit || 'sq ft'}` : (property.area || 'N/A');
-  const bathrooms = property.bathrooms || parseInt(bhk) || 2;
+  const bathrooms = property.bathrooms || 'N/A';
 
-  specs.push({ label: 'BHK', value: `${bhk} BHK` });
+  specs.push({ label: 'BHK', value: bhkVal !== 'N/A' ? `${bhkVal} BHK` : 'N/A' });
   specs.push({ label: 'FURNISHING', value: furnishing });
   specs.push({ label: 'AREA', value: area });
   specs.push({ label: 'BATHROOM', value: `${bathrooms}` });
