@@ -34,6 +34,8 @@ const nextConfig = {
 
   // HTTP caching headers for static assets
   async headers() {
+    if (process.env.NODE_ENV !== 'production') return [];
+    
     return [
       {
         // Cache all static files (JS, CSS, images) for 1 year

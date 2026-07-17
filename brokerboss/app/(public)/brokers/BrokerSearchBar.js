@@ -5,14 +5,14 @@ import { useCallback, useTransition, useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, ChevronDown, Loader2, X } from 'lucide-react';
 
 const EXPERIENCE_FILTERS = [
-  { label: 'By Experience', value: '' },
+  { label: 'Experience', value: '' },
   { label: '0 – 2 Years', value: '0-2' },
   { label: '3 – 5 Years', value: '3-5' },
   { label: '6 – 10 Years', value: '6-10' },
   { label: '10+ Years', value: '10+' },
 ];
 
-export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
+export default function BrokerSearchBar({ initialSearch = '', initialExp = '' }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,7 +46,7 @@ export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
   };
 
   return (
-    <div className="mb-8">
+    <div className="mb-8" data-cache-bust="2">
       <div className="flex items-center gap-3 flex-wrap">
         
         {/* ── Search ── */}
@@ -120,3 +120,5 @@ export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
     </div>
   );
 }
+
+// Cache bust: 1

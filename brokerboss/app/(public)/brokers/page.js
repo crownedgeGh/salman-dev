@@ -6,7 +6,7 @@ import { Phone, MapPin, Building, Briefcase, Home, ChevronLeft, ChevronRight } f
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Suspense } from 'react';
-import BrokerSearch from './BrokerSearch';
+import BrokerSearchBar from './BrokerSearchBar';
 
 export const metadata = {
   title: 'Brokers | BrokerBoss',
@@ -29,7 +29,9 @@ export default async function BrokersPage(props) {
         </div>
 
         {/* Search & Filter Bar */}
-          <BrokerSearch initialSearch={search} initialExp={exp} />
+        <Suspense fallback={<div className="h-[72px] mb-8 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-xl"></div>}>
+          <BrokerSearchBar initialSearch={search} initialExp={exp} />
+        </Suspense>
 
         <Suspense key={`${page}-${search}-${exp}`} fallback={<BrokersSkeleton />}>
           <BrokersList page={page} search={search} exp={exp} />
