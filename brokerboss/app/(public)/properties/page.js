@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Force rebuild to clear Turbopack cache
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
@@ -366,17 +366,23 @@ function PropertiesPageInner() {
     let result = properties;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter((p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.type.toLowerCase().includes(q) ||
-        p.locality.toLowerCase().includes(q) ||
-        p.city.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.purpose.toLowerCase().includes(q) ||
-        p.price.toLowerCase().includes(q) ||
-        p.area.toLowerCase().includes(q) ||
-        p.broker.name.toLowerCase().includes(q)
-      );
+      result = result.filter((p) => {
+        const pIdStr = p._id ? p._id.toString() : (p.id ? p.id.toString() : '');
+        const pDispId = p.propertyId || `BB${100 + ((parseInt(pIdStr.replace(/\\D/g, '')) || 7) % 900)}`;
+        return (
+          (p.title && p.title.toLowerCase().includes(q)) ||
+          (p.type && p.type.toLowerCase().includes(q)) ||
+          (p.locality && p.locality.toLowerCase().includes(q)) ||
+          (p.city && p.city.toLowerCase().includes(q)) ||
+          (p.description && p.description.toLowerCase().includes(q)) ||
+          (p.purpose && p.purpose.toLowerCase().includes(q)) ||
+          (p.price && String(p.price).toLowerCase().includes(q)) ||
+          (p.area && String(p.area).toLowerCase().includes(q)) ||
+          (p.broker && p.broker.name && p.broker.name.toLowerCase().includes(q)) ||
+          pDispId.toLowerCase().includes(q) ||
+          pIdStr.toLowerCase().includes(q)
+        );
+      });
     }
     return result.filter((p) => {
       if (filters.type && p.type !== filters.type) return false;
@@ -475,11 +481,32 @@ function PropertiesPageInner() {
 
             {/* Property Grid */}
             <div className="flex-1 min-w-0">
+              {/* Search Bar */}
+              <div className="mb-4">
+                <div className="relative w-full md:max-w-md">
+                  <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <input 
+                    type="text" 
+                    placeholder="Search by property name or ID..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-10 py-2.5 bg-background border border-border/60 hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all shadow-sm text-sm"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <FaTimes className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Result count */}
               <p className="text-sm text-muted-foreground mb-3">
                 <span className="font-bold text-foreground text-base">{filtered.length}</span>{' '}
                 propert{filtered.length === 1 ? 'y' : 'ies'} found
-                {searchQuery && <span className="italic"> for "{searchQuery}"</span>}
               </p>
               <PropertyGrid properties={filtered} compact />
             </div>

@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Force rebuild to clear hydration cache
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback, useTransition, useState, useEffect } from 'react';

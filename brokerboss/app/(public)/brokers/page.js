@@ -29,9 +29,7 @@ export default async function BrokersPage(props) {
         </div>
 
         {/* Search & Filter Bar */}
-        <Suspense>
           <BrokerSearch initialSearch={search} initialExp={exp} />
-        </Suspense>
 
         <Suspense key={`${page}-${search}-${exp}`} fallback={<BrokersSkeleton />}>
           <BrokersList page={page} search={search} exp={exp} />
