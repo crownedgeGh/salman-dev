@@ -48,43 +48,44 @@ export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
   return (
     <div className="mb-8">
       <div className="flex items-center gap-3 flex-wrap">
-
+        
         {/* ── Search ── */}
-        <div className="flex items-center gap-2.5 px-4 py-3 bg-white dark:bg-card border border-border rounded-2xl shadow-sm w-80 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-all duration-200">
-          {isPending
-            ? <Loader2 size={16} className="text-muted-foreground shrink-0 animate-spin" />
-            : <Search size={16} className="text-muted-foreground shrink-0" />
-          }
+        <div className="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-md flex-1">
+          {isPending ? (
+            <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4 animate-spin" />
+          ) : (
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          )}
           <input
             id="broker-search-input"
             type="text"
             placeholder="Search by name…"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            className="flex-1 min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+            className="w-full pl-10 pr-10 py-2.5 bg-background border border-border/60 hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all shadow-sm text-sm outline-none"
           />
           {inputValue && (
-            <button onClick={() => setInputValue('')} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
-              <X size={14} />
+            <button onClick={() => setInputValue('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+              <X className="h-4 w-4" />
             </button>
           )}
         </div>
 
         {/* ── Experience Filter ── */}
-        <div className="relative flex items-center gap-2.5 px-4 py-3 bg-white dark:bg-card border border-border rounded-2xl shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-all duration-200">
-          <SlidersHorizontal size={15} className="text-muted-foreground shrink-0" />
+        <div className="relative w-[140px] sm:w-[160px] shrink-0">
+          <SlidersHorizontal className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <select
             id="broker-exp-filter"
             value={currentExp}
             onChange={(e) => handleExp(e.target.value)}
-            className="appearance-none bg-transparent text-sm text-foreground outline-none cursor-pointer pr-5 w-36"
+            className="appearance-none w-full pl-10 pr-8 py-2.5 bg-background border border-border/60 hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all shadow-sm text-sm cursor-pointer outline-none text-foreground"
             aria-label="Filter by experience"
           >
             {EXPERIENCE_FILTERS.map((f) => (
               <option key={f.value} value={f.value}>{f.label}</option>
             ))}
           </select>
-          <ChevronDown size={14} className="text-muted-foreground pointer-events-none absolute right-1 top-1/2 -translate-y-1/2" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4 pointer-events-none" />
         </div>
 
         {/* ── Clear ── */}
@@ -92,7 +93,7 @@ export default function BrokerSearch({ initialSearch = '', initialExp = '' }) {
           <button
             onClick={handleClear}
             disabled={isPending}
-            className="flex items-center gap-1.5 px-4 py-3 rounded-2xl border border-border bg-white dark:bg-card text-sm text-muted-foreground hover:text-destructive hover:border-destructive hover:bg-destructive/5 shadow-sm transition-all duration-200 disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-border/60 bg-background text-sm font-medium text-muted-foreground hover:text-destructive hover:border-destructive hover:bg-destructive/5 shadow-sm transition-all duration-200 disabled:opacity-50 shrink-0"
           >
             <X size={14} />
             Clear
