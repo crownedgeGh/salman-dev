@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import LocalImage from '@/components/LocalImage';
 import connectToDatabase from '@/lib/mongodb';
 import Property from '@/lib/models/Property';
 import FeaturedCarousel from '@/components/FeaturedCarousel';
@@ -152,7 +151,7 @@ function FeaturedCard({ property }) {
       */}
       <div className="relative w-full overflow-hidden bg-white" style={{ paddingTop: '75%' }}>
         <img
-          src={getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || '/homebb.jpg'}
+          src={getValidImg(property.images?.[0]) || getValidImg(property.thumbnail) || '/homebb.webp'}
           alt={property.title}
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -234,12 +233,15 @@ export default async function HomePage() {
     <>
       {/* ── Hero Section ─────────────────────────────── */}
       <section className="relative overflow-hidden flex items-center justify-center min-h-[85vh] md:min-h-[90vh]">
-        <LocalImage
-          srcKey="hero-bg-webp"
-          srcUrl="/homebb.webp"
-          alt="Real Estate Hero Background"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <picture className="absolute inset-0 w-full h-full">
+          <source srcSet="/homebb.webp" type="image/webp" />
+          <img
+            src="/homebb.jpg"
+            alt="Real Estate Hero Background"
+            className="w-full h-full object-cover"
+            fetchPriority="high"
+          />
+        </picture>
 
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/10 md:bg-none pointer-events-none" />
