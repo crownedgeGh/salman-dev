@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_change_in_prod
 export async function GET(request) {
   try {
     await connectToDatabase();
-    
+
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -16,7 +16,7 @@ export async function GET(request) {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId).select('-password');
-    
+
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -68,7 +68,7 @@ export async function PUT(request) {
       if (data.name) updateFields['broker.name'] = data.name;
       if (data.passportPhoto || data.image) updateFields['broker.image'] = data.passportPhoto || data.image;
       if (data.phone) updateFields['broker.phone'] = data.phone;
-      
+
       const Property = (await import('@/lib/models/Property')).default;
       await Property.updateMany(
         { 'broker.id': decoded.userId },

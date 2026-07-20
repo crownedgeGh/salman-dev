@@ -28,8 +28,8 @@ import { Badge } from "@/components/ui/badge";
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
-  Sold: "border-gray-300 text-gray-600 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-400",
-  "Sold Out": "border-gray-300 text-gray-600 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-400",
+  Sold: "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
+  "Sold Out": "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
   Pending: "border-yellow-300 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-500",
   Disable: "border-red-300 text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-500",
 };
@@ -113,7 +113,7 @@ export default function ViewPropertyPage({ params }) {
             </Button>
           )}
           {property?.status !== "Sold Out" && (
-            <Button onClick={() => handleUpdateStatus("Sold Out")} disabled={actionLoading} variant="outline" className="text-gray-600 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800">
+            <Button onClick={() => handleUpdateStatus("Sold Out")} disabled={actionLoading} variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/20">
               Sold Out
             </Button>
           )}

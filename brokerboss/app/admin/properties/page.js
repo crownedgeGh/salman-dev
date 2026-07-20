@@ -27,7 +27,8 @@ import api from '@/lib/axios';
 
 const STATUS_COLORS = {
   Active: "border-green-300 text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400",
-  Sold: "border-gray-300 text-gray-600 bg-gray-50 dark:bg-gray-900/20 dark:text-gray-400",
+  Sold: "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
+  "Sold Out": "border-blue-300 text-blue-700 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400",
   Pending: "border-yellow-300 text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-500",
 };
 
@@ -105,6 +106,7 @@ export default function PropertiesPage() {
   const filteredData = properties.filter((p) => {
     if (statusFilter === "All") return true;
     if (statusFilter === "Featured") return p.isFeatured;
+    if (statusFilter === "Sold Out") return p.status === "Sold Out" || p.status === "Sold";
     return (p.status || "Active") === statusFilter;
   });
 
@@ -250,7 +252,7 @@ export default function PropertiesPage() {
             <SelectItem value="All">All Properties</SelectItem>
             <SelectItem value="Featured">Featured</SelectItem>
             <SelectItem value="Active">Active</SelectItem>
-            <SelectItem value="Sold">Sold</SelectItem>
+            <SelectItem value="Sold Out">Sold Out</SelectItem>
             <SelectItem value="Pending">Pending</SelectItem>
           </SelectContent>
         </Select>

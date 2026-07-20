@@ -6,12 +6,12 @@ export async function GET(request, { params }) {
   try {
     await connectToDatabase();
     const { id } = await params;
-    
+
     let property = await Property.findById(id).lean().catch(() => null);
     if (!property) {
       property = await Property.findOne({ id: id }).lean().catch(() => null);
     }
-    
+
     if (!property) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
     }
@@ -27,7 +27,7 @@ export async function PUT(request, { params }) {
     await connectToDatabase();
     const { id } = await params;
     const data = await request.json();
-    
+
     console.log("PUT started, id:", id, "data:", data);
     let property = await Property.findByIdAndUpdate(id, data, { new: true }).catch(e => { console.log('findById error', e); return null; });
     console.log("findByIdAndUpdate done, property:", property);
@@ -36,7 +36,7 @@ export async function PUT(request, { params }) {
       property = await Property.findOneAndUpdate({ id }, data, { new: true }).catch(e => { console.log('findOne error', e); return null; });
       console.log("findOneAndUpdate done");
     }
-    
+
     if (!property) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
     }
@@ -51,12 +51,12 @@ export async function DELETE(request, { params }) {
   try {
     await connectToDatabase();
     const { id } = await params;
-    
+
     let property = await Property.findByIdAndDelete(id).catch(() => null);
     if (!property) {
       property = await Property.findOneAndDelete({ id }).catch(() => null);
     }
-    
+
     if (!property) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
     }
