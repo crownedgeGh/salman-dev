@@ -86,7 +86,7 @@ export default function PostPropertyForm() {
     areaUnit:        'sq ft',
     floorNo:         '',
     totalFloors:     '',
-    bedrooms:        '',
+
     bathrooms:       '',
     furnishing:      '',
     parking:         '',
@@ -296,16 +296,6 @@ export default function PostPropertyForm() {
           <Field id="prop-total-floors" label="Total Floors in Building (optional)">
             <input id="prop-total-floors" type="number" min="1" value={form.totalFloors} onChange={set('totalFloors')} className={input} />
           </Field>
-
-          {/* Bedrooms — residential only */}
-          {isResidential && (
-            <Field id="prop-bed" label="Bedrooms (optional)">
-              <select id="prop-bed" value={form.bedrooms} onChange={set('bedrooms')} className={select}>
-                <option value=""></option>
-                {['1 RK', '1', '2', '3', '4', '5', '6+'].map((b) => <option key={b} value={b}>{b} BHK</option>)}
-              </select>
-            </Field>
-          )}
 
           {/* Bathrooms — residential only */}
           {isResidential && (

@@ -241,13 +241,6 @@ export default function ViewPropertyPage({ params }) {
             <div className="flex items-start gap-3">
               <Home className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs text-muted-foreground block font-medium">Bedrooms</span>
-                <span className="text-sm font-medium text-foreground">{property?.bedrooms || "N/A"}</span>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Home className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div>
                 <span className="text-xs text-muted-foreground block font-medium">Bathrooms</span>
                 <span className="text-sm font-medium text-foreground">{property?.bathrooms || "N/A"}</span>
               </div>

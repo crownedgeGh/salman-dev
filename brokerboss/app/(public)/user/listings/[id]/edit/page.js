@@ -94,7 +94,7 @@ export default function EditPropertyPage() {
           city: p.city || '',
           landmark: p.landmark || '',
           description: p.description || '',
-          bhk: p.bhk || p.BHK || p.bedrooms || '',
+
           furnishing: p.furnishing || '',
           bathroom: p.bathroom || p.bathrooms || '',
           parking: p.parking || '',
@@ -241,10 +241,7 @@ export default function EditPropertyPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <Field label="BHK / Bedrooms">
-              <input id="edit-bhk" type="number" min={1} max={10} value={form.bhk} onChange={set('bhk')}
-                placeholder="2" className={inputClass} />
-            </Field>
+
             <Field label="Bathrooms">
               <input id="edit-bathroom" type="number" min={1} max={10} value={form.bathroom} onChange={set('bathroom')}
                 placeholder="2" className={inputClass} />

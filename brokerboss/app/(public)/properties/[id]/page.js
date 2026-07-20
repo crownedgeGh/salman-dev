@@ -34,7 +34,7 @@ export default async function PropertyDetailsPage({ params }) {
   const purpose = property.purpose || 'Sale';
   const price = property.price || 'Contact for price';
   const area = property.area || (property.areaSize ? `${property.areaSize} ${property.areaUnit || ''}` : 'N/A');
-  const bedrooms = property.bedrooms || 'N/A';
+
   const bathrooms = property.bathrooms || 'N/A';
   const furnishing = property.furnishing || 'N/A';
   const parking = property.parking || 'N/A';
@@ -133,7 +133,6 @@ export default async function PropertyDetailsPage({ params }) {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-5 md:gap-y-8 gap-x-3 md:gap-x-4">
                 <SpecItem icon={<Home className="w-5 h-5" />} label="Type" value={type} />
                 <SpecItem icon={<Ruler className="w-5 h-5" />} label="Area" value={area} />
-                <SpecItem icon={<BedDouble className="w-5 h-5" />} label="Bedrooms" value={bedrooms} />
                 <SpecItem icon={<Bath className="w-5 h-5" />} label="Bathrooms" value={bathrooms} />
                 <SpecItem icon={<Building className="w-5 h-5" />} label="Floor" value={floorInfo} />
                 <SpecItem icon={<Sofa className="w-5 h-5" />} label="Furnishing" value={furnishing} />

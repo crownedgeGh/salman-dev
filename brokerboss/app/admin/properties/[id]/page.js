@@ -49,7 +49,7 @@ export default function EditPropertyPage({ params }) {
     areaUnit: "sq ft",
     floorNo: "",
     totalFloors: "",
-    bedrooms: "",
+
     bathrooms: "",
     furnishing: "",
     parking: "",
@@ -78,7 +78,7 @@ export default function EditPropertyPage({ params }) {
           areaUnit: p.areaUnit || "sq ft",
           floorNo: p.floorNo || "",
           totalFloors: p.totalFloors || "",
-          bedrooms: p.bedrooms || "",
+
           bathrooms: p.bathrooms || "",
           furnishing: p.furnishing || "",
           parking: p.parking || "",
@@ -331,16 +331,7 @@ export default function EditPropertyPage({ params }) {
                 </div>
               </div>
 
-              {/* Bedrooms */}
-              <div className="space-y-1.5">
-                <label htmlFor="prop-bedrooms" className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Home className="h-4 w-4 text-primary" /> Bedrooms
-                </label>
-                <select id="prop-bedrooms" name="bedrooms" value={form.bedrooms} onChange={handleChange} className={inputClass}>
-                  <option value="">Select...</option>
-                  {['1 RK', '1', '2', '3', '4', '5', '6+'].map(b => <option key={b} value={b}>{b} BHK</option>)}
-                </select>
-              </div>
+
 
               {/* Bathrooms */}
               <div className="space-y-1.5">
