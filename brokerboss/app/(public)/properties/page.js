@@ -394,7 +394,7 @@ function PropertiesPageInner() {
         if (filters.priceMin && priceLakh < Number(filters.priceMin)) return false;
         if (filters.priceMax && priceLakh > Number(filters.priceMax)) return false;
       }
-      
+
       if (filters.bhk && (filters.type === 'House' || filters.type === 'Flat')) {
         let pBhk = p.bhk;
         if (!pBhk && p.title) {
@@ -403,7 +403,7 @@ function PropertiesPageInner() {
         }
         // Fallback to '2' to match PropertyCard's display logic
         if (!pBhk) pBhk = '2';
-        
+
         const selectedBhkMatch = filters.bhk.match(/(\d)/);
         if (selectedBhkMatch && pBhk.toString() !== selectedBhkMatch[1]) {
           return false;
@@ -485,15 +485,15 @@ function PropertiesPageInner() {
               <div className="mb-4">
                 <div className="relative w-full md:max-w-md">
                   <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <input 
-                    type="text" 
-                    placeholder="Search by property name or ID..." 
+                  <input
+                    type="text"
+                    placeholder="Search by property name or ID..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-10 py-2.5 bg-background border border-border/60 hover:border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all shadow-sm text-sm"
                   />
                   {searchQuery && (
-                    <button 
+                    <button
                       onClick={() => setSearchQuery('')}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                     >

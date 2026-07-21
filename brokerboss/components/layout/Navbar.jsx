@@ -97,7 +97,7 @@ export default function Navbar() {
       <RegisterModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
       <UserPanelSheet open={panelOpen} onClose={() => setPanelOpen(false)} />
 
-      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-white/95 dark:bg-black/95 backdrop-blur-md">
         <nav className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
 
           {/* ── Logo ── */}

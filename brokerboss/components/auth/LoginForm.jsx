@@ -7,14 +7,14 @@ import { FaPhone, FaCheckCircle, FaLock } from 'react-icons/fa';
 
 function FormField({ id, label, icon: Icon, error, children }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 relative">
       <label htmlFor={id} className="text-sm font-medium text-foreground flex items-center gap-2">
         <Icon className="h-3.5 w-3.5 text-primary" />
         {label}
       </label>
       {children}
       {error && (
-        <p className="text-xs text-destructive flex items-center gap-1">
+        <p className="absolute -bottom-5 left-0 text-xs text-destructive flex items-center gap-1">
           <FaCheckCircle className="h-3 w-3" /> {error}
         </p>
       )}

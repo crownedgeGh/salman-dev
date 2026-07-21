@@ -42,10 +42,17 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-sm mb-3">Property Types</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {['Houses', 'Flats', 'Shops', 'Plots', 'Offices', 'Warehouses'].map((type) => (
+              {[
+                { label: 'Houses', type: 'house' },
+                { label: 'Flats', type: 'flat' },
+                { label: 'Shops', type: 'shop' },
+                { label: 'Plots', type: 'plot' },
+                { label: 'Offices', type: 'office' },
+                { label: 'Warehouses', type: 'warehouse' }
+              ].map(({ label, type }) => (
                 <li key={type}>
-                  <Link href="/properties" className="hover:text-foreground transition-colors">
-                    {type}
+                  <Link href={`/properties?type=${type}`} className="hover:text-foreground transition-colors">
+                    {label}
                   </Link>
                 </li>
               ))}

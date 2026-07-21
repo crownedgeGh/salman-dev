@@ -143,7 +143,7 @@ function FeaturedCard({ property }) {
   };
 
   return (
-    <div className="group bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col relative">
+    <div className="group h-full bg-white dark:bg-card rounded-2xl border border-border/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col relative">
       <Link href={`/properties/${property._id || property.id}`} className="absolute inset-0 z-10" aria-label={`View ${property.title}`} />
       {/*
         Card Image — 4:3 landscape ratio.
