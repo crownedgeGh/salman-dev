@@ -57,8 +57,12 @@ export default function UserPanelSheet({ open, onClose }) {
   const { userProfile, userRole, logout } = useAuth();
 
   const displayName = userProfile?.name || roleLabels[userRole] || 'User';
-  const initial = displayName.charAt(0).toUpperCase();
   const canPostAd = userRole === 'owner' || userRole === 'broker';
+
+  const rawUserImage = userProfile?.passportPhoto || userProfile?.image;
+  const userImage = (rawUserImage && typeof rawUserImage === 'string' && rawUserImage !== '[object File]' && rawUserImage.trim() !== '')
+    ? rawUserImage
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=ffffff&size=128`;
 
   return (
     <Sheet open={open} onOpenChange={(o) => { if (!o) onClose?.(); }}>
@@ -71,8 +75,13 @@ export default function UserPanelSheet({ open, onClose }) {
           <SheetTitle asChild>
             <div className="flex items-center gap-3">
               {/* Avatar circle */}
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-xl shrink-0 shadow">
-                {initial}
+              <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl shrink-0 shadow overflow-hidden">
+                <img 
+                  src={userImage} 
+                  alt={displayName} 
+                  onError={(e) => { e.target.onerror = null; e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=6366f1&color=ffffff&size=128`; }}
+                  className="h-full w-full object-cover object-top" 
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-foreground text-base capitalize truncate leading-tight">
